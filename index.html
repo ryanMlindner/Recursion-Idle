@@ -21,8 +21,10 @@
       <script>
         chara = document.getElementbyId("chara").innerHTML;
         gen1 = {counter:0 , echelon:0 , costbase:100 , costmultiplier:1.21 , realcost: costbase + (costmultiplier*(counter)) , weight:100 }
+        <!-- TODO understand how to connect HTML object 'gen1value' to gen1 object in JS -->
+        document.getElementById("gen1value") = gen1.counter;
         <!-- gen2 through 5 here -->
-        element = document.getElementById("gen1value");
+        element = document.getElementById("gen1value").innerHTML;
         element.addEventListener("click", incrementGenerator(gen1);
         function incrementGenerator(genid) {
           <!-- PLACEHOLDER FOR CHECKING WHETHER INCREMENTING IS ALLOWED -->
