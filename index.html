@@ -1,11 +1,39 @@
 <!DOCTYPE HTML>
+<!-- PAUSED::: TODO VARIABLES DISPLAYING/CHANGING IN REAL TIME, SLOPPY CODE RN -->
 <head>
   <link rel="stylesheet" href="Recursion.css">
 </head>
 <body>
   <!-- TODO: write a game -->
+  
+  <div class="resources">
+    <!-- TODO: find variable definitions that work with JS -->
+    <h5> chara = </h5> <h5 id="chara">100</h5>
+    <h4> ingenuity = </h4> <h4 id="ingenuity">0</h4>
+    <h3> APIP = </h3> <h3 id="APIP">0</h3>
+  </div>
+  
   <div class="main">
     <h1>Example Dummy text that is totally working</h1>
-    <button class="basic">Click</button>
+    <p>
+      <button id="gen1">Keyboard</button> <h3 id="gen1value"> 0 </h3>
+      <!-- for scalability, function needs templating -->
+      <script>
+        chara = document.getElementbyId("chara").innerHTML;
+        gen1 = {counter:0 , echelon:0 , costbase:100 , costmultiplier:1.21 , realcost: costbase + (costmultiplier*(counter)) , weight:100 }
+        <!-- gen2 through 5 here -->
+        element = document.getElementById("gen1value");
+        element.addEventListener("click", incrementGenerator(gen1);
+        function incrementGenerator(genid) {
+          <!-- PLACEHOLDER FOR CHECKING WHETHER INCREMENTING IS ALLOWED -->
+          if (chara >= genid.realcost) {
+            genid.counter++;
+            chara = chara - genid.realcost;
+          }
+        }
+        charaGrowth = gen1.weight <!--+ gen2.weight + gen3.weight + gen4.weight + gen5.weight;-->
+        setInterval(charaCount () {chara += charaGrowth}, 1000);
+      </script>
+    </p>
   </div>
 </body>
