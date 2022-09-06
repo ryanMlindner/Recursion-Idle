@@ -2,8 +2,39 @@ body {
   margin: 0;
   background-color: #111;
 }
-
+/* different headers will be different resource types/layers */
 h1 {
   color: white;
   text-align: center;
+}
+
+h2 {
+  color: red;
+  text-align: center;
+}
+
+h3 {
+  color: springgreen;
+  text-align: center;
+}
+
+h4 {
+  color: silver;
+  text-align: center;
+}
+
+h5 {
+  color: purple;
+  text-align: center;
+}
+
+h6 {
+  color: blue;
+  text-align: center;
+}
+
+button {
+  background-color: seagreen;
+  color: white;
+  border-color: yellow;
 }
