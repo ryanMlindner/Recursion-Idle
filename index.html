@@ -8,9 +8,9 @@
   
   <div class="resources">
     <!-- TODO: find variable definitions that work with JS -->
-    <h6> chara = </h5> <h5 id="chara">100</h5>
-    <h5> ingenuity = </h4> <h4 id="ingenuity">0</h4>
-    <h4> APIP = </h3> <h3 id="APIP">0</h3>
+    <h5 id="charaHeader"> chara = <span id="charaTotal">100</span></h5>
+    <h4 id="ingenuityHeader"> ingenuity = <span id="ingenuityTotal">0</span></h4>
+    <h3 id="apipHeader"> apip = <span id="apipTotal">0</span></h3>
   </div>
   
   <div class="main">
@@ -20,12 +20,14 @@
       <script>
         //currently concatenating the strings '100' and '10', which is hilarious, but not useful
         //TODO figure that out
-        $chara = document.getElementById("chara");
-        $charaGrowth = 10;
+        $chara = 0n;
+        $chara = document.getElementById("charaTotal").innerHTML;
+        $charaGrowth = 10n;
 
         setInterval(charaGrow, 1000)
         function charaGrow(){
-          $chara.innerHTML += $charaGrowth;
+          $chara = $chara + $charaGrowth;
+          document.getElementById("charaTotal").innerHTML = $chara;
         }
       </script>
       <!-- TODO understand how to connect HTML object 'gen1value' to gen1 object in JS -->
