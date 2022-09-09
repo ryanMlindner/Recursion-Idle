@@ -31,7 +31,10 @@ let graphs = 0n;
 let codeCleanliness = 0n;
 
 
-
+//create custom class to handle connections between raw amounts and things like cost increase, base cost, real cost, etc.?
+/*
+class ...
+*/
 
 //NOT IN USE YET, NO DEBUG
 
