@@ -5,8 +5,52 @@
 
 //creating and linking list of resources (linked list lol jk), refer to map in notebook, UPDATE HERE FIRST:: USE ID's IN HTML
 
-
 let chara = 100n;
+
+//class for generators to keep track of cost, costgrowth, and change in chara growth
+class generatorChara {
+  constructor(basecost, costgrowth, tier, currency, growthFactor) {
+  this.basecost = basecost;
+  this.costgrowth = costgrowth;
+  this.tier = tier;
+  this.currency = chara;
+  this.growthFactor = growthFactor;
+  this.realGrowth = 0n;
+  this.amount = 0;
+  }
+  realcost() {
+    return (this.basecost + (this.basecost*this.costgrowth*amount))
+  }
+  buyOne() {
+    let bought = false;
+    if (chara >= this.realcost) {
+      this.amount++;
+      chara = chara - this.realcost;
+      bought = true;
+    }
+    return bought;
+  }
+  buyAmount(amount) {
+    let bought = false;
+    let totalCost = 0n;
+    let index = this.amount;
+    let goalTotal = index + amount;
+    for (let i = index; i < goalTotal; i++ ) {
+      totalCost = totalCost + this.basecost + (this.basecost*this.costgrowth*i)
+    }
+    if (chara >= totalCost) {
+      this.amount = this.amount + amount;
+      chara = chara - totalCost;
+      bought = true;
+    }
+    return bought;    
+  }
+  updateGrowth() {
+    this.realGrowth = this.growthFactor*this.amount;
+  }
+}
+
+//TODO class definitions done, rewrite variables as generators when appropriate
 // prestige layer 1 gen
 let keyboards = 0n;
 let autoclickers = 0n;
