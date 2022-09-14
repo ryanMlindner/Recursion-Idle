@@ -33,27 +33,27 @@
   
   <div class="main">
     <h1>Hi. This is game. Press button?</h1>
-    <p>
+    <p id="gen1declarations">
+
+      <!--GEN1 DECLARATIONS-->
       <button id="gen1">Keyboards</button> <h3>keyboards: </h3><h3 id="keyboards"> 0 </h3>
+      <button id="gen2">Autoclickers</button> <h3>autoclickers: </h3><h3 id="autoclickers"> 0 </h3>
+      <button id="gen3">Macros</button> <h3>macros: </h3><h3 id="macros"> 0 </h3>
+      <button id="gen4">Monitors</button> <h3>monitors: </h3><h3 id="monitors"> 0 </h3>
+      <button id="gen5">Summons</button> <h3>summons: </h3><h3 id="summons"> 0 </h3>
+
       <script>
 
         //use explicit type definitions to enforce addition instead of concatenation due to JS automatic typing
         $chara = BigInt(document.getElementById("charaTotal").innerHTML);
         $charaGrowth = 1n;
         
-        //TODO unsure if using a 100 ms update time and dividing growth numbers by 10 is the correct solution, but works for now
-        setInterval(charaGrow, 100)
-        function charaGrow(){
-          $chara = $chara + $charaGrowth;
-          document.getElementById("charaTotal").innerHTML = $chara;
-        }
-
         //experimental button stuff
         const button = document.getElementById("gen1");
         let $keyboards = BigInt(document.getElementById("keyboards").innerHTML);
 
         //TODO currently this executes ONCE and never again, the button doesn't seem to be doing anything yet
-
+        //still stuck on that one, added more to JS classes 9/13
         button.addEventListener("click", buyOneGenerator($keyboards));
         //TODO define cost growth and functions to manage that
         function buyOneGenerator(generatorID) {
@@ -71,6 +71,13 @@
             growthUpdate(generator);
           }
           */
+
+        //TODO unsure if using a 100 ms update time and dividing growth numbers by 10 is the correct solution, but works for now
+        setInterval(charaGrow, 100)
+        function charaGrow(){
+          $chara = $chara + $charaGrowth;
+          document.getElementById("charaTotal").innerHTML = $chara;
+        }
         }
 
       </script>

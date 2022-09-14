@@ -4,6 +4,16 @@
 //TODO object definitions in HTML vs. JS
 
 //creating and linking list of resources (linked list lol jk), refer to map in notebook, UPDATE HERE FIRST:: USE ID's IN HTML
+//TODO get plugins set up for HTML objects -> JS objects
+/*
+plugins for to get T1 working:
+chara
+keyboards
+autoclickers
+macros
+monitors
+summons
+*/
 
 let chara = 100n;
 
@@ -19,7 +29,8 @@ class generatorChara {
   this.amount = 0;
   }
   realcost() {
-    return (this.basecost + (this.basecost*this.costgrowth*amount))
+    //TODO this is wrong, figure that out
+    return (this.basecost + this.basecost*(Math.pow(this.costgrowth, amount)-1))
   }
   buyOne() {
     let bought = false;
@@ -52,11 +63,13 @@ class generatorChara {
 
 //TODO class definitions done, rewrite variables as generators when appropriate
 // prestige layer 1 gen
-let keyboards = 0n;
-let autoclickers = 0n;
-let macros = 0n;
-let monitors = 0n;
-let summons = 0n;
+
+//BALANCEPOINT
+let keyboards = new generatorChara(100n, 1.21, 1, chara, 10n);
+let autoclickers = new generatorChara(1000n, 1.31, 2, chara, 100n);
+let macros = new generatorChara(10000n, 1.41, 3, chara, 1000n);
+let monitors = new generatorChara(100000n, 1.51, 4, chara, 10000n);
+let summons = new generatorChara(1000000n, 1.61, 5, chara, 100000n);
 
 let ingenuity = 0n;
 // prestige layer 2 gen
