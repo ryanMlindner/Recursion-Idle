@@ -20,8 +20,6 @@
     why should anyone play it?
       -possible insights into the development of idle games
       -to look at it and be like yes this is a lot of coding good job we can pay you for stuff now
-      -the development process, commit frequency, developer attitude towards self and capabilities are an allegory for
-      depression and how to not be that
 
   -->
   <div class="resources">
@@ -46,23 +44,21 @@
 
         //use explicit type definitions to enforce addition instead of concatenation due to JS automatic typing
         $chara = BigInt(document.getElementById("charaTotal").innerHTML);
-        $charaGrowth = 1n;
+        $charaGrowth = 0n;
         
         //experimental button stuff
-        const button = document.getElementById("gen1");
+        const gen1Button = document.getElementById("gen1");
         let $keyboards = BigInt(document.getElementById("keyboards").innerHTML);
 
-        //TODO currently this executes ONCE and never again, the button doesn't seem to be doing anything yet
-        //still stuck on that one, added more to JS classes 9/13
-        button.addEventListener("click", buyOneGenerator($keyboards));
+        //TODO clone code into timing.js, works for now in here for testing
+        gen1Button.addEventListener("click", buyOneGenerator);
         //TODO define cost growth and functions to manage that
-        function buyOneGenerator(generatorID) {
+        function buyOneGenerator() {
           //TODO generatorID to object? attributes for cost and suchnot? would make it more readable and easier to edit
-          let $generatorvalue = generatorID;
-          $generatorvalue++;
-          $charaGrowth = $charaGrowth + ($generatorvalue * 10n);
+          $keyboards++;
+          $charaGrowth = $charaGrowth + 10n;
           $chara = $chara - 100n;
-          document.getElementById("keyboards").innerHTML = $generatorvalue;
+          document.getElementById("keyboards").innerHTML = $keyboards;
           /*
           not used yet, just getting button to work
           if (generatorID.realcost <= $chara) {
@@ -71,9 +67,8 @@
             growthUpdate(generator);
           }
           */
-
-        //TODO unsure if using a 100 ms update time and dividing growth numbers by 10 is the correct solution, but works for now
-        setInterval(charaGrow, 100)
+        
+        setInterval(charaGrow, 100);
         function charaGrow(){
           $chara = $chara + $charaGrowth;
           document.getElementById("charaTotal").innerHTML = $chara;
@@ -82,7 +77,7 @@
 
       </script>
       <!-- TODO understand how to connect HTML object 'gen1value' to gen1 object in JS -->
-      <script src="timing.js"></script>
+      <!--<script src="timing.js"></script>-->
       <!--
       <script>
         chara = document.getElementbyId("chara").innerHTML;

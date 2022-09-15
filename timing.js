@@ -29,8 +29,8 @@ class generatorChara {
   this.amount = 0;
   }
   realcost() {
-    //TODO this is wrong, figure that out
-    return (this.basecost + this.basecost*(Math.pow(this.costgrowth, amount)-1))
+    //TODO this is right?
+    return (this.basecost*(Math.pow(this.costgrowth, amount)))
   }
   buyOne() {
     let bought = false;
@@ -47,7 +47,7 @@ class generatorChara {
     let index = this.amount;
     let goalTotal = index + amount;
     for (let i = index; i < goalTotal; i++ ) {
-      totalCost = totalCost + this.basecost + (this.basecost*this.costgrowth*i)
+      totalCost = totalCost + (this.basecost*this.costgrowth*i);
     }
     if (chara >= totalCost) {
       this.amount = this.amount + amount;
