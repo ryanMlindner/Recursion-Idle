@@ -65,11 +65,11 @@ class generatorChara {
 // prestige layer 1 gen
 
 //BALANCEPOINT
-let keyboards = new generatorChara(100n, 1.21, 1, chara, 10n);
-let autoclickers = new generatorChara(1000n, 1.31, 2, chara, 100n);
-let macros = new generatorChara(10000n, 1.41, 3, chara, 1000n);
-let monitors = new generatorChara(100000n, 1.51, 4, chara, 10000n);
-let summons = new generatorChara(1000000n, 1.61, 5, chara, 100000n);
+let keyboards = new generatorChara(100n, 1.21, 1, chara, 1n);
+let autoclickers = new generatorChara(1000n, 1.31, 2, chara, 10n);
+let macros = new generatorChara(10000n, 1.41, 3, chara, 100n);
+let monitors = new generatorChara(100000n, 1.51, 4, chara, 1000n);
+let summons = new generatorChara(1000000n, 1.61, 5, chara, 10000n);
 
 let ingenuity = 0n;
 // prestige layer 2 gen

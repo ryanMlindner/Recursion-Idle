@@ -55,10 +55,12 @@
         //TODO define cost growth and functions to manage that
         function buyOneGenerator() {
           //TODO generatorID to object? attributes for cost and suchnot? would make it more readable and easier to edit
+          if ($chara >= 100n) {
           $keyboards++;
-          $charaGrowth = $charaGrowth + 10n;
+          $charaGrowth = $charaGrowth + 1n; //balancepoint for testing
           $chara = $chara - 100n;
           document.getElementById("keyboards").innerHTML = $keyboards;
+          }
           /*
           not used yet, just getting button to work
           if (generatorID.realcost <= $chara) {
