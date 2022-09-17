@@ -34,70 +34,14 @@
     <p id="gen1declarations">
 
       <!--GEN1 DECLARATIONS-->
-      <button id="gen1">Keyboards</button> <h3>keyboards: </h3><h3 id="keyboards"> 0 </h3>
+      <button id="gen1">Keyboards</button> <h3>cost: </h3><h3 id="keyboardsCost">100</h3> <h3>keyboards: </h3><h3 id="keyboards"> 0 </h3>
       <button id="gen2">Autoclickers</button> <h3>autoclickers: </h3><h3 id="autoclickers"> 0 </h3>
       <button id="gen3">Macros</button> <h3>macros: </h3><h3 id="macros"> 0 </h3>
       <button id="gen4">Monitors</button> <h3>monitors: </h3><h3 id="monitors"> 0 </h3>
       <button id="gen5">Summons</button> <h3>summons: </h3><h3 id="summons"> 0 </h3>
 
-      <script>
 
-        //use explicit type definitions to enforce addition instead of concatenation due to JS automatic typing
-        $chara = BigInt(document.getElementById("charaTotal").innerHTML);
-        $charaGrowth = 0n;
-        
-        //experimental button stuff
-        const gen1Button = document.getElementById("gen1");
-        let $keyboards = BigInt(document.getElementById("keyboards").innerHTML);
-
-        //TODO clone code into timing.js, works for now in here for testing
-        gen1Button.addEventListener("click", buyOneGenerator);
-        //TODO define cost growth and functions to manage that
-        function buyOneGenerator() {
-          //TODO generatorID to object? attributes for cost and suchnot? would make it more readable and easier to edit
-          if ($chara >= 100n) {
-          $keyboards++;
-          $charaGrowth = $charaGrowth + 1n; //balancepoint for testing
-          $chara = $chara - 100n;
-          document.getElementById("keyboards").innerHTML = $keyboards;
-          }
-          /*
-          not used yet, just getting button to work
-          if (generatorID.realcost <= $chara) {
-            generatorID.amount + 1n;
-            $chara = $chara - generatorID.realcost;
-            growthUpdate(generator);
-          }
-          */
-        
-        setInterval(charaGrow, 100);
-        function charaGrow(){
-          $chara = $chara + $charaGrowth;
-          document.getElementById("charaTotal").innerHTML = $chara;
-        }
-        }
-
-      </script>
-      <!-- TODO understand how to connect HTML object 'gen1value' to gen1 object in JS -->
-      <!--<script src="timing.js"></script>-->
-      <!--
-      <script>
-        chara = document.getElementbyId("chara").innerHTML;
-        gen1 = {counter:0 , echelon:0 , costbase:100 , costmultiplier:1.21 , realcost: costbase + (costmultiplier*(counter)) , weight:100 }
-        
-        document.getElementById("gen1value") = gen1.counter;
-        
-        element = document.getElementById("gen1value").innerHTML;
-        element.addEventListener("click", incrementGenerator(gen1));
-        function incrementGenerator(genid) {
-          if (chara >= genid.realcost) {
-            genid.counter++;
-            chara = chara - genid.realcost;
-          }
-        }
-        charaGrowth = gen1.weight 
-        setInterval(charaCount(), 1000);
-      </script> -->
+      <script src="timing.js"></script>
     </p>
   </div>
 </body>
