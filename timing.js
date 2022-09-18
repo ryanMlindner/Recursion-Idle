@@ -17,16 +17,18 @@ plugins plugged in, working ish **need to test GEN 2-5 and connect buttons, only
 
 //class for generators to keep track of cost, costgrowth, and change in chara growth
 class generatorChara {
-  constructor(basecost, costgrowth, tier, button, growthFactor) {
+  constructor(basecost, costgrowth, costRef, name, button, growthFactor) {
   this.basecost = basecost;
   this.costgrowth = costgrowth;
-  this.tier = tier;
+  this.costRef = costRef;
+  this.name = name;
   this.button = button;
   this.growthFactor = growthFactor;
+  this.growth = 0n;
   this.amount = 0;
+  document.getElementById(costRef).innerHTML = basecost;
   }
   realcost() {
-    //TODO this is right?
     return Math.floor((this.basecost*(Math.pow(this.costgrowth, this.amount))))
   }
   buyOne() {
@@ -51,19 +53,22 @@ class generatorChara {
       chara = chara - totalCost;
       bought = true;
     }
-    return bought;    
+    return bought;
+  }
+  updateGrowth() {
+    this.growth = (this.growthFactor * BigInt(this.amount));
   }
 }
 
 //TODO class definitions done, rewrite variables as generators when appropriate
 // prestige layer 1 gen
 
-//BALANCEPOINT
-let $keyboards = new generatorChara(100, 1.21, 1, document.getElementById("gen1"), 1n);
-let $autoclickers = new generatorChara(1000n, 1.31, 2, document.getElementById("gen2"), 10n);
-let $macros = new generatorChara(10000n, 1.41, 3, document.getElementById("gen3"), 100n);
-let $monitors = new generatorChara(100000n, 1.51, 4, document.getElementById("gen4"), 1000n);
-let $summons = new generatorChara(1000000n, 1.61, 5, document.getElementById("gen5"), 10000n);
+//BALANCEPOINT first two numbers are base cost and cost growth, last is amount of chara generated per 1/10 sec
+let $keyboards = new generatorChara(100, 1.21, "keyboardsCost", "keyboards", document.getElementById("gen1"), 1n);
+let $autoclickers = new generatorChara(1000, 1.31, "autoclickersCost", "autoclickers", document.getElementById("gen2"), 10n);
+let $macros = new generatorChara(10000, 1.41, "macrosCost", "macros", document.getElementById("gen3"), 100n);
+let $monitors = new generatorChara(100000, 1.51, "monitorsCost", "monitors", document.getElementById("gen4"), 1000n);
+let $summons = new generatorChara(1000000, 1.61, "summonsCost", "summons", document.getElementById("gen5"), 10000n);
 
 let ingenuity = 0n;
 // prestige layer 2 gen
@@ -86,21 +91,30 @@ let codeCleanliness = 0n;
 let $chara = BigInt(document.getElementById("charaTotal").innerHTML);
 let $charaGrowth = 0n;
 
-$keyboards.button.addEventListener("click", buyOneGenerator);
+$keyboards.button.addEventListener("click", buyOneGenerator.bind($keyboards));
+$autoclickers.button.addEventListener("click", buyOneGenerator.bind($autoclickers));
+$macros.button.addEventListener("click", buyOneGenerator.bind($macros));
+$monitors.button.addEventListener("click", buyOneGenerator.bind($monitors));
+$summons.button.addEventListener("click", buyOneGenerator.bind($summons));
 
-function buyOneGenerator() {
-  if ($chara >= $keyboards.realcost()) {
-  $charaGrowth = $charaGrowth + $keyboards.growthFactor; //balancepoint for testing
-  $chara = $chara - BigInt($keyboards.realcost());
-  $keyboards.amount++;
-  document.getElementById("keyboards").innerHTML = $keyboards.amount;
-  document.getElementById("keyboardsCost").innerHTML = $keyboards.realcost();
+function buyOneGenerator(genID) {
+  if ($chara >= this.realcost()) {
+    $chara = $chara - BigInt(this.realcost());
+    this.amount++;
+    this.updateGrowth();
+    document.getElementById(this.name).innerHTML = this.amount;
 
+    let output = this.realcost();
+      if (this.realcost() > 10000) {
+      output = output.toExponential(2);
+      }
+    document.getElementById(this.costRef).innerHTML = output;
+    }
   }
-}
 
 setInterval(charaGrow, 100);
 function charaGrow(){
+  $charaGrowth = $keyboards.growth + $autoclickers.growth + $macros.growth + $monitors.growth + $summons.growth;
   $chara = $chara + $charaGrowth;
   document.getElementById("charaTotal").innerHTML = $chara;
 }
