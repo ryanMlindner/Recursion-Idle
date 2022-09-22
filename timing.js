@@ -119,12 +119,12 @@ function buyOneGenerator(genID) {
     document.getElementById(this.name).innerHTML = this.amount;
 
     let output = this.realcost();
-      if (this.realcost() > 10000) {
-      output = output.toExponential(2);
-      }
-    document.getElementById(this.costRef).innerHTML = output;
+    if (this.realcost() > 10000) {
+    output = output.toExponential(2);
     }
+    document.getElementById(this.costRef).innerHTML = output;
   }
+}
 
 setInterval(charaGrow, 100);
 function charaGrow(){
@@ -132,6 +132,7 @@ function charaGrow(){
   $chara = $chara + $charaGrowth;
   document.getElementById("charaTotal").innerHTML = $chara;
 }
+
 /*NOT IN USE YET, NO DEBUG
 
 //3 prestige tiers & growth factors
