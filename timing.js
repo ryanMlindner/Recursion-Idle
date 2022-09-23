@@ -10,7 +10,9 @@ TODO::
 upgrades
 enum of upgrades and class for upgrade objects
 */
-
+//LOADING SCRIPT
+onload:(openGenTab('charaGen'));
+onload:(openSuperTab('game'));
 /*
 PDL for upgrade framework
 
@@ -31,9 +33,26 @@ class upgrade {
   }
 */
 
+//functions to control tabs
+function openSuperTab(tab) {
+  var index;
+  var tabNames = document.getElementsByClassName("supers");
+  for (index = 0; index < tabNames.length; index++) {
+    tabNames[index].style.display = "none";
+  }
+  document.getElementById(tab).style.display = "block";
+}
+function openGenTab(tab) {
+  var index;
+  var tabNames = document.getElementsByClassName("generators");
+  for (index = 0; index < tabNames.length; index++) {
+    tabNames[index].style.display = "none";
+  }
+  document.getElementById(tab).style.display = "block";
+}
 //class for generators to keep track of cost, costgrowth, and change in chara growth
 class generatorChara {
-  constructor(basecost, costgrowth, costRef, name, button, growthFactor) {
+  constructor(basecost, costgrowth, costRef, name, button, growthFactor, growthDisplay) {
   this.basecost = basecost;
   this.costgrowth = costgrowth;
   this.costRef = costRef;
@@ -42,6 +61,7 @@ class generatorChara {
   this.growthFactor = growthFactor;
   this.growth = 0n;
   this.amount = 0;
+  this.growthDisplay = growthDisplay;
   document.getElementById(costRef).innerHTML = basecost;
   }
   realcost() {
@@ -76,11 +96,11 @@ class generatorChara {
 // prestige layer 1 gen
 
 //BALANCEPOINT first two numbers are base cost and cost growth, last is amount of chara generated per 1/10 sec
-let $keyboards = new generatorChara(100, 1.21, "keyboardsCost", "keyboards", document.getElementById("gen1"), 1n);
-let $autoclickers = new generatorChara(2000, 1.31, "autoclickersCost", "autoclickers", document.getElementById("gen2"), 10n);
-let $macros = new generatorChara(40000, 1.41, "macrosCost", "macros", document.getElementById("gen3"), 100n);
-let $monitors = new generatorChara(800000, 1.51, "monitorsCost", "monitors", document.getElementById("gen4"), 1000n);
-let $summons = new generatorChara(16000000, 1.61, "summonsCost", "summons", document.getElementById("gen5"), 10000n);
+let $keyboards = new generatorChara(100, 1.21, "keyboardsCost", "keyboards", document.getElementById("gen1"), 1n, "keyboardsGen");
+let $autoclickers = new generatorChara(2000, 1.31, "autoclickersCost", "autoclickers", document.getElementById("gen2"), 10n, "autoclickersGen");
+let $macros = new generatorChara(40000, 1.41, "macrosCost", "macros", document.getElementById("gen3"), 100n, "macrosGen");
+let $monitors = new generatorChara(800000, 1.51, "monitorsCost", "monitors", document.getElementById("gen4"), 1000n, "monitorsGen");
+let $summons = new generatorChara(16000000, 1.61, "summonsCost", "summons", document.getElementById("gen5"), 10000n, "summonsGen");
 
 let ingenuity = 0n;
 // prestige layer 2 gen
@@ -122,6 +142,7 @@ function buyOneGenerator(genID) {
     if (this.realcost() > 10000) {
     output = output.toExponential(2);
     }
+    document.getElementById(this.growthDisplay).innerHTML = this.growth*10n;
     document.getElementById(this.costRef).innerHTML = output;
   }
 }

@@ -1,5 +1,6 @@
 body {
   margin: 0;
+  box-sizing: border-box;
   background-color: #111;
 }
 /* different headers will be different resource types/layers */
@@ -20,21 +21,37 @@ h3 {
 
 h4 {
   color: silver;
-  text-align: center;
+  text-align: left;
 }
 
 h5 {
   color: purple;
-  text-align: center;
+  text-align: left;
+  display: none;
 }
 
 h6 {
   color: blue;
-  text-align: center;
+  text-align: left;
+  display: none;
 }
 
+div.generators {
+  color: purple;
+}
 button {
+  background-color: blue;
+  color: white;
+  border-color: yellow;
+}
+button.tabs {
+  background-color: purple;
+  color: white;
+  border-color: yellow;
+}
+button.superTabs {
   background-color: seagreen;
   color: white;
   border-color: yellow;
 }
+
