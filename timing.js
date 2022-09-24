@@ -14,8 +14,6 @@ enum of upgrades and class for upgrade objects
 onload:(openGenTab('charaGen'));
 onload:(openSuperTab('game'));
 /*
-PDL for upgrade framework
-
 for each upgrade, define connections to the growth factors it affects (default to ALL?), what it costs, when it unlocks (using .hidden?)
 class upgrade {
   constructor(cost, tier, unlockCondition, button, generators, multiplier(flat or based on other changing #s))
@@ -50,6 +48,25 @@ function openGenTab(tab) {
   }
   document.getElementById(tab).style.display = "block";
 }
+
+//generic upgrade class
+class upgrade {
+  constructor(name, cost, effectStrength, effectTarget, button) {
+    this.name = name;
+    this.cost = cost;
+    this.effectStrength = effectStrength;
+    this.effectTarget = effectTarget;
+    this.button = button;
+    this.on = false;
+  }
+  turnOn() {
+    this.on = true;
+    this.effectTarget.upgradeMulti = this.effectTarget.upgradeMulti * this.effectStrength;
+    this.effectTarget.updateGrowth();
+    this.button.style.color = "red";
+  }
+}
+
 //class for generators to keep track of cost, costgrowth, and change in chara growth
 class generatorChara {
   constructor(basecost, costgrowth, costRef, name, button, growthFactor, growthDisplay) {
@@ -62,6 +79,7 @@ class generatorChara {
   this.growth = 0n;
   this.amount = 0;
   this.growthDisplay = growthDisplay;
+  this.upgradeMulti = 1n;
   document.getElementById(costRef).innerHTML = basecost;
   }
   realcost() {
@@ -76,6 +94,7 @@ class generatorChara {
     }
     return bought;
   }
+
   //templated buy function? pass in amount that UI can change (1x, 10x, 100x, etc)?
   //TODO would have to update buttons to be able to show amount to buy, add more buttons to toggle buy amount
   totalCostBuyAmount(amount) {
@@ -88,14 +107,16 @@ class generatorChara {
     return totalCost;
   }
   updateGrowth() {
-    this.growth = (this.growthFactor * BigInt(this.amount));
+    this.growth = (this.growthFactor * BigInt(this.amount) * this.upgradeMulti);
+    document.getElementById(this.growthDisplay).innerHTML = this.growth*10n;
   }
 }
+
 
 //TODO class definitions done, rewrite variables as generators when appropriate
 // prestige layer 1 gen
 
-//BALANCEPOINT first two numbers are base cost and cost growth, last is amount of chara generated per 1/10 sec
+//BALANCEPOINT first two numbers are base cost and cost growth, second to last is amount of chara generated per 1/10 sec
 let $keyboards = new generatorChara(100, 1.21, "keyboardsCost", "keyboards", document.getElementById("gen1"), 1n, "keyboardsGen");
 let $autoclickers = new generatorChara(2000, 1.31, "autoclickersCost", "autoclickers", document.getElementById("gen2"), 10n, "autoclickersGen");
 let $macros = new generatorChara(40000, 1.41, "macrosCost", "macros", document.getElementById("gen3"), 100n, "macrosGen");
@@ -118,9 +139,38 @@ let nodes = 0n;
 let graphs = 0n;
 let codeCleanliness = 0n;
 
+//upgrade layer one iteration one
+let $gen11Upgrade = new upgrade("upgradeGenOne1", 4000, 2n, $keyboards, document.getElementById("upgradeGenOne1"));
+let $gen21Upgrade = new upgrade("upgradeGenTwo1", 40000, 2n, $autoclickers, document.getElementById("upgradeGenTwo1"));
+let $gen31Upgrade = new upgrade("upgradeGenThree1", 400000, 2n, $macros, document.getElementById("upgradeGenThree1"));
+let $gen41Upgrade = new upgrade("upgradeGenFour1", 4000000, 2n, $monitors, document.getElementById("upgradeGenFour1"));
+let $gen51Upgrade = new upgrade("upgradeGenFive1", 40000000, 2n, $summons, document.getElementById("upgradeGenFive1"));
 
+//button activation for upgrades
+$gen11Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen11Upgrade));
+$gen21Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen21Upgrade));
+$gen31Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen31Upgrade));
+$gen41Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen41Upgrade));
+$gen51Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen51Upgrade));
+
+function turnUpgradeOn(upgradeID) {
+  if ($chara >= this.cost && this.on == false) {
+    $chara = $chara - BigInt(this.cost);
+    this.turnOn();
+  }
+}
+
+//IMPORTANT FUNCTION for guiding gameplay
+//TODO make flags for $backgroundTotalChara equaling or passing 1/2 value of upgrades or first generator cost and change from hidden to displayed
+function checkUnlocks(charactersMax) {
+  if (charactersMax > 10000n) {
+    document.getElementById("title").style.visibility = "visible";
+    document.getElementById("greet").innerHTML = "good job pressing button, keep going";
+  }
+}
 //use explicit type definitions to enforce addition instead of concatenation due to JS automatic typing
 let $chara = BigInt(document.getElementById("charaTotal").innerHTML);
+let $backgroundTotalChara = $chara;
 let $charaGrowth = 0n;
 
 $keyboards.button.addEventListener("click", buyOneGenerator.bind($keyboards));
@@ -150,8 +200,17 @@ function buyOneGenerator(genID) {
 setInterval(charaGrow, 100);
 function charaGrow(){
   $charaGrowth = $keyboards.growth + $autoclickers.growth + $macros.growth + $monitors.growth + $summons.growth;
+
+  //backgroundtotal is used for unlocks, so that buying upgrades/generators doesn't hinder progress in a meaningful way cause that feels bad as a game
+  $backgroundTotalChara = $backgroundTotalChara + $charaGrowth;
+  checkUnlocks($backgroundTotalChara);
+  //keep track of spendable money
   $chara = $chara + $charaGrowth;
-  document.getElementById("charaTotal").innerHTML = $chara;
+  let output = Number($chara);
+  if (output > 10000) {
+    output = output.toExponential(2);
+  }
+  document.getElementById("charaTotal").innerHTML = output;
 }
 
 /*NOT IN USE YET, NO DEBUG

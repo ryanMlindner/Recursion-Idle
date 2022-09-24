@@ -2,11 +2,17 @@ body {
   margin: 0;
   box-sizing: border-box;
   background-color: #111;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 /* different headers will be different resource types/layers */
 h1 {
   color: white;
   text-align: center;
+}
+h1.title {
+  font-size: xx-large;
+  text-align: center;
+  visibility: hidden;
 }
 
 h2 {

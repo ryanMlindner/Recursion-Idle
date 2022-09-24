@@ -22,8 +22,10 @@
       -to look at it and be like yes this is a lot of coding good job we can pay you for stuff now
 
   -->
+  <h1 class="title" id="title">Recursion Idle</h1>
+
   <div class="resources">
-    <h4 id="charaHeader"> chara = <span id="charaTotal">100</span></h4>
+    <h4 id="charaHeader"> chara = <span id="charaTotal">9999</span></h4>
     <h5 id="ingenuityHeader"> ingenuity = <span id="ingenuityTotal">0</span></h5>
     <h6 id="apipHeader"> apip = <span id="apipTotal">0</span></h6>
   </div>
@@ -32,8 +34,8 @@
 
   <div class="superTabs">
     <button class="superTabs" onclick="openSuperTab('game')">Game</button>
-    <button class="superTabs" onclick="openSuperTab('settings')">Settings</button>
-    <button class="superTabs" onclick="openSuperTab('thirdOption')">Totally Real and Necessary Third Tab</button>
+    <button class="superTabs" onclick="openSuperTab('upgrades')">Upgrades</button>
+    <button class="superTabs" onclick="openSuperTab('settings')">Totally Real and Necessary Third Tab</button>
   </div>
 
   <div id="game"class="supers">
@@ -45,7 +47,7 @@
   </div>
 
   <div id="charaGen" class="generators">
-    <h1>Hi. This is game. Press button?</h1>
+    <h1 id="greet">Hi. This is game. Press button?</h1>
     <p class="gen1declarations">
 
       <!--GEN1 DECLARATIONS-->
@@ -72,11 +74,26 @@
   </div>
   </div>
 
-<div id="settings" class="supers">
-  <h1>These are definitely working setting options. That is a lie.</h1>
+<div id="upgrades" class="supers">
+  <h1>More Upgrades appear as you progress :) bro thats just a lie right now. I know. Don't tell the player.</h1>
+  <h4 id="genoneUpgrades">
+    <button id="upgradeGenOne1">x2 generator one(4000 chara)</button>
+  </h4>
+  <h4 id="gentwoUpgrades">
+    <button id="upgradeGenTwo1">x2 generator two(4e4 chara)</button>
+  </h4>
+  <h4 id="genthreeUpgrades">
+    <button id="upgradeGenThree1">x2 generator three(4e5 chara)</button>
+  </h4>
+  <h4 id="genfourUpgrades">
+    <button id="upgradeGenFour1">x2 generator four(4e6 chara)</button>
+  </h4>
+  <h4 id="genfiveUpgrades">
+    <button id="upgradeGenFive1">x2 generator five(4e7 chara)</button>
+  </h4>
 </div>
 
-<div id="thirdOption" class="supers">
+<div id="settings" class="supers">
   <h1>See I told you it was real!</h1>
 </div>
 
