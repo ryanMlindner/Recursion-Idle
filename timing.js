@@ -13,6 +13,9 @@ enum of upgrades and class for upgrade objects
 //LOADING SCRIPT
 onload:(openGenTab('charaGen'));
 onload:(openSuperTab('game'));
+
+//container to keep track of game progress
+itemsToDraw = new Array();
 /*
 for each upgrade, define connections to the growth factors it affects (default to ALL?), what it costs, when it unlocks (using .hidden?)
 class upgrade {
@@ -50,6 +53,7 @@ function openGenTab(tab) {
 }
 
 //generic upgrade class
+//TODO modularize for relation to other numbers rather than just x2
 class upgrade {
   constructor(name, cost, effectStrength, effectTarget, button) {
     this.name = name;
@@ -58,18 +62,20 @@ class upgrade {
     this.effectTarget = effectTarget;
     this.button = button;
     this.on = false;
+    this.show = cost / 2;
+    itemsToDraw.push(this);
   }
   turnOn() {
     this.on = true;
     this.effectTarget.upgradeMulti = this.effectTarget.upgradeMulti * this.effectStrength;
     this.effectTarget.updateGrowth();
-    this.button.style.color = "red";
+    this.button.style.backgroundColor = "green";
   }
 }
 
 //class for generators to keep track of cost, costgrowth, and change in chara growth
 class generatorChara {
-  constructor(basecost, costgrowth, costRef, name, button, growthFactor, growthDisplay) {
+  constructor(basecost, costgrowth, costRef, name, button, growthFactor, growthDisplay, descriptor) {
   this.basecost = basecost;
   this.costgrowth = costgrowth;
   this.costRef = costRef;
@@ -80,6 +86,10 @@ class generatorChara {
   this.amount = 0;
   this.growthDisplay = growthDisplay;
   this.upgradeMulti = 1n;
+  this.show = basecost / 2;
+  this.descriptor = document.getElementById(descriptor);
+  itemsToDraw.push(this);
+
   document.getElementById(costRef).innerHTML = basecost;
   }
   realcost() {
@@ -117,11 +127,11 @@ class generatorChara {
 // prestige layer 1 gen
 
 //BALANCEPOINT first two numbers are base cost and cost growth, second to last is amount of chara generated per 1/10 sec
-let $keyboards = new generatorChara(100, 1.21, "keyboardsCost", "keyboards", document.getElementById("gen1"), 1n, "keyboardsGen");
-let $autoclickers = new generatorChara(2000, 1.31, "autoclickersCost", "autoclickers", document.getElementById("gen2"), 10n, "autoclickersGen");
-let $macros = new generatorChara(40000, 1.41, "macrosCost", "macros", document.getElementById("gen3"), 100n, "macrosGen");
-let $monitors = new generatorChara(800000, 1.51, "monitorsCost", "monitors", document.getElementById("gen4"), 1000n, "monitorsGen");
-let $summons = new generatorChara(16000000, 1.61, "summonsCost", "summons", document.getElementById("gen5"), 10000n, "summonsGen");
+let $keyboards = new generatorChara(100, 1.21, "keyboardsCost", "keyboards", document.getElementById("gen1"), 1n, "keyboardsGen", "descriptor1");
+let $autoclickers = new generatorChara(2000, 1.31, "autoclickersCost", "autoclickers", document.getElementById("gen2"), 10n, "autoclickersGen", "descriptor2");
+let $macros = new generatorChara(40000, 1.41, "macrosCost", "macros", document.getElementById("gen3"), 100n, "macrosGen", "descriptor3");
+let $monitors = new generatorChara(800000, 1.51, "monitorsCost", "monitors", document.getElementById("gen4"), 1000n, "monitorsGen", "descriptor4");
+let $summons = new generatorChara(16000000, 1.61, "summonsCost", "summons", document.getElementById("gen5"), 10000n, "summonsGen", "descriptor5");
 
 let ingenuity = 0n;
 // prestige layer 2 gen
@@ -161,8 +171,20 @@ function turnUpgradeOn(upgradeID) {
 }
 
 //IMPORTANT FUNCTION for guiding gameplay
-//TODO make flags for $backgroundTotalChara equaling or passing 1/2 value of upgrades or first generator cost and change from hidden to displayed
 function checkUnlocks(charactersMax) {
+
+  itemsToDraw.forEach(checkToDraw);
+  
+  function checkToDraw(object) {
+    if (charactersMax >= BigInt(object.show)) {
+      object.button.style.visibility = "visible";
+      if (object.descriptor) {object.descriptor.style.visibility = "visible";}
+    }
+  }
+  //special cases / tutorial
+  if (charactersMax > 100n)  {
+    document.getElementById("greet").innerHTML = "wow wasn't that fun. press more? find upgrades?"
+  }
   if (charactersMax > 10000n) {
     document.getElementById("title").style.visibility = "visible";
     document.getElementById("greet").innerHTML = "good job pressing button, keep going";
@@ -192,7 +214,11 @@ function buyOneGenerator(genID) {
     if (this.realcost() > 10000) {
     output = output.toExponential(2);
     }
-    document.getElementById(this.growthDisplay).innerHTML = this.growth*10n;
+    let growingDisplay = Number(this.growth*10n);
+    if (growingDisplay >= 10000) {
+      growingDisplay = growingDisplay.toExponential(2);
+    }
+    document.getElementById(this.growthDisplay).innerHTML = growingDisplay;
     document.getElementById(this.costRef).innerHTML = output;
   }
 }
@@ -204,6 +230,7 @@ function charaGrow(){
   //backgroundtotal is used for unlocks, so that buying upgrades/generators doesn't hinder progress in a meaningful way cause that feels bad as a game
   $backgroundTotalChara = $backgroundTotalChara + $charaGrowth;
   checkUnlocks($backgroundTotalChara);
+
   //keep track of spendable money
   $chara = $chara + $charaGrowth;
   let output = Number($chara);

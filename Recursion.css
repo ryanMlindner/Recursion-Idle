@@ -21,8 +21,13 @@ h2 {
 }
 
 h3 {
-  color: springgreen;
+  color: yellow;
   text-align: left;
+  visibility: hidden;
+}
+
+h3.gen1 {
+  visibility: visible;
 }
 
 h4 {
@@ -30,12 +35,14 @@ h4 {
   text-align: left;
 }
 
+/*h5 is prestige layer TWO*/
 h5 {
   color: purple;
   text-align: left;
   display: none;
 }
 
+/*h5 is prestige layer THREE*/
 h6 {
   color: blue;
   text-align: left;
@@ -45,19 +52,32 @@ h6 {
 div.generators {
   color: purple;
 }
+
 button {
   background-color: blue;
   color: white;
   border-color: yellow;
+  visibility: hidden;
 }
+
 button.tabs {
   background-color: purple;
   color: white;
   border-color: yellow;
+  visibility: visible;
 }
+
 button.superTabs {
   background-color: seagreen;
   color: white;
   border-color: yellow;
+  visibility: visible;
+}
+
+button.upgradeButton {
+  background-color: #111;
+  color: white;
+  border-color: yellow;
+  visibility: hidden;
 }
 
