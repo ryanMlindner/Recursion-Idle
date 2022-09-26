@@ -1,14 +1,8 @@
-
-//how deep to template?
-//how to call the value of 'chara' and then use a more complex data type to connect everything?
-//TODO object definitions in HTML vs. JS
-
 //creating and linking list of resources (linked list lol jk), refer to map in notebook, UPDATE HERE FIRST:: USE ID's IN HTML
+
+//TODO import some form of break_infinity.js to use DECIMAL instead of BigInt and Number
 /*
-plugins for to get T1 working:
-TODO::
-upgrades
-enum of upgrades and class for upgrade objects
+
 */
 //LOADING SCRIPT
 onload:(openGenTab('charaGen'));
@@ -16,23 +10,8 @@ onload:(openSuperTab('game'));
 
 //container to keep track of game progress
 itemsToDraw = new Array();
-/*
-for each upgrade, define connections to the growth factors it affects (default to ALL?), what it costs, when it unlocks (using .hidden?)
-class upgrade {
-  constructor(cost, tier, unlockCondition, button, generators, multiplier(flat or based on other changing #s))
-  
-  routine for determining variable multiplier() not required for every upgrade, but most?
-
-  routine for receiving current growth factors, updating upgraded growth? 
-  OR
-  routine to update external(in an enum?) flags for each upgrade
-  routine works on a seperated enum class of all upgrades in the game, and sets booleans for which upgrade was purchased(if affordable)
-  can make everything private to the enum except COST and IF ACTIVE?
-  TODO
-  what about upgrades that change base values of other things in the game? time manipulation?
-  goal is ONE place to define upgrades, ONE place to tweak balance numbers, and code reuseability
-  }
-*/
+//container to neatly call/update all upgrade effects
+upgrades = new Array();
 
 //functions to control tabs
 function openSuperTab(tab) {
@@ -52,10 +31,10 @@ function openGenTab(tab) {
   document.getElementById(tab).style.display = "block";
 }
 
+
 //generic upgrade class
-//TODO modularize for relation to other numbers rather than just x2
 class upgrade {
-  constructor(name, cost, effectStrength, effectTarget, button) {
+  constructor(name, cost, effectStrength, effectTarget, button, costDisplay) {
     this.name = name;
     this.cost = cost;
     this.effectStrength = effectStrength;
@@ -63,46 +42,48 @@ class upgrade {
     this.button = button;
     this.on = false;
     this.show = cost / 2;
+    this.costDisplay = costDisplay;
+
+    document.getElementById(costDisplay).innerHTML = formatOutput(Number(this.cost));
     itemsToDraw.push(this);
+    upgrades.push(this);
   }
   turnOn() {
     this.on = true;
-    this.effectTarget.upgradeMulti = this.effectTarget.upgradeMulti * this.effectStrength;
+    this.updateMulti();
     this.effectTarget.updateGrowth();
     this.button.style.backgroundColor = "green";
   }
+  updateMulti() {
+    if(this.effectStrength.amount == 0) {this.effectTarget.upgradeMulti = 1;}
+    else this.effectTarget.upgradeMulti = this.effectStrength.amount;
+    this.effectTarget.updateGrowth();
+  }
 }
+
 
 //class for generators to keep track of cost, costgrowth, and change in chara growth
 class generatorChara {
   constructor(basecost, costgrowth, costRef, name, button, growthFactor, growthDisplay, descriptor) {
-  this.basecost = basecost;
-  this.costgrowth = costgrowth;
-  this.costRef = costRef;
-  this.name = name;
-  this.button = button;
-  this.growthFactor = growthFactor;
-  this.growth = 0n;
-  this.amount = 0;
-  this.growthDisplay = growthDisplay;
-  this.upgradeMulti = 1n;
-  this.show = basecost / 2;
-  this.descriptor = document.getElementById(descriptor);
-  itemsToDraw.push(this);
-
-  document.getElementById(costRef).innerHTML = basecost;
+    //create object in JS, connect to references in HTML
+    this.basecost = basecost;
+    this.costgrowth = costgrowth;
+    this.costRef = costRef;
+    this.name = name;
+    this.button = button;
+    this.growthFactor = growthFactor;
+    this.growth = 0n;
+    this.amount = 0;
+    this.growthDisplay = growthDisplay;
+    this.upgradeMulti = 1n;
+    this.show = basecost / 2;
+    this.descriptor = document.getElementById(descriptor);
+    //update UI
+    itemsToDraw.push(this);
+    document.getElementById(costRef).innerHTML = formatOutput(Number(basecost));
   }
   realcost() {
     return Math.floor((this.basecost*(Math.pow(this.costgrowth, this.amount))))
-  }
-  buyOne() {
-    let bought = false;
-    if (chara >= this.realcost) {
-      this.amount++;
-      chara = chara - this.realcost;
-      bought = true;
-    }
-    return bought;
   }
 
   //templated buy function? pass in amount that UI can change (1x, 10x, 100x, etc)?
@@ -117,8 +98,8 @@ class generatorChara {
     return totalCost;
   }
   updateGrowth() {
-    this.growth = (this.growthFactor * BigInt(this.amount) * this.upgradeMulti);
-    document.getElementById(this.growthDisplay).innerHTML = this.growth*10n;
+    this.growth = BigInt(this.growthFactor * BigInt(this.amount) * BigInt(this.upgradeMulti));
+    document.getElementById(this.growthDisplay).innerHTML = formatOutput(Number(this.growth*10n));
   }
 }
 
@@ -150,11 +131,16 @@ let graphs = 0n;
 let codeCleanliness = 0n;
 
 //upgrade layer one iteration one
-let $gen11Upgrade = new upgrade("upgradeGenOne1", 4000, 2n, $keyboards, document.getElementById("upgradeGenOne1"));
-let $gen21Upgrade = new upgrade("upgradeGenTwo1", 40000, 2n, $autoclickers, document.getElementById("upgradeGenTwo1"));
-let $gen31Upgrade = new upgrade("upgradeGenThree1", 400000, 2n, $macros, document.getElementById("upgradeGenThree1"));
-let $gen41Upgrade = new upgrade("upgradeGenFour1", 4000000, 2n, $monitors, document.getElementById("upgradeGenFour1"));
-let $gen51Upgrade = new upgrade("upgradeGenFive1", 40000000, 2n, $summons, document.getElementById("upgradeGenFive1"));
+let $gen11Upgrade = new upgrade
+("upgradeGenOne1", 4000, $autoclickers, $keyboards, document.getElementById("upgradeGenOne1"), "upgradeOneCost");
+let $gen21Upgrade = new upgrade
+("upgradeGenTwo1", 40000, $macros, $autoclickers, document.getElementById("upgradeGenTwo1"), "upgradeTwoCost");
+let $gen31Upgrade = new upgrade
+("upgradeGenThree1", 400000, $monitors, $macros, document.getElementById("upgradeGenThree1"), "upgradeThreeCost");
+let $gen41Upgrade = new upgrade
+("upgradeGenFour1", 4000000, $summons, $monitors, document.getElementById("upgradeGenFour1"), "upgradeFourCost");
+let $gen51Upgrade = new upgrade
+("upgradeGenFive1", 40000000, $keyboards, $summons, document.getElementById("upgradeGenFive1"), "upgradeFiveCost");
 
 //button activation for upgrades
 $gen11Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen11Upgrade));
@@ -204,23 +190,31 @@ $summons.button.addEventListener("click", buyOneGenerator.bind($summons));
 //TODO change to accept buying any amount? toggle buttons to change amount bought and return floor amount?
 //GOAL IS ABSTRACTION
 function buyOneGenerator(genID) {
+  //math
   if ($chara >= this.realcost()) {
     $chara = $chara - BigInt(this.realcost());
     this.amount++;
     this.updateGrowth();
-    document.getElementById(this.name).innerHTML = this.amount;
 
-    let output = this.realcost();
-    if (this.realcost() > 10000) {
-    output = output.toExponential(2);
+    //redo math for variable changes in upgrades
+    upgrades.forEach(update);
+    function update(upgrade) {
+      if (upgrade.on) {
+        upgrade.updateMulti();
+      }
     }
-    let growingDisplay = Number(this.growth*10n);
-    if (growingDisplay >= 10000) {
-      growingDisplay = growingDisplay.toExponential(2);
-    }
-    document.getElementById(this.growthDisplay).innerHTML = growingDisplay;
-    document.getElementById(this.costRef).innerHTML = output;
+    //update UI
+    document.getElementById(this.name).innerHTML = formatOutput(this.amount);
+    document.getElementById(this.costRef).innerHTML = formatOutput(this.realcost());
+    document.getElementById(this.growthDisplay).innerHTML = formatOutput(Number(this.growth*10n));
   }
+}
+
+function formatOutput(output) {
+  if (output >= 10000) {
+    output = output.toExponential(2);
+  }
+  return output;
 }
 
 setInterval(charaGrow, 100);
