@@ -26,7 +26,7 @@
 
   <div class="resources">
     <h4 id="charaHeader"> chara = <span id="charaTotal">100</span></h4>
-    <h5 id="ingenuityHeader"> ingenuity = <span id="ingenuityTotal">0</span></h5>
+    <h5 id="memoryHeader"> memory = <span id="memoryTotal">0</span></h5>
     <h6 id="apipHeader"> apip = <span id="apipTotal">0</span></h6>
   </div>
   
@@ -41,15 +41,14 @@
   <div id="game"class="supers">
 
   <div class="generatorsTabs">
-    <button class="tabs" onclick="openGenTab('charaGen')">Character Generation</button>
-    <button class="tabs" onclick="openGenTab('ingenGen')">Ingenuity Generation</button>
-    <button class="tabs" onclick="openGenTab('apipGen')">API Power Generation</button>
+    <button class="tabs" id="charaTab" onclick="openGenTab('charaGen')">Character Generation</button>
+    <button class="tabs" id="memoryTab" onclick="openGenTab('memoryGen')" style.visibility = "hidden" >Memory Generation</button>
+    <button class="tabs" id="apipTab" onclick="openGenTab('apipGen')" style.visibility = "hidden" >API Power Generation</button>
   </div>
 
   <div id="charaGen" class="generators">
     <h1 id="greet">Hi. This is game. Press button?</h1>
-    <p class="gen1declarations">
-
+    <p class="genTabCharaDeclarations">
       <!--GEN1 DECLARATIONS-->
       <h3 id="descriptor1"><button id="gen1">Keyboards</button> <span>cost: </span><span id="keyboardsCost">0</span> <span>keyboards: </span><span id="keyboards"> 0 </span>
         <span>per second: </span><span id="keyboardsGen">0</span></h3>
@@ -64,10 +63,23 @@
     </p>
   </div>
 
-  <div id="ingenGen" class="generators">
-    <h1>Congrats on your first prestige layer! Press more buttons?</h1>
-    <span>placeholder for testing</span>
+  <div id="memoryGen" class="generators">
+    <h1>ERROR: memory leak in code, generate more memory to ensure code can keep running</h1>
+    <p class="genTabMemoryDeclarations">
+      <!--MEMORY DECLARATIONS-->
+      <h3 id="descriptor6"><button id="gen6">TickerTape</button> <span>cost: </span><span id="tickertapeCost">0</span> <span>TickerTapes: </span><span id="tickertapes"> 0 </span>
+        <span>per second: </span><span id="tickertapeGen">0</span></h3>
+      <h3 id="descriptor7"><button id="gen7">EtchaSketchs</button> <span>cost: </span><span id="etchasketchCost"> 0 </span> <span>EtchaSketch: </span> <span id="etchasketchs"> 0 </span>
+        <span>per second: </span><span id="etchasketchGen">0</span></h3>
+      <h3 id="descriptor8"><button id="gen8">FloppyDiscs</button> <span>cost: </span><span id="floppydiscCost"> 0 </span> <span>FloppyDiscs: </span> <span id="floppydiscs"> 0</span> 
+        <span>per second: </span><span id="floppydiscGen">0</span></h3>
+      <h3 id="descriptor9"><button id="gen9">SSDs</button> <span>cost: </span><span id="ssdCost"> 0 </span> <span>SSDs: </span> <span id="ssds"> 0 </span>
+        <span>per second: </span><span id="ssdGen">0</span></h3>
+      <h3 id="descriptor10"><button id="gen10">FaustDeals</button> <span>cost: </span><span id="faustdealCost"> 0 </span> <span>FaustDeals: </span> <span id="faustdeals"> 0 </span>
+        <span>per second: </span><span id="faustdealGen">0</span></h3>
+    </p>
   </div>
+
   <div id="apipGen" class="generators">
     <h1>time to plug in APIs!</h1>
     <span>placeholder for testing</span>

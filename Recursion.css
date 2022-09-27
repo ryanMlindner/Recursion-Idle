@@ -25,11 +25,11 @@ h3 {
   text-align: left;
   visibility: hidden;
 }
-
+/*
 h3.gen1 {
   visibility: visible;
 }
-
+*/
 h4 {
   color: silver;
   text-align: left;
@@ -42,7 +42,7 @@ h5 {
   display: none;
 }
 
-/*h5 is prestige layer THREE*/
+/*h6 is prestige layer THREE*/
 h6 {
   color: blue;
   text-align: left;
