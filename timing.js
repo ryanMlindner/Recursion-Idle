@@ -1,8 +1,7 @@
-//creating and linking list of resources (linked list lol jk), refer to map in notebook, UPDATE HERE FIRST:: USE ID's IN HTML
-
+//creating and linking list of resources (linked list lol jk), 
+//refer to map in notebook, UPDATE HERE FIRST:: USE ID's IN HTML
 //TODO import some form of break_infinity.js to use DECIMAL instead of Number
 /*
-
 */
 //LOADING SCRIPT
 onload:(openGenTab('charaGen'));
@@ -15,6 +14,7 @@ upgrades = new Array();
 //generator container
 generators = new Array();
 
+
 //functions to control tabs
 function openSuperTab(tab) {
   var index;
@@ -24,6 +24,7 @@ function openSuperTab(tab) {
   }
   document.getElementById(tab).style.display = "block";
 }
+
 function openGenTab(tab) {
   var index;
   var tabNames = document.getElementsByClassName("generators");
@@ -33,7 +34,8 @@ function openGenTab(tab) {
   document.getElementById(tab).style.display = "block";
 }
 
-//TODO doublecheck functionality
+
+//TODO private
 class currencies {
   constructor(tier, refHTML, value, growth, unlocked, prestigeTarget) {
     this.tier = tier;
@@ -105,7 +107,8 @@ class upgrade {
 
 //class for generators to keep track of cost, costgrowth, and change in chara growth
 class generator {
-  constructor(currencyBuy, currencyGen, basecost, costgrowth, costRef, name, button, growthFactor, growthDisplay, descriptor) {
+  constructor(currencyBuy, currencyGen, basecost, costgrowth, costRef,
+     name, button, growthFactor, growthDisplay, descriptor) {
     //create object in JS, connect to references in HTML
     this.currencyBuy = currencyBuy;
     this.currencyGen = currencyGen;
@@ -151,26 +154,49 @@ class generator {
 }
 
 //BALANCEPOINT
-let $memory = new currencies("memory", document.getElementById("memoryTotal"), 0, 0, false, null);
-let $memoryLeak = new currencies("memoryLeak", document.getElementById("memoryLeakTotal"), 0, 0, true, null);
-let $chara = new currencies("chara", document.getElementById("charaTotal"), 100, 0, true, $memory);
+let $memory = new currencies
+  ("memory", document.getElementById("memoryTotal"), 0, 0, false, null);
+let $memoryLeak = new currencies
+  ("memoryLeak", document.getElementById("memoryLeakTotal"), 0, 0, true, null);
+let $chara = new currencies
+  ("chara", document.getElementById("charaTotal"), 1000000000, 0, true, $memory);
 
 //TODO class definitions done, rewrite variables as generators when appropriate
 // prestige layer 1 gen
 
-//BALANCEPOINT first two numbers are base cost and cost growth, second to last is amount of chara generated per 1/10 sec
-let $keyboards = new generator($chara, $chara, 100, 1.21, "keyboardsCost", "keyboards", document.getElementById("gen1"), 1, "keyboardsGen", "descriptor1");
-let $autoclickers = new generator($chara, $chara, 2000, 1.31, "autoclickersCost", "autoclickers", document.getElementById("gen2"), 10, "autoclickersGen", "descriptor2");
-let $macros = new generator($chara, $chara, 40000, 1.41, "macrosCost", "macros", document.getElementById("gen3"), 100, "macrosGen", "descriptor3");
-let $monitors = new generator($chara, $chara, 800000, 1.51, "monitorsCost", "monitors", document.getElementById("gen4"), 1000, "monitorsGen", "descriptor4");
-let $summons = new generator($chara, $chara, 16000000, 1.61, "summonsCost", "summons", document.getElementById("gen5"), 10000, "summonsGen", "descriptor5");
+//BALANCEPOINT
+let $keyboards = new generator
+  ($chara, $chara, 100, 1.21, "keyboardsCost", "keyboards",
+    document.getElementById("gen1"), 1, "keyboardsGen", "descriptor1");
+let $autoclickers = new generator
+  ($chara, $chara, 2000, 1.31, "autoclickersCost", "autoclickers", 
+    document.getElementById("gen2"), 10, "autoclickersGen", "descriptor2");
+let $macros = new generator
+  ($chara, $chara, 40000, 1.41, "macrosCost", "macros", 
+    document.getElementById("gen3"), 100, "macrosGen", "descriptor3");
+let $monitors = new generator
+  ($chara, $chara, 800000, 1.51, "monitorsCost", "monitors", 
+    document.getElementById("gen4"), 1000, "monitorsGen", "descriptor4");
+let $summons = new generator
+  ($chara, $chara, 16000000, 1.61, "summonsCost", "summons", 
+    document.getElementById("gen5"), 10000, "summonsGen", "descriptor5");
 
 // BALANCEPOINT prestige layer 2 gen
-let $tickertape = new generator($memory, $memoryLeak, 100, 1.21, "tickertapeCost", "tickertapes", document.getElementById("gen6"), 1, "tickertapeGen", "descriptor6");
-let $etchasketch = new generator($memory, $memoryLeak, 4000, 1.31, "etchasketchCost", "etchasketchs", document.getElementById("gen7"), 10, "etchasketchGen", "descriptor7");
-let $floppydisc = new generator($memory, $memoryLeak, 40000, 1.41, "floppydiscCost", "floppydiscs", document.getElementById("gen8"), 100, "floppydiscGen", "descriptor8");
-let $ssd = new generator($memory, $memoryLeak, 800000, 1.51, "ssdCost", "ssds", document.getElementById("gen9"), 1000, "ssdGen", "descriptor9");
-let $faustdeal = new generator($memory, $memoryLeak, 16000000, 1.61, "faustdealCost", "faustdeals", document.getElementById("gen10"), 10000, "faustdealGen", "descriptor10");
+let $tickertape = new generator
+  ($memory, $memoryLeak, 100, 1.21, "tickertapeCost", "tickertapes", 
+    document.getElementById("gen6"), 1, "tickertapeGen", "descriptor6");
+let $etchasketch = new generator
+  ($memory, $memoryLeak, 4000, 1.31, "etchasketchCost", "etchasketchs", 
+    document.getElementById("gen7"), 10, "etchasketchGen", "descriptor7");
+let $floppydisc = new generator
+  ($memory, $memoryLeak, 40000, 1.41, "floppydiscCost", "floppydiscs", 
+    document.getElementById("gen8"), 100, "floppydiscGen", "descriptor8");
+let $ssd = new generator
+  ($memory, $memoryLeak, 800000, 1.51, "ssdCost", "ssds", 
+    document.getElementById("gen9"), 1000, "ssdGen", "descriptor9");
+let $faustdeal = new generator
+  ($memory, $memoryLeak, 16000000, 1.61, "faustdealCost", "faustdeals", 
+    document.getElementById("gen10"), 10000, "faustdealGen", "descriptor10");
 
 let apip = 0;
 // prestige layer 3 gen, apip == api power
@@ -182,15 +208,20 @@ let codeCleanliness = 0;
 
 //upgrade layer one iteration one
 let $gen11Upgrade = new upgrade
-("upgradeGenOne1", $chara, 4000, $autoclickers, $keyboards, document.getElementById("upgradeGenOne1"), "upgradeOneCost");
+  ("upgradeGenOne1", $chara, 4000, $autoclickers, $keyboards,
+    document.getElementById("upgradeGenOne1"), "upgradeOneCost");
 let $gen21Upgrade = new upgrade
-("upgradeGenTwo1", $chara, 80000, $macros, $autoclickers, document.getElementById("upgradeGenTwo1"), "upgradeTwoCost");
+  ("upgradeGenTwo1", $chara, 80000, $macros, $autoclickers,
+    document.getElementById("upgradeGenTwo1"), "upgradeTwoCost");
 let $gen31Upgrade = new upgrade
-("upgradeGenThree1", $chara, 1600000, $monitors, $macros, document.getElementById("upgradeGenThree1"), "upgradeThreeCost");
+  ("upgradeGenThree1", $chara, 1600000, $monitors, $macros,
+    document.getElementById("upgradeGenThree1"), "upgradeThreeCost");
 let $gen41Upgrade = new upgrade
-("upgradeGenFour1", $chara, 32000000, $summons, $monitors, document.getElementById("upgradeGenFour1"), "upgradeFourCost");
+  ("upgradeGenFour1", $chara, 32000000, $summons, $monitors,
+    document.getElementById("upgradeGenFour1"), "upgradeFourCost");
 let $gen51Upgrade = new upgrade
-("upgradeGenFive1", $chara, 640000000, $keyboards, $summons, document.getElementById("upgradeGenFive1"), "upgradeFiveCost");
+  ("upgradeGenFive1", $chara, 640000000, $keyboards, $summons,
+    document.getElementById("upgradeGenFive1"), "upgradeFiveCost");
 
 //button activations for upgrades
 //bundled
@@ -220,7 +251,7 @@ function checkUnlocks() {
       if (object.descriptor) {object.descriptor.style.visibility = "visible";}
     }
   }
-  let memoryUnlockGoal = Number(1E10);
+  let memoryUnlockGoal = Number(1E9);
 
   //special cases / tutorial
   if ($chara.backgroundTotal > 100)  {
@@ -236,8 +267,9 @@ function checkUnlocks() {
   if ($memory.unlocked == false && $chara.backgroundTotal >= memoryUnlockGoal) {
     $memory.unlocked = true;
     document.getElementById("memoryHeader").style.visibility = "visible";
-    document.getElementById("memoryLeakHeader").style.visibility = "visible"
+    document.getElementById("memoryLeakHeader").style.visibility = "visible";
     document.getElementById("charaPrestige").style.visibility = "visible";
+    document.getElementById("prestigelayeroneUnlock").style.visibility = "visible";
   }
   if ($memory.backgroundTotal > 0) {
     document.getElementById("memoryTab").visibility = "visible";
@@ -258,7 +290,7 @@ $faustdeal.button.addEventListener("click", buyOneGenerator.bind($faustdeal));
 
 document.getElementById("charaPrestige").addEventListener("click", prestige.bind($chara));
 
-//TODO change to accept buying any amount? toggle buttons to change amount bought and return floor amount?
+//TODO change to accept buying any amount?
 //GOAL IS ABSTRACTION
 function buyOneGenerator() {
   //math
@@ -294,7 +326,7 @@ function prestige() {
   }
 }
 
-
+//public
 function formatOutput(output) {
   if (output >= 10000) {
     output = output.toExponential(2);
@@ -303,6 +335,8 @@ function formatOutput(output) {
 }
 
 setInterval(Grow, 100);
+
+//public
 function Grow(){
   generators.forEach(updateAll)
 
@@ -311,10 +345,13 @@ function Grow(){
     gen.updatePrestigeMulti();
   }
   
-  $chara.growth = ($keyboards.growth + $autoclickers.growth + $macros.growth + $monitors.growth + $summons.growth);
-  $memoryLeak.growth = $tickertape.growth + $etchasketch.growth + $floppydisc.growth + $ssd.growth + $faustdeal.growth;
+  $chara.growth = 
+    $keyboards.growth + $autoclickers.growth + $macros.growth + $monitors.growth + $summons.growth;
 
-  //backgroundtotal is used for unlocks, so that buying upgrades/generators doesn't hinder progress in a meaningful way cause that feels bad as a game
+  $memoryLeak.growth =
+    $tickertape.growth + $etchasketch.growth + $floppydisc.growth + $ssd.growth + $faustdeal.growth;
+
+  //backgroundtotal is used for unlocks
   $chara.backgroundTotal = $chara.backgroundTotal + $chara.growth;
   $memoryLeak.backgroundTotal = $memoryLeak.backgroundTotal + $memoryLeak.growth;
 

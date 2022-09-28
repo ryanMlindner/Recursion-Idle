@@ -14,6 +14,9 @@ h1.title {
   text-align: center;
   visibility: hidden;
 }
+h1.memoryError {
+  visibility: hidden;
+}
 
 h2 {
   color: red;
@@ -57,6 +60,9 @@ div.generators {
 }
 
 button {
+  padding: 10px;
+  border-radius: 10px;
+  margin: 10px;
   background-color: blue;
   color: white;
   border-color: yellow;
