@@ -12,6 +12,8 @@ onload:(openSuperTab('game'));
 itemsToDraw = new Array();
 //container to neatly call/update all upgrade effects
 upgrades = new Array();
+//generator container
+generators = new Array();
 
 //functions to control tabs
 function openSuperTab(tab) {
@@ -30,25 +32,45 @@ function openGenTab(tab) {
   }
   document.getElementById(tab).style.display = "block";
 }
+
 //TODO doublecheck functionality
 class currencies {
-  constructor(tier, refHTML, growth, backgroundTotal) {
+  constructor(tier, refHTML, value, growth, unlocked, prestigeTarget) {
     this.tier = tier;
     this.refHTML = refHTML;
-    this.value = Number(refHTML.innerHTML);
+    this.value = value;
     this.growth = growth;
-    this.backgroundTotal = backgroundTotal;
+    this.backgroundTotal = value;
+    this.unlocked = unlocked;
+    this.prestigeAmount = 0;
+    this.prestigeTarget = prestigeTarget;
   }
   updateValue() {
     this.value = this.value + this.growth;
+    if (this.backgroundTotal < this.value) {this.backgroundTotal = this.value}
+    this.backgroundTotal = this.backgroundTotal + this.growth;
+  }
+  updatePrestige() {
+    this.prestigeAmount = Math.floor(Math.sqrt(this.backgroundTotal / 1E9)) * 100;
+  }
+  prestige() {
+    if (this.prestigeAmount != 0) {
+      this.prestigeTarget.value = this.prestigeTarget.value + this.prestigeAmount;
+      this.value = 100;
+      this.growth = 0;
+      this.backgroundTotal = 100;
+      this.prestigeAmount = 0;
+      return true;
+    }
+    return false;
   }
 }
 
 //generic upgrade class
 class upgrade {
-  constructor(name, currency, cost, effectStrength, effectTarget, button, costDisplay) {
+  constructor(name, currencyBuy, cost, effectStrength, effectTarget, button, costDisplay) {
     this.name = name;
-    this.currency = currency;
+    this.currencyBuy = currencyBuy;
     this.cost = cost;
     this.effectStrength = effectStrength;
     this.effectTarget = effectTarget;
@@ -72,14 +94,21 @@ class upgrade {
     else this.effectTarget.upgradeMulti = this.effectStrength.amount;
     this.effectTarget.updateGrowth();
   }
+  prestigeClean() {
+    this.on = false;
+    this.effectStrength = 1;
+    this.effectTarget.updateGrowth();
+    this.button.style.backgroundColor = "#111";
+  }
 }
 
 
 //class for generators to keep track of cost, costgrowth, and change in chara growth
 class generator {
-  constructor(currency, basecost, costgrowth, costRef, name, button, growthFactor, growthDisplay, descriptor) {
+  constructor(currencyBuy, currencyGen, basecost, costgrowth, costRef, name, button, growthFactor, growthDisplay, descriptor) {
     //create object in JS, connect to references in HTML
-    this.currency = currency;
+    this.currencyBuy = currencyBuy;
+    this.currencyGen = currencyGen;
     this.basecost = basecost;
     this.costgrowth = costgrowth;
     this.costRef = costRef;
@@ -91,54 +120,57 @@ class generator {
     this.growthDisplay = growthDisplay;
     this.upgradeMulti = 1;
     this.show = basecost / 2;
+    this.prestigeMulti = 1;
     this.descriptor = document.getElementById(descriptor);
     //update UI
     itemsToDraw.push(this);
-    document.getElementById(costRef).innerHTML = formatOutput(basecost);
+    generators.push(this);
+    document.getElementById(this.costRef).innerHTML = formatOutput(this.basecost);
   }
   realcost() {
     return Math.floor((this.basecost*(Math.pow(this.costgrowth, this.amount))))
   }
 
-  //templated buy function? pass in amount that UI can change (1x, 10x, 100x, etc)?
-  //TODO would have to update buttons to be able to show amount to buy, add more buttons to toggle buy amount
-  totalCostBuyAmount(amount) {
-    let totalCost = 0;
-    let index = this.amount;
-    let goalTotal = index + amount;
-    for (let i = index; i < goalTotal; i++ ) {
-      totalCost = totalCost + (this.basecost*this.costgrowth*i);
-    }
-    return totalCost;
-  }
   updateGrowth() {
-    this.growth = (this.growthFactor * this.amount * this.upgradeMulti);
+    this.growth = (this.growthFactor * this.amount * this.upgradeMulti * this.prestigeMulti);
     document.getElementById(this.growthDisplay).innerHTML = formatOutput(this.growth*10);
+  }
+  updatePrestigeMulti() {
+    if (this.currencyGen == $chara) {
+    this.prestigeMulti = Math.floor(1 + ($memoryLeak.backgroundTotal/1000))
+    }
+  }
+  prestigeClean() {
+    this.amount = 0;
+    this.growth = 0;
+    this.upgradeMulti = 1;
+    document.getElementById(this.costRef).innerHTML = formatOutput(this.basecost);
+    document.getElementById(this.growthDisplay).innerHTML = formatOutput(this.growth*10);
+    document.getElementById(this.name).innerHTML = formatOutput(this.amount);
   }
 }
 
-//use explicit type definitions to enforce addition instead of concatenation due to JS automatic typing
-let $chara = new currencies("chara", document.getElementById("charaTotal"), 0, 100);
-
-let $memory = new currencies("memory", document.getElementById("memoryTotal"), 0, 0);
-
+//BALANCEPOINT
+let $memory = new currencies("memory", document.getElementById("memoryTotal"), 0, 0, false, null);
+let $memoryLeak = new currencies("memoryLeak", document.getElementById("memoryLeakTotal"), 0, 0, true, null);
+let $chara = new currencies("chara", document.getElementById("charaTotal"), 100, 0, true, $memory);
 
 //TODO class definitions done, rewrite variables as generators when appropriate
 // prestige layer 1 gen
 
 //BALANCEPOINT first two numbers are base cost and cost growth, second to last is amount of chara generated per 1/10 sec
-let $keyboards = new generator($chara, 100, 1.21, "keyboardsCost", "keyboards", document.getElementById("gen1"), 1, "keyboardsGen", "descriptor1");
-let $autoclickers = new generator($chara, 2000, 1.31, "autoclickersCost", "autoclickers", document.getElementById("gen2"), 10, "autoclickersGen", "descriptor2");
-let $macros = new generator($chara, 40000, 1.41, "macrosCost", "macros", document.getElementById("gen3"), 100, "macrosGen", "descriptor3");
-let $monitors = new generator($chara, 800000, 1.51, "monitorsCost", "monitors", document.getElementById("gen4"), 1000, "monitorsGen", "descriptor4");
-let $summons = new generator($chara, 16000000, 1.61, "summonsCost", "summons", document.getElementById("gen5"), 10000, "summonsGen", "descriptor5");
+let $keyboards = new generator($chara, $chara, 100, 1.21, "keyboardsCost", "keyboards", document.getElementById("gen1"), 1, "keyboardsGen", "descriptor1");
+let $autoclickers = new generator($chara, $chara, 2000, 1.31, "autoclickersCost", "autoclickers", document.getElementById("gen2"), 10, "autoclickersGen", "descriptor2");
+let $macros = new generator($chara, $chara, 40000, 1.41, "macrosCost", "macros", document.getElementById("gen3"), 100, "macrosGen", "descriptor3");
+let $monitors = new generator($chara, $chara, 800000, 1.51, "monitorsCost", "monitors", document.getElementById("gen4"), 1000, "monitorsGen", "descriptor4");
+let $summons = new generator($chara, $chara, 16000000, 1.61, "summonsCost", "summons", document.getElementById("gen5"), 10000, "summonsGen", "descriptor5");
 
-// prestige layer 2 gen
-let $tickertape = new generator($memory, 100, 1.21, "tickertapeCost", "tickertapes", document.getElementById("gen6"), 1, "tickertapeGen", "descriptor6");
-let $etchasketch = new generator($memory, 4000, 1.31, "etchasketchCost", "etchasketchs", document.getElementById("gen7"), 10, "etchasketchGen", "descriptor7");
-let $floppydisc = new generator($memory, 40000, 1.41, "floppydiscCost", "floppydiscs", document.getElementById("gen8"), 100, "floppydiscGen", "descriptor8");
-let $ssd = new generator($memory, 800000, 1.51, "ssdCost", "ssds", document.getElementById("gen9"), 1000, "ssdGen", "descriptor9");
-let $faustdeal = new generator($memory, 16000000, 1.61, "faustdealCost", "faustdeals", document.getElementById("gen10"), 10000, "faustdealGen", "descriptor10");
+// BALANCEPOINT prestige layer 2 gen
+let $tickertape = new generator($memory, $memoryLeak, 100, 1.21, "tickertapeCost", "tickertapes", document.getElementById("gen6"), 1, "tickertapeGen", "descriptor6");
+let $etchasketch = new generator($memory, $memoryLeak, 4000, 1.31, "etchasketchCost", "etchasketchs", document.getElementById("gen7"), 10, "etchasketchGen", "descriptor7");
+let $floppydisc = new generator($memory, $memoryLeak, 40000, 1.41, "floppydiscCost", "floppydiscs", document.getElementById("gen8"), 100, "floppydiscGen", "descriptor8");
+let $ssd = new generator($memory, $memoryLeak, 800000, 1.51, "ssdCost", "ssds", document.getElementById("gen9"), 1000, "ssdGen", "descriptor9");
+let $faustdeal = new generator($memory, $memoryLeak, 16000000, 1.61, "faustdealCost", "faustdeals", document.getElementById("gen10"), 10000, "faustdealGen", "descriptor10");
 
 let apip = 0;
 // prestige layer 3 gen, apip == api power
@@ -170,8 +202,8 @@ $gen51Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen51Upgrade)
 
 
 function turnUpgradeOn(upgradeID) {
-  if (this.currency.value >= this.cost && this.on == false) {
-    this.currency.value = this.currency.value - this.cost;
+  if (this.currencyBuy.value >= this.cost && this.on == false) {
+    this.currencyBuy.value = this.currencyBuy.value - this.cost;
     this.turnOn();
   }
 }
@@ -183,20 +215,31 @@ function checkUnlocks() {
   itemsToDraw.forEach(checkToDraw);
   
   function checkToDraw(object) {
-    if (object.currency.value >= object.show) {
+    if (object.currencyBuy.backgroundTotal >= object.show) {
       object.button.style.visibility = "visible";
       if (object.descriptor) {object.descriptor.style.visibility = "visible";}
     }
   }
+  let memoryUnlockGoal = Number(1E10);
+
   //special cases / tutorial
   if ($chara.backgroundTotal > 100)  {
-    document.getElementById("greet").innerHTML = "wow wasn't that fun. press more? find upgrades?"
+    document.getElementById("greet").innerHTML = "wow wasn't that fun. press more?";
+  }
+  if ($chara.backgroundTotal >= 2000) {
+    document.getElementById("greet").innerHTML = "there's something new in the upgrades tab";
   }
   if ($chara.backgroundTotal > 10000) {
     document.getElementById("title").style.visibility = "visible";
-    document.getElementById("greet").innerHTML = "good job pressing button, keep going";
+    document.getElementById("greet").style.display = "none";
   }
-  if ($memory.backgroundTotal >= 0) {
+  if ($memory.unlocked == false && $chara.backgroundTotal >= memoryUnlockGoal) {
+    $memory.unlocked = true;
+    document.getElementById("memoryHeader").style.visibility = "visible";
+    document.getElementById("memoryLeakHeader").style.visibility = "visible"
+    document.getElementById("charaPrestige").style.visibility = "visible";
+  }
+  if ($memory.backgroundTotal > 0) {
     document.getElementById("memoryTab").visibility = "visible";
   }
 }
@@ -207,12 +250,20 @@ $macros.button.addEventListener("click", buyOneGenerator.bind($macros));
 $monitors.button.addEventListener("click", buyOneGenerator.bind($monitors));
 $summons.button.addEventListener("click", buyOneGenerator.bind($summons));
 
+$tickertape.button.addEventListener("click", buyOneGenerator.bind($tickertape));
+$etchasketch.button.addEventListener("click", buyOneGenerator.bind($etchasketch));
+$floppydisc.button.addEventListener("click", buyOneGenerator.bind($floppydisc));
+$ssd.button.addEventListener("click", buyOneGenerator.bind($ssd));
+$faustdeal.button.addEventListener("click", buyOneGenerator.bind($faustdeal));
+
+document.getElementById("charaPrestige").addEventListener("click", prestige.bind($chara));
+
 //TODO change to accept buying any amount? toggle buttons to change amount bought and return floor amount?
 //GOAL IS ABSTRACTION
 function buyOneGenerator() {
   //math
-  if (this.currency.value >= this.realcost()) {
-    this.currency.value = this.currency.value - this.realcost();
+  if (this.currencyBuy.value >= this.realcost()) {
+    this.currencyBuy.value = this.currencyBuy.value - this.realcost();
     this.amount++;
     this.updateGrowth();
 
@@ -230,6 +281,20 @@ function buyOneGenerator() {
   }
 }
 
+function prestige() {
+  currency = this;
+  if (this.prestige()) {
+    itemsToDraw.forEach(prestigeUpdate)
+
+    function prestigeUpdate(objects) {
+      if (objects.currencyBuy == currency) {
+        objects.prestigeClean();
+      }
+    }
+  }
+}
+
+
 function formatOutput(output) {
   if (output >= 10000) {
     output = output.toExponential(2);
@@ -239,13 +304,34 @@ function formatOutput(output) {
 
 setInterval(Grow, 100);
 function Grow(){
-  $chara.growth = $keyboards.growth + $autoclickers.growth + $macros.growth + $monitors.growth + $summons.growth;
+  generators.forEach(updateAll)
+
+  function updateAll(gen) {
+    gen.updateGrowth();
+    gen.updatePrestigeMulti();
+  }
+  
+  $chara.growth = ($keyboards.growth + $autoclickers.growth + $macros.growth + $monitors.growth + $summons.growth);
+  $memoryLeak.growth = $tickertape.growth + $etchasketch.growth + $floppydisc.growth + $ssd.growth + $faustdeal.growth;
+
   //backgroundtotal is used for unlocks, so that buying upgrades/generators doesn't hinder progress in a meaningful way cause that feels bad as a game
   $chara.backgroundTotal = $chara.backgroundTotal + $chara.growth;
-  checkUnlocks($chara);
-  checkUnlocks($memory);
+  $memoryLeak.backgroundTotal = $memoryLeak.backgroundTotal + $memoryLeak.growth;
 
+  checkUnlocks($chara);
+  if ($memory.unlocked) {
+    checkUnlocks($memory);
+    document.getElementById("charaPrestigeAmount").innerHTML = formatOutput($chara.prestigeAmount);
+  }
   //keep track of spendable money
   $chara.updateValue();
   $chara.refHTML.innerHTML = formatOutput($chara.value);
+
+  $memory.updateValue();
+  $memory.refHTML.innerHTML = formatOutput($memory.value);
+
+  $memoryLeak.updateValue();
+  $memoryLeak.refHTML.innerHTML = formatOutput($memoryLeak.value);
+  //keep track of prestige amounts
+  $chara.updatePrestige();
 }

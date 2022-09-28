@@ -31,19 +31,22 @@ h3.gen1 {
 }
 */
 h4 {
+  font-size: x-large;
   color: silver;
   text-align: left;
 }
 
 /*h5 is prestige layer TWO*/
 h5 {
+  font-size: x-large;
   color: purple;
   text-align: left;
-  display: none;
+  visibility: hidden;
 }
 
 /*h6 is prestige layer THREE*/
 h6 {
+  font-size: x-large;
   color: blue;
   text-align: left;
   display: none;

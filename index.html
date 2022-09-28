@@ -25,9 +25,10 @@
   <h1 class="title" id="title">Recursion Idle</h1>
 
   <div class="resources">
-    <h4 id="charaHeader"> chara = <span id="charaTotal">100</span></h4>
-    <h5 id="memoryHeader"> memory = <span id="memoryTotal">0</span></h5>
-    <h6 id="apipHeader"> apip = <span id="apipTotal">0</span></h6>
+    <h4 id="charaHeader"> Chara: <span id="charaTotal">0</span></h4>
+    <h5 id="memoryHeader"> Memory: <span id="memoryTotal">0</span></h5>
+    <h5 id="memoryLeakHeader"> Memory Leaks: <span id="memoryLeakTotal">0</span></h5>
+    <h6 id="apipHeader"> APIP: <span id="apipTotal">0</span></h6>
   </div>
   
   <!--tabs currently use onclick instead of binding for simplicity, CHANGE IF PROBLEM-->
@@ -61,6 +62,7 @@
       <h3 id="descriptor5"><button id="gen5">Summons</button> <span>cost: </span><span id="summonsCost"> 0 </span> <span>summons: </span> <span id="summons"> 0 </span>
         <span>per second: </span><span id="summonsGen">0</span></h3>
     </p>
+    <button id="charaPrestige" style.visibility = "hidden">Lose all but 100 Chara, gain <span id="charaPrestigeAmount"></span> memory</button>
   </div>
 
   <div id="memoryGen" class="generators">
