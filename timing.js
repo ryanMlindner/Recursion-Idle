@@ -81,7 +81,7 @@ class upgrade {
     this.show = cost / 2;
     this.costDisplay = costDisplay;
 
-    document.getElementById(costDisplay).innerHTML = formatOutput(Number(this.cost));
+    document.getElementById(costDisplay).innerHTML = formatOutput(this.cost);
     itemsToDraw.push(this);
     upgrades.push(this);
   }
@@ -98,7 +98,7 @@ class upgrade {
   }
   prestigeClean() {
     this.on = false;
-    this.effectStrength = 1;
+    this.updateMulti();
     this.effectTarget.updateGrowth();
     this.button.style.backgroundColor = "#111";
   }
@@ -298,14 +298,6 @@ function buyOneGenerator() {
     this.currencyBuy.value = this.currencyBuy.value - this.realcost();
     this.amount++;
     this.updateGrowth();
-
-    //redo math for variable changes in upgrades
-    upgrades.forEach(update);
-    function update(upgrade) {
-      if (upgrade.on) {
-        upgrade.updateMulti();
-      }
-    }
     //update UI
     document.getElementById(this.name).innerHTML = formatOutput(this.amount);
     document.getElementById(this.costRef).innerHTML = formatOutput(this.realcost());
@@ -338,11 +330,18 @@ setInterval(Grow, 100);
 
 //public
 function Grow(){
-  generators.forEach(updateAll)
 
+  generators.forEach(updateAll)
   function updateAll(gen) {
     gen.updateGrowth();
     gen.updatePrestigeMulti();
+  }
+  //redo math for variable changes in upgrades
+  upgrades.forEach(update);
+  function update(upgrade) {
+    if (upgrade.on) {
+      upgrade.updateMulti();
+    }
   }
   
   $chara.growth = 
