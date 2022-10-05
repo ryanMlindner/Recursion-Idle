@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name":"Python: Flask",
+            "type":"python",
+            "request":"launch",
+            "module":"flask",
+            "env":{"FLASK_APP":"saveData.py","FLASK_DEBUG":"1"},
+            "args":["run","--no-debugger","--no-reload"],"jinja":true,"justMyCode":true},
+        {
             "type": "chrome",
             "request": "launch",
             "name": "Open index.html",
