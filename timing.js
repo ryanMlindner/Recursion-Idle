@@ -159,7 +159,7 @@ let $memory = new currencies
 let $memoryLeak = new currencies
   ("memoryLeak", document.getElementById("memoryLeakTotal"), 0, 0, true, null);
 let $chara = new currencies
-  ("chara", document.getElementById("charaTotal"), 1000000000, 0, true, $memory);
+  ("chara", document.getElementById("charaTotal"), 100, 0, true, $memory);
 
 //TODO class definitions done, rewrite variables as generators when appropriate
 // prestige layer 1 gen
