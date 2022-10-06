@@ -15,9 +15,27 @@
 # code on demand (opt) (not doing)
 # build API using FLASK
 # connect to something we'll figure it out
+
+import datetime
+import os
+
 from inspect import _void
 from flask import Flask, jsonify, request
 from flask_restful import Resource, Api
+from dotenv import load_dotenv
+from pymongo import MongoClient
+
+# Load config from a .env file:
+load_dotenv()
+MONGODB_URI = os.environ['MONGODB_URI']
+
+# Connect to your MongoDB cluster:
+client = MongoClient(MONGODB_URI)
+
+# List all the databases in the cluster:
+for db_info in client.list_database_names():
+   print(db_info)
+
 # flask app
 saveStateApp = Flask(__name__)
 # api instance
