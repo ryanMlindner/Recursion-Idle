@@ -1,7 +1,7 @@
 # API necessities
 # save database (csv file? TODO figure out how to host a save database? external? idk)
-# database consists of name : JSON save string? how to update saves? automatic?
-# classic import/export functionality TBD
+# database consists of collections, mirror the object interface in JS code,
+# 15 objects in code, store instances of each as a save file?
 # action : http method
 # save creation POST
 # save deletion DELETE
@@ -14,25 +14,26 @@
 # layered system
 # code on demand (opt) (not doing)
 # build API using FLASK
-# connect to something we'll figure it out
+# database using MONGODB
+# connecting using pymongo
+# update/interact with flask
 
 import datetime
 import os
 
-from inspect import _void
 from flask import Flask, jsonify, request
 from flask_restful import Resource, Api
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
-# Load config from a .env file:
+# load config from a .env file:
 load_dotenv()
 MONGODB_URI = os.environ['MONGODB_URI']
 
-# Connect to your MongoDB cluster:
+# connect to cluster:
 client = MongoClient(MONGODB_URI)
 
-# List all the databases in the cluster:
+# list all the databases in the cluster:
 for db_info in client.list_database_names():
    print(db_info)
 
