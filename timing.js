@@ -37,7 +37,7 @@ function openGenTab(tab) {
 
 //TODO private
 class currencies {
-  constructor(tier, refHTML, value, growth, unlocked, prestigeTarget) {
+  constructor(tier, refHTML, value, growth, unlocked, prestigeTarget, prestigeButton) {
     this.tier = tier;
     this.refHTML = refHTML;
     this.value = value;
@@ -46,6 +46,7 @@ class currencies {
     this.unlocked = unlocked;
     this.prestigeAmount = 0;
     this.prestigeTarget = prestigeTarget;
+    this.prestigeButton = prestigeButton;
   }
   updateValue() {
     this.value = this.value + this.growth;
@@ -62,6 +63,7 @@ class currencies {
       this.growth = 0;
       this.backgroundTotal = 100;
       this.prestigeAmount = 0;
+      this.prestigeButton.style.visibility = "hidden";
       return true;
     }
     return false;
@@ -155,11 +157,11 @@ class generator {
 
 //BALANCEPOINT
 let $memory = new currencies
-  ("memory", document.getElementById("memoryTotal"), 0, 0, false, null);
+  ("memory", document.getElementById("memoryTotal"), 0, 0, false, null, null);
 let $memoryLeak = new currencies
-  ("memoryLeak", document.getElementById("memoryLeakTotal"), 0, 0, true, null);
+  ("memoryLeak", document.getElementById("memoryLeakTotal"), 0, 0, true, null, null);
 let $chara = new currencies
-  ("chara", document.getElementById("charaTotal"), 1000000000, 0, true, $memory);
+  ("chara", document.getElementById("charaTotal"), 10000000000, 0, true, $memory, document.getElementById("charaPrestige"));
 
 //TODO class definitions done, rewrite variables as generators when appropriate
 // prestige layer 1 gen
@@ -270,6 +272,9 @@ function checkUnlocks() {
     document.getElementById("memoryLeakHeader").style.visibility = "visible";
     document.getElementById("charaPrestige").style.visibility = "visible";
     document.getElementById("prestigelayeroneUnlock").style.visibility = "visible";
+  }
+  if ($chara.backgroundTotal >= memoryUnlockGoal) {
+    document.getElementById("charaPrestige").style.visibility = "visible";
   }
   if ($memory.backgroundTotal > 0) {
     document.getElementById("memoryTab").visibility = "visible";
