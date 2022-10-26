@@ -1,10 +1,6 @@
 # API necessities
-# save database with objects as in JS file
-# classic import/export functionality TBD
-# action : http method
-# save creation POST
-# save deletion DELETE
-# save update PUT
+# save database with user key and json string savefile
+# CRUD
 # restful constraints for reference
 # uniform interface
 # client // server
@@ -12,77 +8,95 @@
 # cacheable
 # layered system
 # code on demand (opt) (not doing)
-# build API using FLASK
 # database host with mongoDB
-# understand how to use venv
+# connect database to python with pymongo layer 1
+# connect python to JS with ajax layer 2
+# layer 3 is UI/control
 
 import datetime
 import os
+import pymongo
 
 from inspect import _void
 from flask import Flask, jsonify, request
-from flask_restful import Resource, Api
 from dotenv import load_dotenv
+from flask_restful import Resource, Api
 from pymongo import MongoClient
 
-# Load config from a .env file:
 load_dotenv()
 MONGODB_URI = os.environ['MONGODB_URI']
 
-# Connect to your MongoDB cluster:
+# Connect to MongoDB cluster:
 client = MongoClient(MONGODB_URI)
 
 # List all the databases in the cluster:
 for db_info in client.list_database_names():
    print(db_info)
 
-# flask app
-saveStateApp = Flask(__name__)
-# api instance
-saveStateAPI = Api(saveStateApp)
+responseString = "Failed to create User: Default"
 
-# users api endpoints
-class users(Resource):
+db = client.idleSaves
+saveCollection = db.saves
 
-    # HTTP GET
-    def get(self):
-        pass #placeholder get
+class saveFile:
+    def __init__(self, username, saveString):
+        self.username = username
+        self.saveString = saveString
+        self.user_id
+
+    def exists(self):
+        if (saveCollection.find_one({'username': 'user'}) == None):
+            return False
+        else:
+            return True
+
+    # CRUD
+    def postData(self):
+        id = saveCollection.insert_one({
+            "username" : self.username, 
+            "saveFile" : self.saveString
+            })
+        self.user_id = id.inserted_id
+
+    def updateData(self):
+        update_save = saveCollection.update_one({
+            '_id': self.user_id},{
+            'saveFile': self.saveString
+            })
+
+    def getSaveFile(self):
+        return saveCollection.find_one({'_id' : self.user_id})
     
-    # HTTP POST
-    def post(self):
-        # if (!exist) -->
-        pass #placeholder createe
-    
-    # HTTP PUT
-    def put(self):
-        pass #placeholder update/replace
-    
-    # HTTP DELETE
     def delete(self):
-        pass #placeholder delete
+        if (saveCollection.find_one({'username': 'user'}) != None):
+            saveCollection.delete_one({'_id' : self.user_id})
 
-# saves api endpoints
-class saves(Resource):
+# get values from ajax?
+# TODO rework logic to include correct parts of ajax on both sides (JS, PY)
+userName = 'Test'
+saveString = 'flubber'
+serverAction = 'getputupdatedeletechooseone' #TODO vis a vis async promise or ajax
+serverResponse = responseString
 
-    # HTTP GET
-    def get(self):
-        pass #placeholder get
-    
-    # HTTP POST
-    def post(self):
-        # if (!exist) -->
-        pass #placeholder create
-    
-    # HTTP PUT
-    def put(self):
-        pass #placeholder update/replace
-    
-    # HTTP DELETE
-    def delete(self):
-        pass #placeholder delete
+# container for new savestring before old can be safely deleted
+updatedSave = ''
 
-saveStateAPI.add_resource(users, '/users') #endpt
-saveStateAPI.add_resource(saves, '/saves') #endpt
+save = saveFile(userName, saveString)
+if (serverAction == 'get'):
+    save.getSaveFile
+    updatedSave = save.saveString
+    serverResponse = 'savefile retrieved successfully'
+if (serverAction == 'put'):
+    if (save.exists):
+        serverResponse = 'username exists, try something more original'
+    else :
+        save.postData
+        serverResponse = 'savefile created successfully'
+if (serverAction == 'update'):
+    save.postData
+    serverResponse = 'savefile updated successfully'
+if (serverAction == 'delete'):
+    save.delete
+    serverResponse = 'savefile deleted successfully'
 
-if __name__ == '__main__':
-    saveStateApp.run()
+

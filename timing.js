@@ -8,6 +8,7 @@ onload:(openGenTab('charaGen'));
 onload:(openSuperTab('game'));
 
 //container to keep track of game progress
+saveItems = new Array();
 itemsToDraw = new Array();
 //container to neatly call/update all upgrade effects
 upgrades = new Array();
@@ -47,6 +48,7 @@ class currencies {
     this.prestigeAmount = 0;
     this.prestigeTarget = prestigeTarget;
     this.prestigeButton = prestigeButton;
+    saveItems.push(this);
   }
   updateValue() {
     this.value = this.value + this.growth;
@@ -84,6 +86,7 @@ class upgrade {
     this.costDisplay = costDisplay;
 
     document.getElementById(costDisplay).innerHTML = formatOutput(this.cost);
+    saveItems.push(this);
     itemsToDraw.push(this);
     upgrades.push(this);
   }
@@ -128,6 +131,7 @@ class generator {
     this.prestigeMulti = 1;
     this.descriptor = document.getElementById(descriptor);
     //update UI
+    saveItems.push(this);
     itemsToDraw.push(this);
     generators.push(this);
     document.getElementById(this.costRef).innerHTML = formatOutput(this.basecost);
@@ -161,7 +165,7 @@ let $memory = new currencies
 let $memoryLeak = new currencies
   ("memoryLeak", document.getElementById("memoryLeakTotal"), 0, 0, true, null, null);
 let $chara = new currencies
-  ("chara", document.getElementById("charaTotal"), 10000000000, 0, true, $memory, document.getElementById("charaPrestige"));
+  ("chara", document.getElementById("charaTotal"), 100, 0, true, $memory, document.getElementById("charaPrestige"));
 
 //TODO class definitions done, rewrite variables as generators when appropriate
 // prestige layer 1 gen
@@ -314,7 +318,6 @@ function prestige() {
   currency = this;
   if (this.prestige()) {
     itemsToDraw.forEach(prestigeUpdate)
-
     function prestigeUpdate(objects) {
       if (objects.currencyBuy == currency) {
         objects.prestigeClean();
@@ -331,6 +334,18 @@ function formatOutput(output) {
   return output;
 }
 
+//public
+function save() {
+  saveString = JSON.stringify(saveItems);
+  //ajax goes here!
+}
+
+function load() {
+  saveItems = JSON.parse(saveString);
+  //ajax goes here!
+}
+
+//timer private?
 setInterval(Grow, 100);
 
 //public
@@ -375,4 +390,8 @@ function Grow(){
   $memoryLeak.refHTML.innerHTML = formatOutput($memoryLeak.value);
   //keep track of prestige amounts
   $chara.updatePrestige();
+
+  //unit test. why is this here just make a unit test ryan. shut up ryan. no u. oh wow so mature.
+  //save();
+  //console.log(saveString);
 }
