@@ -1,7 +1,10 @@
 <!DOCTYPE HTML>
-<!-- PAUSED::: TODO VARIABLES DISPLAYING/CHANGING IN REAL TIME, SLOPPY CODE RN -->
 <head>
-  <link rel="stylesheet" href="Recursion.css">
+  <title>Recursion-Idle</title>
+  <meta charset="UTF-8" />
+  <meta content="width=device-width, initial-scale=1.0" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='Recursion.css') }}" >
 </head>
 <body>
   <!-- TODO: write a game -->
@@ -105,19 +108,24 @@
 <div id="upgrades" class="supers">
   <h1>More Upgrades appear as you progress :) 5 of them, to be exact. 5 total, not 5 additional</h1>
   <h4 id="genoneUpgrades">
-    <button class="upgradeButton" id="upgradeGenOne1">multiply keyboards generation by autoclickers: <span id="upgradeOneCost"></span> chara</button>
+    <button class="upgradeButton" id="upgradeGenOne1">multiply keyboards generation by autoclickers: 
+      <span id="upgradeOneCost"></span> chara</button>
   </h4>
   <h4 id="gentwoUpgrades">
-    <button class="upgradeButton" id="upgradeGenTwo1">multiply autoclickers generation by macros: <span id="upgradeTwoCost"></span> chara</button>
+    <button class="upgradeButton" id="upgradeGenTwo1">multiply autoclickers generation by macros: 
+      <span id="upgradeTwoCost"></span> chara</button>
   </h4>
   <h4 id="genthreeUpgrades">
-    <button class="upgradeButton" id="upgradeGenThree1">multiply macros generation by monitors: <span id="upgradeThreeCost"></span> chara</button>
+    <button class="upgradeButton" id="upgradeGenThree1">multiply macros generation by monitors: 
+      <span id="upgradeThreeCost"></span> chara</button>
   </h4>
   <h4 id="genfourUpgrades">
-    <button class="upgradeButton" id="upgradeGenFour1">multiply monitors generation by summons: <span id="upgradeFourCost"></span> chara</button>
+    <button class="upgradeButton" id="upgradeGenFour1">multiply monitors generation by summons: 
+      <span id="upgradeFourCost"></span> chara</button>
   </h4>
   <h4 id="genfiveUpgrades">
-    <button class="upgradeButton" id="upgradeGenFive1">multiply summons generation by keyboards: <span id="upgradeFiveCost"></span> chara</button>
+    <button class="upgradeButton" id="upgradeGenFive1">multiply summons generation by keyboards: 
+      <span id="upgradeFiveCost"></span> chara</button>
   </h4>
 </div>
 
@@ -125,5 +133,5 @@
   <h1>See I told you it was real!</h1>
 </div>
 
-  <script src="timing.js"></script>
+<script src="{{ url_for('static', filename='timing.js') }}"></script>
 </body>

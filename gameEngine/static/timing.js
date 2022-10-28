@@ -335,9 +335,25 @@ function formatOutput(output) {
 }
 
 //public
-function save() {
-  saveString = JSON.stringify(saveItems);
+function saveNewUser() {
+  $.ajax({
+    type: "POST",
+    url: "",
+    data: JSON.stringify(saveItems),
+    contentType: "application/json",
+    dataType: 'json'
+  });
   //ajax goes here!
+}
+
+function saveExistingUser() {
+    $.ajax({
+      type: "PUT",
+      url: "",
+      data: JSON.stringify(saveItems),
+      contentType: "application/json",
+      dataType: 'json'
+    });
 }
 
 function load() {
@@ -345,6 +361,12 @@ function load() {
   //ajax goes here!
 }
 
+function deleteSave() {
+  $.ajax({
+    type: "DELETE",
+      url: "",
+  });
+}
 //timer private?
 setInterval(Grow, 100);
 

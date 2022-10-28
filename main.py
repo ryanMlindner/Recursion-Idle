@@ -17,8 +17,7 @@ import datetime
 import os
 import pymongo
 
-from inspect import _void
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, url_for, render_template
 from dotenv import load_dotenv
 from flask_restful import Resource, Api
 from pymongo import MongoClient
@@ -29,9 +28,14 @@ MONGODB_URI = os.environ['MONGODB_URI']
 # Connect to MongoDB cluster:
 client = MongoClient(MONGODB_URI)
 
-# List all the databases in the cluster:
-for db_info in client.list_database_names():
-   print(db_info)
+app = Flask(__name__,
+            static_url_path='',
+            static_folder='gameEngine/static',
+            template_folder='gameEngine/templates')
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 responseString = "Failed to create User: Default"
 
@@ -42,7 +46,7 @@ class saveFile:
     def __init__(self, username, saveString):
         self.username = username
         self.saveString = saveString
-        self.user_id
+        self.user_id = ''
 
     def exists(self):
         if (saveCollection.find_one({'username': 'user'}) == None):
@@ -70,6 +74,7 @@ class saveFile:
     def delete(self):
         if (saveCollection.find_one({'username': 'user'}) != None):
             saveCollection.delete_one({'_id' : self.user_id})
+# TODO JQUERY!! YAY MORE NEW STUFF DEAR GOD WHEN WILL THIS END. NEVER? Oh. aight.
 
 # get values from ajax?
 # TODO rework logic to include correct parts of ajax on both sides (JS, PY)
@@ -99,4 +104,6 @@ if (serverAction == 'delete'):
     save.delete
     serverResponse = 'savefile deleted successfully'
 
-
+# TODO refactor to serve for prod instead of this
+if __name__ == "__main__":
+    app.run(debug=True)
