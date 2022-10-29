@@ -326,7 +326,7 @@ function prestige() {
   }
 }
 
-//public
+//private
 function formatOutput(output) {
   if (output >= 10000) {
     output = output.toExponential(2);
@@ -334,39 +334,69 @@ function formatOutput(output) {
   return output;
 }
 
-//public
+//private
+//SAVESTATE work
 function saveNewUser() {
-  $.ajax({
-    type: "POST",
-    url: "",
-    data: JSON.stringify(saveItems),
-    contentType: "application/json",
-    dataType: 'json'
-  });
-  //ajax goes here!
+  bundleSavetoSend()
+  fetch('/persist', {
+    "method": "POST",
+    "headers": {"Content-Type": "application/json"},
+    "body": JSON.stringify(saveItems),
+  })
+  .then(function (response) {
+    return response.json();
+  })
+  .then(function (json) {
+    console.log('POST response as JSON:'); //DEBUG TODO
+    console.log(json);
+  })
+  unbundleSavetoUse()
 }
 
 function saveExistingUser() {
-    $.ajax({
-      type: "PUT",
-      url: "",
-      data: JSON.stringify(saveItems),
-      contentType: "application/json",
-      dataType: 'json'
-    });
+  bundleSavetoSend()
+  fetch('/persist', {
+    "method": "PUT",
+    "headers": {"Content-Type": "application/json"},
+    "body": JSON.stringify(saveItems),
+  })
+  .then(//TODO handle response, update UI
+  )
+  unbundleSavetoUse()
 }
 
 function load() {
-  saveItems = JSON.parse(saveString);
-  //ajax goes here!
+  bundleSavetoSend()
+  fetch('/persist', {
+    "method": "GET",
+    "body": JSON.stringify(saveItems),
+  })
+  .then(function (response) {
+    saveItems = Response.body;
+    return response.json();
+  })
+  // TODO figure this out for prod
+  .then(function (json) {
+    console.log('GET response as JSON:');
+    console.log(json);
+  })
+  unbundleSavetoUse()
 }
 
 function deleteSave() {
-  $.ajax({
-    type: "DELETE",
-      url: "",
-  });
+  bundleSavetoSend()
+  fetch('/persist', {
+    "method": "DELETE",
+    "body": JSON.stringify(saveItems),
+  })
+  .then(//TODO handle response, update UI
+  )
+  unbundleSavetoUse()
 }
+
+function bundleSavetoSend() {saveItems.unshift(document.getElementById("username").innerHTML) }
+//TODO CONNECT THESE v^ TO SAVE API UI
+function unbundleSavetoUse() {saveItems.shift()}
 //timer private?
 setInterval(Grow, 100);
 
