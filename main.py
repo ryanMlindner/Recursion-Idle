@@ -128,4 +128,4 @@ def apiFunction(save):
 
 # TODO refactor to serve for prod instead of this
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

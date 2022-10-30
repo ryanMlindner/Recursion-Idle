@@ -9,6 +9,7 @@ onload:(openSuperTab('game'));
 
 //container to keep track of game progress
 saveItems = new Array();
+//UI tutor container
 itemsToDraw = new Array();
 //container to neatly call/update all upgrade effects
 upgrades = new Array();
@@ -337,70 +338,100 @@ function formatOutput(output) {
 //private
 //SAVESTATE work
 function saveNewUser() {
-  bundleSavetoSend()
-  fetch('/persist', {
-    "method": "POST",
-    "headers": {"Content-Type": "application/json"},
-    "body": JSON.stringify(saveItems),
-  })
-  .then(function (response) {
-    return response.json();
-  })
-  .then(function (json) {
-    console.log('POST response as JSON:'); //DEBUG TODO
-    console.log(json);
-  })
-  unbundleSavetoUse()
+  document.getElementById("DEBUGAPIFLAG").innerHTML = 'got to func savenewuser';
+  if (bundleSavetoSend()) {
+    fetch('/persist', {
+      "method": "POST",
+      "headers": {"Content-Type": "application/json"},
+      "body": JSON.stringify(saveItems),
+    })
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function () {
+      console.log('success?');
+      console.log(response);
+    })
+    unbundleSavetoUse()
+  }
+  else return false;
 }
 
 function saveExistingUser() {
-  bundleSavetoSend()
-  fetch('/persist', {
-    "method": "PUT",
-    "headers": {"Content-Type": "application/json"},
-    "body": JSON.stringify(saveItems),
-  })
-  .then(//TODO handle response, update UI
-  )
-  unbundleSavetoUse()
+  if (bundleSavetoSend()) {
+    fetch('/persist', {
+      "method": "PUT",
+      "headers": {"Content-Type": "application/json"},
+      "body": JSON.stringify(saveItems),
+    })
+    .then(function () {
+      console.log('success?');
+      console.log(response);
+    })
+    unbundleSavetoUse()
+  }
+  else return false;
 }
 
 function load() {
-  bundleSavetoSend()
-  fetch('/persist', {
-    "method": "GET",
-    "body": JSON.stringify(saveItems),
-  })
-  .then(function (response) {
-    saveItems = Response.body;
-    return response.json();
-  })
-  // TODO figure this out for prod
-  .then(function (json) {
-    console.log('GET response as JSON:');
-    console.log(json);
-  })
-  unbundleSavetoUse()
+  if (bundleSavetoSend()) {
+    fetch('/persist', {
+      "method": "GET",
+      "body": JSON.stringify(saveItems),
+    })
+    .then(function (response) {
+      saveItems = Response.body;
+      return response.json();
+    })
+    // TODO figure this out for prod
+    .then(function () {
+      console.log('success?');
+      console.log(response);
+    })
+    unbundleSavetoUse()
+  }
+  else return false;
 }
 
 function deleteSave() {
-  bundleSavetoSend()
-  fetch('/persist', {
-    "method": "DELETE",
-    "body": JSON.stringify(saveItems),
-  })
-  .then(//TODO handle response, update UI
-  )
-  unbundleSavetoUse()
+  if (bundleSavetoSend()){
+    fetch('/persist', {
+      "method": "DELETE",
+      "body": JSON.stringify(saveItems),
+    })
+    .then(function () {
+      console.log('success?');
+      console.log(response);
+    })
+    unbundleSavetoUse()
+  }
+  else return false;
 }
 
-function bundleSavetoSend() {saveItems.unshift(document.getElementById("username").innerHTML) }
-//TODO CONNECT THESE v^ TO SAVE API UI
+function bundleSavetoSend() {
+  const userName = document.getElementById("username").value
+  document.getElementById("DEBUGAPIFLAG").innerHTML = 'got to func bundlesavetosend: ' + userName;
+
+  //inefficient to avoid use of regex here, just testing input to make sure only alphanumeric ch
+  //are accepted
+  const safe = userName.test(/^[A-Za-z0-9]*$/)
+  //TODO muddle through this to see whats wrong, find a way to make debugger work or do it by hand
+  document.getElementById("DEBUGAPIFLAG").innerHTML = 'got to func bundlesavetosend: ' + userName + safe;
+  if (userName != '' && safe) {
+    saveItems.unshift(userName)
+    saveStatus = 'sent'
+    return true;
+  }
+  else {
+    return false;
+  }
+}
 function unbundleSavetoUse() {saveItems.shift()}
+function refreshAPIUI() {document.getElementById("username").innerHTML=''}
+
 //timer private?
 setInterval(Grow, 100);
 
-//public
 function Grow(){
 
   generators.forEach(updateAll)

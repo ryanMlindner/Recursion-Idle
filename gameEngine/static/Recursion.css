@@ -55,8 +55,20 @@ h6 {
   display: none;
 }
 
+span.uiNiceLooking{
+  padding-left: 10%;
+}
+
 div.generators {
   color: purple;
+}
+
+div.APIUI {
+  color:#111;
+  padding: 20px;
+  border-radius: 20px;
+  margin: 20px;
+  background-color: slategrey;
 }
 
 button {
@@ -90,3 +102,6 @@ button.upgradeButton {
   visibility: hidden;
 }
 
+button.APIUI {
+  visibility: visible;
+}
