@@ -337,6 +337,8 @@ function formatOutput(output) {
 
 //private
 //SAVESTATE work
+//TODO learn fetch, like actually learn fetch. but do it later, getting back into this is
+//hurting your brain, be nice to self
 function saveNewUser() {
   document.getElementById("DEBUGAPIFLAG").innerHTML = 'got to func savenewuser';
   if (bundleSavetoSend()) {
@@ -409,14 +411,14 @@ function deleteSave() {
 }
 
 function bundleSavetoSend() {
-  const userName = document.getElementById("username").value
-  document.getElementById("DEBUGAPIFLAG").innerHTML = 'got to func bundlesavetosend: ' + userName;
+  let userName = document.getElementById("username").value;
+  let pattern = /^[A-Za-z0-9]*$/;
+  document.getElementById("DEBUGAPIFLAG").innerHTML = 'got to func bundlesavetosend: ' + userName;  
 
-  //inefficient to avoid use of regex here, just testing input to make sure only alphanumeric ch
-  //are accepted
-  const safe = userName.test(/^[A-Za-z0-9]*$/)
-  //TODO muddle through this to see whats wrong, find a way to make debugger work or do it by hand
-  document.getElementById("DEBUGAPIFLAG").innerHTML = 'got to func bundlesavetosend: ' + userName + safe;
+  let safe = pattern.test(userName); //only allows alphanumeric characters
+  //this part is working as intended now :D
+  document.getElementById("DEBUGAPIFLAG").innerHTML =
+   'got to func bundlesavetosend plus safe: ' + userName + safe;
   if (userName != '' && safe) {
     saveItems.unshift(userName)
     saveStatus = 'sent'

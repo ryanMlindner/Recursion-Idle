@@ -84,9 +84,8 @@ class saveFile:
         else: return False
 
 # TODO FETCH!! YAY MORE NEW STUFF DEAR GOD WHEN WILL THIS END. NEVER? Oh. aight.
+# TODO learn fetch first, then work on this stuff. one step at a time <3
 
-
-# TODO rework logic to include correct parts of ajax on both sides (JS, PY)
 userName = 'Test'
 saveString = 'flubber'
 serverResponse = responseString
