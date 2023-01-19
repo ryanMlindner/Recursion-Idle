@@ -57,7 +57,9 @@ class saveFile:
             self.user_id = user._id
 
     # CRUD for DB in MongoDB
-    # almost 100% sure this is wrong, TODO fix after fixing fetch api
+    # TODO data in mongoDB is treated like a dict, implement accessing username/savestring
+    # using python dict access
+    # ... learn how to use python dicts wow i know like zero python
     def postData(self):
         id = saveCollection.insert_one({
             "username" : self.username, 
@@ -74,6 +76,7 @@ class saveFile:
 
     def getSaveFile(self):
         self.getID
+        # TODO FIX LMAO
         return saveCollection.find_one({'_id' : self.user_id})
     
     def delete(self):
@@ -90,14 +93,16 @@ class saveFile:
 def dbConnect():
 
     # whatever we do with the savefile, we need to parse it first
-    bundledSaveUsername = request.body
-    identifier = bundledSaveUsername.split('', 1)
+    bundledSaveUsername = request.json
+    saveStringUsernameAppended = bundledSaveUsername.__str__()
+    identifier = saveStringUsernameAppended.split(',', 1)
     # create a savefile class to handle mongoDB stuff in for readability
-    save = saveFile(identifier[0] ,identifier[1])
+    userName = identifier[0]
+    saveString = identifier[1]
+    save = saveFile(userName, saveString)
 
     if (request.method == 'GET'):
-        save.getSaveFile
-        updatedSave = save.saveString
+        updatedSave = save.getSaveFile
         serverResponse = 'savefile retrieved successfully'
         packagedSave = save.username + save.saveString
         return  jsonify(packagedSave)
