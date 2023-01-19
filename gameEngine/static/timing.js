@@ -338,69 +338,65 @@ function formatOutput(output) {
 //private
 //SAVESTATE work
 //TODO learn fetch, like actually learn fetch. but do it later, getting back into this is
-//hurting your brain, be nice to self
+//progress made in fetch TODO more :3
 function saveNewUser() {
   document.getElementById("DEBUGAPIFLAG").innerHTML = 'got to func savenewuser';
   if (bundleSavetoSend()) {
-    fetch('/persist', {
-      "method": "POST",
-      "headers": {"Content-Type": "application/json"},
-      "body": JSON.stringify(saveItems),
+    fetch('/dbConnect', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(saveItems),
     })
-    .then(function (response) {
-      return response.json();
+    .then((response) => response.json())
+    .then((data) => {
+      console.log('success?', saveItems);
+      unbundleSavetoUse();
     })
-    .then(function () {
-      console.log('success?');
-      console.log(response);
-    })
-    unbundleSavetoUse()
   }
   else return false;
 }
 
 function saveExistingUser() {
   if (bundleSavetoSend()) {
-    fetch('/persist', {
-      "method": "PUT",
-      "headers": {"Content-Type": "application/json"},
-      "body": JSON.stringify(saveItems),
+    fetch('/dbConnect', {
+      method: "PUT",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify(saveItems),
     })
-    .then(function () {
-      console.log('success?');
-      console.log(response);
+    .then((response) => response.json())
+    .then((data) => {
+      console.log('success?', saveItems);
+      unbundleSavetoUse();
     })
-    unbundleSavetoUse()
   }
   else return false;
 }
 
 function load() {
   if (bundleSavetoSend()) {
-    fetch('/persist', {
-      "method": "GET",
-      "body": JSON.stringify(saveItems),
+    fetch('/dbConnect', {
+      method: "GET",
+      body: JSON.stringify(saveItems),
     })
-    .then(function (response) {
-      saveItems = Response.body;
-      return response.json();
-    })
-    // TODO figure this out for prod
-    .then(function () {
-      console.log('success?');
-      console.log(response);
+    .then((response) => response.json() ,
+      saveItems = Response.body
+    )
+    .then((data) => {
+      console.log('success?', saveItems);
+      unbundleSavetoUse();
     })
     unbundleSavetoUse()
   }
   else return false;
 }
-
+// TODO unnecessary to send the save for deletion, refactor?
 function deleteSave() {
   if (bundleSavetoSend()){
-    fetch('/persist', {
-      "method": "DELETE",
-      "body": JSON.stringify(saveItems),
+    fetch('/dbConnect', {
+      method: "DELETE",
+      body: JSON.stringify(saveItems),
     })
+    //old wrong syntax, not fixing yet bc refactor delete entirely
     .then(function () {
       console.log('success?');
       console.log(response);
@@ -428,6 +424,7 @@ function bundleSavetoSend() {
     return false;
   }
 }
+
 function unbundleSavetoUse() {saveItems.shift()}
 function refreshAPIUI() {document.getElementById("username").innerHTML=''}
 

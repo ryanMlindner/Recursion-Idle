@@ -37,8 +37,6 @@ app = Flask(__name__,
 def index():
     return render_template('index.html')
 
-responseString = "Failed: Default"
-
 db = client.idleSaves
 saveCollection = db.saves
 
@@ -59,6 +57,7 @@ class saveFile:
             self.user_id = user._id
 
     # CRUD for DB in MongoDB
+    # almost 100% sure this is wrong, TODO fix after fixing fetch api
     def postData(self):
         id = saveCollection.insert_one({
             "username" : self.username, 
@@ -68,7 +67,7 @@ class saveFile:
 
     def updateData(self):
         self.getID
-        update_save = saveCollection.update_one({
+        saveCollection.update_one({
             '_id': self.user_id},{
             'saveFile': self.saveString
             })
@@ -86,18 +85,16 @@ class saveFile:
 # TODO FETCH!! YAY MORE NEW STUFF DEAR GOD WHEN WILL THIS END. NEVER? Oh. aight.
 # TODO learn fetch first, then work on this stuff. one step at a time <3
 
-userName = 'Test'
-saveString = 'flubber'
-serverResponse = responseString
 
-save = saveFile(userName, saveString)
+@app.route('/dbConnect', methods=['GET', 'POST', 'PUT', 'DELETE'])
+def dbConnect():
 
-@app.route('/persist', methods=['GET', 'POST', 'PUT', 'DELETE'])
-def apiFunction(save):
-    # NO IDEA IF THIS WILL WORK BUT IM TAKING A BREAK TODO
+    # whatever we do with the savefile, we need to parse it first
     bundledSaveUsername = request.body
     identifier = bundledSaveUsername.split('', 1)
+    # create a savefile class to handle mongoDB stuff in for readability
     save = saveFile(identifier[0] ,identifier[1])
+
     if (request.method == 'GET'):
         save.getSaveFile
         updatedSave = save.saveString
