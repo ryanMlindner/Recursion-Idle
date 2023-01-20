@@ -347,9 +347,10 @@ function saveNewUser() {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(saveItems),
     })
-    .then((response) => response.json())
+    .then((response) => console.log(response.json()))
     .then((data) => {
-      console.log('success?', saveItems);
+      //data is undefined, i dont understand this formatting i dont think
+      console.log('post success?', data);
       unbundleSavetoUse();
     })
   }
@@ -363,23 +364,24 @@ function saveExistingUser() {
       headers: {"Content-Type": "application/json"},
       body: JSON.stringify(saveItems),
     })
-    .then((response) => response.json())
+    .then((response) => console.log(response.json()))
     .then((data) => {
-      console.log('success?', saveItems);
       unbundleSavetoUse();
+      console.log('success?', saveItems);
     })
   }
   else return false;
 }
 
+//get req cant have body, figure that out eh TODO
 function load() {
   if (bundleSavetoSend()) {
     fetch('/dbConnect', {
       method: "GET",
       body: JSON.stringify(saveItems),
     })
-    .then((response) => response.json() ,
-      saveItems = Response.body
+    .then((response) => saveItems = response.json() ,
+      console.log(Response.body)
     )
     .then((data) => {
       console.log('success?', saveItems);

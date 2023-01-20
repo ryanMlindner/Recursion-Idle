@@ -51,15 +51,12 @@ class saveFile:
             return False
         else:
             return True
+
     def getID(self):
         if (self.exists()):
             user = saveCollection.find_one({'username': self.username})
             self.user_id = user._id
 
-    # CRUD for DB in MongoDB
-    # TODO data in mongoDB is treated like a dict, implement accessing username/savestring
-    # using python dict access
-    # ... learn how to use python dicts wow i know like zero python
     def postData(self):
         id = saveCollection.insert_one({
             "username" : self.username, 
@@ -76,8 +73,9 @@ class saveFile:
 
     def getSaveFile(self):
         self.getID
-        # TODO FIX LMAO
-        return saveCollection.find_one({'_id' : self.user_id})
+        save = saveCollection.find_one({'_id' : self.user_id})
+        self.username = save.username
+        self.saveString = save.saveFile
     
     def delete(self):
         self.getID
@@ -102,7 +100,7 @@ def dbConnect():
     save = saveFile(userName, saveString)
 
     if (request.method == 'GET'):
-        updatedSave = save.getSaveFile
+        save.getSaveFile
         serverResponse = 'savefile retrieved successfully'
         packagedSave = save.username + save.saveString
         return  jsonify(packagedSave)
