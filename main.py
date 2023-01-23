@@ -19,6 +19,7 @@
 import datetime
 import os
 import pymongo
+import json
 
 from flask import Flask, jsonify, request, url_for, render_template
 from dotenv import load_dotenv
@@ -70,9 +71,8 @@ class saveFile:
             })
 
     def getSaveFile(self):
-        save = saveCollection.find_one({'username': self.username})
-        self.username = save["username"]
-        self.saveString = save["saveFile"]
+        saveDoc = saveCollection.find_one({'username': self.username})
+        self.saveString = saveDoc["saveFile"]
     
     def delete(self):
         if (saveCollection.find_one({'username': self.username}) != None):
@@ -86,39 +86,25 @@ class saveFile:
 # TODO clean up readability
 # TODO make it work lmao
 
-
-@app.route('/dbConnect', methods=['GET', 'POST', 'PUT', 'DELETE'])
-def dbConnect():
-
-    #call when savestring is passed from JS
-    def createSaveObject():
-        bundledSaveUsername = request.json
-        saveStringUsernameAppended = bundledSaveUsername.__str__()
-        identifier = saveStringUsernameAppended.split(',', 1)
-        userName = identifier[0]
-        saveString = identifier[1]
-        save = saveFile(userName)
-        save.saveString = saveString
-        return save
+#call when savestring is passed from JS
+def createSaveObject():
+    bundledSave = request.json
+    userName = bundledSave["userName"]
+    del bundledSave["userName"]
+    save = saveFile(userName)
+    save.saveString = bundledSave
+    return save
     
-    #call when only username is passed in authorization from JS
-    def getSaveObject():
-        userName = request.authorization
+#call when only username is passed in body from JS
+def getSaveObject():
+    userName = request.json
+    if debug:
+        print(userName)
+    save = saveFile(userName)
+    return save
 
-        if debug:
-            print(userName)
-        
-        save = saveFile(userName)
-        save.getSaveFile()
-        return save
-
-    #load
-    if (request.method == 'GET'):
-        save = getSaveObject()
-        save.getSaveFile()
-        packagedSave = save.username + save.saveString
-        save.refreshForNext()
-        return  jsonify(packagedSave)
+@app.route('/dbSave', methods=['POST', 'PUT', 'DELETE'])
+def dbSave():
 
     #new save
     if (request.method == 'POST'):
@@ -134,20 +120,32 @@ def dbConnect():
     #update save
     if (request.method == 'PUT'):
         save = createSaveObject()
+        serverResponse = 'no such savefile :(, try making one!'
         if (save.exists()):
             save.updateData()
-            serverResponse = 'savefile updated successfully'
+            serverResponse = 'savefile updated successfully!'
         save.refreshForNext()
         return jsonify(serverResponse)
 
     #delete
     if (request.method == 'DELETE'):
         save = getSaveObject()
+        serverResponse = 'savefile not found'
         if (save.exists()):
             save.delete()
             serverResponse = 'savefile deleted successfully'
         save.refreshForNext()
         return jsonify(serverResponse)
+
+@app.route('/dbLoad', methods=['POST'])
+def dbLoad():
+    save = getSaveObject()
+    if (save.exists()):
+        save.getSaveFile()
+        packagedSave = save.saveString
+        save.refreshForNext()
+        return  json.dumps(packagedSave)
+    return 'no save found'
 
 def unitTests():
     print("index info of saves: \n")

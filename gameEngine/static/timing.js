@@ -338,11 +338,12 @@ function formatOutput(output) {
 //private
 //SAVESTATE work
 function saveNewUser() {
+  let saveItemsObjectNotated = bundleSavetoSend();
   if (bundleSavetoSend()) {
-    fetch('/dbConnect', {
+    fetch('/dbSave', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(saveItems),
+      body: JSON.stringify(saveItemsObjectNotated),
     })
     .then((response) => response.json())
     .then((data) => {
@@ -357,11 +358,12 @@ function saveNewUser() {
 }
 
 function saveExistingUser() {
-  if (bundleSavetoSend()) {
-    fetch('/dbConnect', {
-      method: "PUT",
+  let saveItemsObjectNotated = bundleSavetoSend();
+  if (saveItemsObjectNotated) {
+    fetch('/dbSave', {
+      method: 'PUT',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(saveItems),
+      body: JSON.stringify(saveItemsObjectNotated),
     })
     .then((response) => response.json())
     .then((data) => {
@@ -376,58 +378,69 @@ function saveExistingUser() {
 }
 
 function load() {
-  let userToken = getUsername(); 
-  fetch('/dbConnect', {
-    method: "GET",
-    withCredentials: true,
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization' : userToken
-    }
-  })
-  .then((response) => response.json()
-  )
-  .then((data) => {
-    if (debug) {
-      console.log('before load: ', saveItems);
-      console.log('get success');
-    }
-    saveItems = data;
-    if (debug) console.log('after load: ', saveItems);
-  })
+  let userToken = getUsername();
+  if (userToken) {
+    fetch('/dbLoad', {
+      method: "POST",
+      body: JSON.stringify(userToken),
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+    .then((response) => response.json()
+    )
+    .then((data) => {
+      if (debug) {
+        console.log('before load: ', saveItems);
+        console.log(data);
+        console.log('get success');
+      }
+    
+      saveItems = JSON.parse(data);
+      if (debug) console.log('after load: ', saveItems);
+    })
+  }
 }
 
 function deleteSave() {
   let userToken = getUsername(); 
-  fetch('/dbConnect', {
-    method: "DELETE",
-    withCredentials: true,
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization' : userToken
-    }
-  })
-  .then((response) => {
-    console.log('delete response: ');
-    console.log(response);
-  })
+  if (userToken) {
+    fetch('/dbSave', {
+      method: "DELETE",
+      body: JSON.stringify(userToken),
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+    .then((response) => {
+      console.log('delete response: ');
+      console.log(response);
+    })
+  }
 }
 
 function getUsername() {
   let userName = document.getElementById("username").value;
   let pattern = /^[A-Za-z0-9]*$/;
   let safe = pattern.test(userName); //only allows alphanumeric characters
-  if (safe) return userName
-  else console.log("unsafe user input")
+  if (safe) return userName;
+  else {
+    console.log("unsafe user input");
+    return false;
+  }
 }
 
+//TODO NEED TO SEND A JSON STRING TO PY. I DONT KNOW WHAT IM SENDING OR WHAT IM DOING OR ANYTHING
+//AT ALL
 function bundleSavetoSend() {
-  userName = getUsername()
-  saveItems.unshift(userName)
-  saveStatus = 'sent'
-  return true;
+  userName = getUsername();
+  if (userName) {
+    saveItems.unshift(userName);
+    let saveItemsObjectNotated = JSON.parse(JSON.stringify(saveItems));
+    console.log(saveItemsObjectNotated);
+    return saveItemsObjectNotated;
+  }
+  else return false;
 }
 
 function unbundleSavetoUse() {saveItems.shift()}
