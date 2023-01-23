@@ -6,7 +6,7 @@
 //LOADING SCRIPT
 onload:(openGenTab('charaGen'));
 onload:(openSuperTab('game'));
-
+let debug = true;
 //container to keep track of game progress
 saveItems = new Array();
 //UI tutor container
@@ -337,20 +337,19 @@ function formatOutput(output) {
 
 //private
 //SAVESTATE work
-//TODO learn fetch, like actually learn fetch. but do it later, getting back into this is
-//progress made in fetch TODO more :3
 function saveNewUser() {
-  document.getElementById("DEBUGAPIFLAG").innerHTML = 'got to func savenewuser';
   if (bundleSavetoSend()) {
     fetch('/dbConnect', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(saveItems),
     })
-    .then((response) => console.log(response.json()))
+    .then((response) => response.json())
     .then((data) => {
-      //data is undefined, i dont understand this formatting i dont think
-      console.log('post success?', data);
+      if (debug) {
+        console.log(data);
+        console.log('post success!');
+      }
       unbundleSavetoUse();
     })
   }
@@ -361,74 +360,77 @@ function saveExistingUser() {
   if (bundleSavetoSend()) {
     fetch('/dbConnect', {
       method: "PUT",
-      headers: {"Content-Type": "application/json"},
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(saveItems),
     })
-    .then((response) => console.log(response.json()))
+    .then((response) => response.json())
     .then((data) => {
+      if (debug) {
+        console.log(data);
+        console.log('put success!');
+      }
       unbundleSavetoUse();
-      console.log('success?', saveItems);
     })
   }
   else return false;
 }
 
-//get req cant have body, figure that out eh TODO
 function load() {
-  if (bundleSavetoSend()) {
-    fetch('/dbConnect', {
-      method: "GET",
-      body: JSON.stringify(saveItems),
-    })
-    .then((response) => saveItems = response.json() ,
-      console.log(Response.body)
-    )
-    .then((data) => {
-      console.log('success?', saveItems);
-      unbundleSavetoUse();
-    })
-    unbundleSavetoUse()
-  }
-  else return false;
+  let userToken = getUsername(); 
+  fetch('/dbConnect', {
+    method: "GET",
+    withCredentials: true,
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization' : userToken
+    }
+  })
+  .then((response) => response.json()
+  )
+  .then((data) => {
+    if (debug) {
+      console.log('before load: ', saveItems);
+      console.log('get success');
+    }
+    saveItems = data;
+    if (debug) console.log('after load: ', saveItems);
+  })
 }
-// TODO unnecessary to send the save for deletion, refactor?
+
 function deleteSave() {
-  if (bundleSavetoSend()){
-    fetch('/dbConnect', {
-      method: "DELETE",
-      body: JSON.stringify(saveItems),
-    })
-    //old wrong syntax, not fixing yet bc refactor delete entirely
-    .then(function () {
-      console.log('success?');
-      console.log(response);
-    })
-    unbundleSavetoUse()
-  }
-  else return false;
+  let userToken = getUsername(); 
+  fetch('/dbConnect', {
+    method: "DELETE",
+    withCredentials: true,
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization' : userToken
+    }
+  })
+  .then((response) => {
+    console.log('delete response: ');
+    console.log(response);
+  })
+}
+
+function getUsername() {
+  let userName = document.getElementById("username").value;
+  let pattern = /^[A-Za-z0-9]*$/;
+  let safe = pattern.test(userName); //only allows alphanumeric characters
+  if (safe) return userName
+  else console.log("unsafe user input")
 }
 
 function bundleSavetoSend() {
-  let userName = document.getElementById("username").value;
-  let pattern = /^[A-Za-z0-9]*$/;
-  document.getElementById("DEBUGAPIFLAG").innerHTML = 'got to func bundlesavetosend: ' + userName;  
-
-  let safe = pattern.test(userName); //only allows alphanumeric characters
-  //this part is working as intended now :D
-  document.getElementById("DEBUGAPIFLAG").innerHTML =
-   'got to func bundlesavetosend plus safe: ' + userName + safe;
-  if (userName != '' && safe) {
-    saveItems.unshift(userName)
-    saveStatus = 'sent'
-    return true;
-  }
-  else {
-    return false;
-  }
+  userName = getUsername()
+  saveItems.unshift(userName)
+  saveStatus = 'sent'
+  return true;
 }
 
 function unbundleSavetoUse() {saveItems.shift()}
-function refreshAPIUI() {document.getElementById("username").innerHTML=''}
 
 //timer private?
 setInterval(Grow, 100);
