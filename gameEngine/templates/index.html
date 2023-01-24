@@ -33,15 +33,19 @@
   <div class="superTabs">
     <button class="superTabs" onclick="openSuperTab('game')">Game</button>
     <button class="superTabs" onclick="openSuperTab('upgrades')">Upgrades</button>
-    <button class="superTabs" onclick="openSuperTab('apiUI')">Experimental UI for save/load API</button>
+    <button class="superTabs" onclick="openSuperTab('apiUI')">
+      Experimental UI for save/load API</button>
   </div>
 
   <div id="game"class="supers">
 
   <div class="generatorsTabs">
-    <button class="tabs" id="charaTab" onclick="openGenTab('charaGen')" style.visibility = "visible">Character Generation</button>
-    <button class="tabs" id="memoryTab" onclick="openGenTab('memoryGen')" style.visibility = "hidden" >Memory Generation</button>
-    <button class="tabs" id="apipTab" onclick="openGenTab('apipGen')" style.visibility = "hidden" >API Power Generation</button>
+    <button class="tabs" id="charaTab" onclick="openGenTab('charaGen')" 
+      style.visibility = "visible">Character Generation</button>
+    <button class="tabs" id="memoryTab" onclick="openGenTab('memoryGen')" 
+      style.visibility = "hidden" >Memory Generation</button>
+    <button class="tabs" id="apipTab" onclick="openGenTab('apipGen')" 
+      style.visibility = "hidden" >API Power Generation</button>
   </div>
 
   <div id="charaGen" class="generators">
@@ -69,11 +73,13 @@
         <span>summons: </span> <span id="summons"> 0 </span>
         <span>per second: </span><span id="summonsGen">0</span></h3>
     </p>
-    <button id="charaPrestige" style.visibility = "hidden">Lose all but 100 Chara, gain <span id="charaPrestigeAmount"></span> memory</button>
+    <button id="charaPrestige" style.visibility = "hidden">
+      Lose all but 100 Chara, gain <span id="charaPrestigeAmount"></span> memory</button>
   </div>
 
   <div id="memoryGen" class="generators">
-    <h1 class="memoryDef" id="prestigelayeroneUnlock">Memory is used here to multiply Chara generation</h1>
+    <h1 class="memoryDef" id="prestigelayeroneUnlock">
+      Memory is used here to multiply Chara generation</h1>
     <p class="genTabMemoryDeclarations">
       <!--MEMORY DECLARATIONS-->
       <h3 id="descriptor6"><button id="gen6">Buy TickerTape</button> 
