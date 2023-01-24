@@ -11,8 +11,6 @@
 # database host with mongoDB
 # connect database to python with pymongo layer 1
 # connect python to JS with ajax layer 2
-# layer 3 is UI/control
-
 # TODO OOP
 # separate into files for a python package
 
@@ -39,6 +37,7 @@ app = Flask(__name__,
             static_folder='gameEngine/static',
             template_folder='gameEngine/templates')
 
+#game view
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -83,9 +82,6 @@ class saveFile:
         self.user_id = None
         self.saveString = None
 
-# TODO clean up readability
-# TODO make it work lmao
-
 #call when savestring is passed from JS
 #sets username as str and passes savestate array into save.savestring
 def createSaveObject():
@@ -95,10 +91,9 @@ def createSaveObject():
     save = saveFile(userName)
     save.saveString = bundledSave
     return save
-    
+
 #call when only username is passed in body from JS
 def getSaveObject():
-    #fix next
     userName = json.loads(request.get_data(as_text= True))
     if debug:
         print(userName)
