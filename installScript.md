@@ -6,7 +6,7 @@ pip install virtualenv
 py -m venv env
 env/Scripts/activate.bat
 # install required libraries
-pip install Flask pymongo python-dotenv Jinja2 Flask_RESTful
+pip install -r requirements.txt
 
 # run server host
 py main.py
