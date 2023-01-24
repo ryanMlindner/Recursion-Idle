@@ -337,13 +337,18 @@ function formatOutput(output) {
 
 //private
 //SAVESTATE work
+let userName = '';
+let safeInput = false;
+
+//TODO convert console logs to UI messages on save/load UI API page
 function saveNewUser() {
+  //get serialized json string to send
   let saveItemsObjectNotated = bundleSavetoSend();
-  if (bundleSavetoSend()) {
+  if (safeInput) {
     fetch('/dbSave', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(saveItemsObjectNotated),
+      body: saveItemsObjectNotated,
     })
     .then((response) => response.json())
     .then((data) => {
@@ -351,7 +356,6 @@ function saveNewUser() {
         console.log(data);
         console.log('post success!');
       }
-      unbundleSavetoUse();
     })
   }
   else return false;
@@ -359,11 +363,11 @@ function saveNewUser() {
 
 function saveExistingUser() {
   let saveItemsObjectNotated = bundleSavetoSend();
-  if (saveItemsObjectNotated) {
+  if (safeInput) {
     fetch('/dbSave', {
       method: 'PUT',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(saveItemsObjectNotated),
+      body: saveItemsObjectNotated,
     })
     .then((response) => response.json())
     .then((data) => {
@@ -371,18 +375,17 @@ function saveExistingUser() {
         console.log(data);
         console.log('put success!');
       }
-      unbundleSavetoUse();
     })
   }
   else return false;
 }
 
 function load() {
-  let userToken = getUsername();
-  if (userToken) {
+  checkUsername();
+  if (safeInput) {
     fetch('/dbLoad', {
       method: "POST",
-      body: JSON.stringify(userToken),
+      body: JSON.stringify(userName),
       headers: {
         'Content-Type': 'application/json',
       }
@@ -390,24 +393,25 @@ function load() {
     .then((response) => response.json()
     )
     .then((data) => {
-      if (debug) {
-        console.log('before load: ', saveItems);
-        console.log(data);
-        console.log('get success');
-      }
-    
-      saveItems = JSON.parse(data);
-      if (debug) console.log('after load: ', saveItems);
+      console.log(data);
+      if (data != 'savefile not found') {
+        if (debug) {
+          console.log('before load: ', saveItems);
+        }
+        parseSaveToUse(data);
+        if (debug) console.log('after load: ', saveItems);
+        }
+      else console.log('invalid username');
     })
   }
 }
 
 function deleteSave() {
-  let userToken = getUsername(); 
-  if (userToken) {
+  checkUsername();
+  if (safeInput) {
     fetch('/dbSave', {
       method: "DELETE",
-      body: JSON.stringify(userToken),
+      body: JSON.stringify(userName),
       headers: {
         'Content-Type': 'application/json',
       }
@@ -419,31 +423,49 @@ function deleteSave() {
   }
 }
 
-function getUsername() {
-  let userName = document.getElementById("username").value;
+//updates username value if no illegal characters are present
+function checkUsername() {
+  userName = document.getElementById("username").value;
   let pattern = /^[A-Za-z0-9]*$/;
   let safe = pattern.test(userName); //only allows alphanumeric characters
-  if (safe) return userName;
+  if (safe && userName != '') safeInput = true;
   else {
     console.log("unsafe user input");
-    return false;
   }
 }
 
-//TODO NEED TO SEND A JSON STRING TO PY. I DONT KNOW WHAT IM SENDING OR WHAT IM DOING OR ANYTHING
-//AT ALL
+//packages username + savestring into a JSON string to send
 function bundleSavetoSend() {
-  userName = getUsername();
-  if (userName) {
+  checkUsername();
+  if (safeInput) {
     saveItems.unshift(userName);
-    let saveItemsObjectNotated = JSON.parse(JSON.stringify(saveItems));
+    let saveItemsObjectNotated = JSON.stringify(saveItems);
+    saveItems.shift(userName);
     console.log(saveItemsObjectNotated);
     return saveItemsObjectNotated;
   }
   else return false;
 }
 
-function unbundleSavetoUse() {saveItems.shift()}
+//reads server response and updates as the currently used save array
+//TODO doesnt work correctly, need to iterate over all game values and replace them
+//somehow, will figure out how soon
+/*
+convert back to usable save state
+need to accept new save string as json string from server for load
+then convert (and replace current save data) with new save data
+*/
+function parseSaveToUse(saveData) {
+  let recievedData = new Array();
+  recievedData = saveData;
+  recievedData.forEach(updateSaveData)
+
+  function updateSaveData(item, index) {
+    saveItems[index] = item;
+    console.log(item);
+  }
+  delete recievedData;
+}
 
 //timer private?
 setInterval(Grow, 100);
@@ -489,8 +511,4 @@ function Grow(){
   $memoryLeak.refHTML.innerHTML = formatOutput($memoryLeak.value);
   //keep track of prestige amounts
   $chara.updatePrestige();
-
-  //unit test. why is this here just make a unit test ryan. shut up ryan. no u. oh wow so mature.
-  //save();
-  //console.log(saveString);
 }

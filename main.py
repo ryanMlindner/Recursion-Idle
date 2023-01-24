@@ -53,7 +53,7 @@ class saveFile:
         self.saveString = ''
 
     def exists(self):
-        if (saveCollection.find_one({'username': self.username}) == None):
+        if (saveCollection.find_one({"username": self.username}) == None):
             return False
         else:
             return True
@@ -87,17 +87,19 @@ class saveFile:
 # TODO make it work lmao
 
 #call when savestring is passed from JS
+#sets username as str and passes savestate array into save.savestring
 def createSaveObject():
-    bundledSave = request.json
-    userName = bundledSave["userName"]
-    del bundledSave["userName"]
+    bundledSave = list(json.loads(request.get_data(as_text= True)))
+    userName = bundledSave[0]
+    del bundledSave[0]
     save = saveFile(userName)
     save.saveString = bundledSave
     return save
     
 #call when only username is passed in body from JS
 def getSaveObject():
-    userName = request.json
+    #fix next
+    userName = json.loads(request.get_data(as_text= True))
     if debug:
         print(userName)
     save = saveFile(userName)
@@ -145,7 +147,7 @@ def dbLoad():
         packagedSave = save.saveString
         save.refreshForNext()
         return  json.dumps(packagedSave)
-    return 'no save found'
+    return jsonify('savefile not found')
 
 def unitTests():
     print("index info of saves: \n")
