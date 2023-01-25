@@ -31,20 +31,20 @@
   <!--tabs currently use onclick instead of binding for simplicity, CHANGE IF PROBLEM-->
 
   <div class="superTabs">
-    <button class="superTabs" onclick="openSuperTab('game')">Game</button>
-    <button class="superTabs" onclick="openSuperTab('upgrades')">Upgrades</button>
-    <button class="superTabs" onclick="openSuperTab('apiUI')">
+    <button class="superTabs" id="game">Game</button>
+    <button class="superTabs" id="upgrades">Upgrades</button>
+    <button class="superTabs" id="apiUI">
       Experimental UI for save/load API</button>
   </div>
 
-  <div id="game"class="supers">
+  <div id="gameTab" class="supers">
 
   <div class="generatorsTabs">
-    <button class="tabs" id="charaTab" onclick="openGenTab('charaGen')" 
+    <button class="tabs" id="charaTab"  
       style.visibility = "visible">Character Generation</button>
-    <button class="tabs" id="memoryTab" onclick="openGenTab('memoryGen')" 
+    <button class="tabs" id="memoryTab" 
       style.visibility = "hidden" >Memory Generation</button>
-    <button class="tabs" id="apipTab" onclick="openGenTab('apipGen')" 
+    <button class="tabs" id="apipTab"
       style.visibility = "hidden" >API Power Generation</button>
   </div>
 
@@ -111,7 +111,7 @@
   </div>
 </div>
 
-<div id="upgrades" class="supers">
+<div id="upgradesTab" class="supers">
   <h1>More Upgrades appear as you progress :) 5 of them, to be exact. 5 total, not 5 additional</h1>
   <h4 id="genoneUpgrades">
     <button class="upgradeButton" id="upgradeGenOne1">multiply keyboards generation by autoclickers: 
@@ -135,7 +135,7 @@
   </h4>
 </div>
 
-<div id="apiUI" class="supers">
+<div id="apiUITab" class="supers">
   <h1>See I told you it was real!</h1>
 
   <div id="saveLoadAPI" class="APIUI">
@@ -151,5 +151,5 @@
   </div>
 </div>
 
-<script src="{{ url_for('static', filename='timing.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='Run.js') }}"></script>
 </body>
