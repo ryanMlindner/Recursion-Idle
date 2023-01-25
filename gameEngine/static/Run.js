@@ -54,10 +54,10 @@ function openGenTab(tab) {
 
 
 //class for generators to keep track of cost, costgrowth, and change in chara growth
+//generators run the game, so they are kept locally in run instead of an external file
 class generator {
   constructor(currencyBuy, currencyGen, basecost, costgrowth, costRef,
      name, button, growthFactor, growthDisplay, descriptor) {
-    //create object in JS, connect to references in HTML
     this.currencyBuy = currencyBuy;
     this.currencyGen = currencyGen;
     this.basecost = basecost;
@@ -73,6 +73,7 @@ class generator {
     this.show = basecost / 2;
     this.prestigeMulti = 1;
     this.descriptor = document.getElementById(descriptor);
+
     //update UI
     saveItems.push(this);
     itemsToDraw.push(this);
@@ -101,6 +102,8 @@ class generator {
     document.getElementById(this.name).innerHTML = formatOutput(this.amount);
   }
 }
+
+
 
 function addUpgradeToArrays(itemToAdd) {
   saveItems.push(itemToAdd);
@@ -255,8 +258,6 @@ $faustdeal.button.addEventListener("click", buyOneGenerator.bind($faustdeal));
 
 document.getElementById("charaPrestige").addEventListener("click", prestige.bind($chara));
 
-//TODO change to accept buying any amount?
-//GOAL IS ABSTRACTION
 function buyOneGenerator() {
   //math
   if (this.currencyBuy.value >= this.realcost()) {
@@ -282,12 +283,13 @@ function prestige() {
   }
 }
 
-//private
 //SAVESTATE work
 let userName = '';
 let safeInput = false;
 
 //TODO convert console logs to UI messages on save/load UI API page
+//TODO bind functions to click events like everything else is so that it works
+// in strict
 function saveNewUser() {
   //get serialized json string to send
   let saveItemsObjectNotated = bundleSavetoSend();
