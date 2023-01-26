@@ -1,3 +1,5 @@
+# server driver and API endpoints
+
 import datetime
 import os
 import pymongo
@@ -21,7 +23,6 @@ def index():
 
 @app.route('/dbSave', methods=['POST', 'PUT', 'DELETE'])
 def dbSave():
-
     #new save
     if (request.method == 'POST'):
         save = createSaveObject()
