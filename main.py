@@ -8,11 +8,6 @@
 # cacheable
 # layered system
 # code on demand (opt) (not doing)
-# database host with mongoDB
-# connect database to python with pymongo layer 1
-# connect python to JS with ajax layer 2
-# TODO OOP
-# separate into files for a python package
 
 import datetime
 import os

@@ -1,6 +1,7 @@
 from .databaseConnection import db
 saveCollection = db.saves
 
+#talks to mongoDB and formats info
 class saveFile:
     def __init__(self, username):
         self.username = username
