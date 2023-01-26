@@ -51,9 +51,32 @@ function openGenTab(tab) {
   else document.getElementById(tab).style.display = "block";
 }
 
+/*
+TODO load state function called when page loads, called with savedata values if player loads a save
+*/
+function parseSaveToUse(saveData) {
+  let recievedData = new Array();
+  recievedData = saveData;
+  loadFromFile(recievedData);
+}
 
+function loadFromFile(recieved) {
+/*
+for each object in recieved,
+update the values of the correct object type in saveItems
+and replace those values so that they are mapped correctly as the new values
+for the game to use
+TODO remap objects by type and use identifier to tell function
+what kind of object it is so that the save knows where to place everything
+*/
+}
 
-//class for generators to keep track of cost, costgrowth, and change in chara growth
+/*
+function loadWithoutFile() {
+  //load the game normally
+}
+*/
+
 //generators run the game, so they are kept locally in run instead of an external file
 class generator {
   constructor(currencyBuy, currencyGen, basecost, costgrowth, costRef,
@@ -104,7 +127,6 @@ class generator {
 }
 
 
-
 function addUpgradeToArrays(itemToAdd) {
   saveItems.push(itemToAdd);
   itemsToDraw.push(itemToAdd);
@@ -112,16 +134,15 @@ function addUpgradeToArrays(itemToAdd) {
 }
 
 //BALANCEPOINT
-//TODO refactor for pretty and for save/load
 let $memory = new currencies
   ("memory", document.getElementById("memoryTotal"), 0, 0, false, null, null);
-  saveItems.push($memory); //REFACTOR?
+  saveItems.push($memory); 
 let $memoryLeak = new currencies
   ("memoryLeak", document.getElementById("memoryLeakTotal"), 0, 0, true, null, null);
-  saveItems.push($memoryLeak); //REFACTOR?
+  saveItems.push($memoryLeak); 
 let $chara = new currencies
   ("chara", document.getElementById("charaTotal"), 100, 0, true, $memory, document.getElementById("charaPrestige"));
-  saveItems.push($chara); //REFACTOR?
+  saveItems.push($chara); 
 
 // prestige layer 1 gen
 //BALANCEPOINT
@@ -166,7 +187,7 @@ let nodes = 0;
 let graphs = 0;
 let codeCleanliness = 0;
 
-//upgrade layer one iteration one
+//upgrade layer one
 let $gen11Upgrade = new upgrade
   ("upgradeGenOne1", $chara, 4000, $autoclickers, $keyboards,
     document.getElementById("upgradeGenOne1"), document.getElementById("upgradeOneCost"));
@@ -189,7 +210,6 @@ let $gen51Upgrade = new upgrade
     addUpgradeToArrays($gen51Upgrade);
 
 //button activations for upgrades
-//bundled
 $gen11Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen11Upgrade));
 $gen21Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen21Upgrade));
 $gen31Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen31Upgrade));
@@ -205,11 +225,9 @@ function turnUpgradeOn() {
 }
 
 //IMPORTANT FUNCTION for guiding gameplay
-//templated!
 function checkUnlocks() {
 
   itemsToDraw.forEach(checkToDraw);
-  
   function checkToDraw(object) {
     if (object.currencyBuy.backgroundTotal >= object.show) {
       object.button.style.visibility = "visible";
@@ -217,7 +235,6 @@ function checkUnlocks() {
     }
   }
   let memoryUnlockGoal = Number(1E9);
-
   //special cases / tutorial
   if ($chara.backgroundTotal > 100)  {
     document.getElementById("greet").innerHTML = "wow wasn't that fun. press more?";
@@ -259,7 +276,6 @@ $faustdeal.button.addEventListener("click", buyOneGenerator.bind($faustdeal));
 document.getElementById("charaPrestige").addEventListener("click", prestige.bind($chara));
 
 function buyOneGenerator() {
-  //math
   if (this.currencyBuy.value >= this.realcost()) {
     this.currencyBuy.value = this.currencyBuy.value - this.realcost();
     this.amount++;
@@ -287,14 +303,9 @@ function prestige() {
 let userName = '';
 let safeInput = false;
 let serverMessage = 'no response';
-//TODO convert console logs to UI messages on save/load UI API page
-//TODO bind functions to click events like everything else is so that it works
-// in strict
-
 
 document.getElementById("saveNewUser").addEventListener("click", saveNewUser.bind());
 function saveNewUser() {
-  //get serialized json string to send
   let saveItemsObjectNotated = bundleSavetoSend();
   if (safeInput) {
     fetch('/dbSave', {
@@ -406,33 +417,8 @@ function updateServerMessage(message) {
   document.getElementById("apiStatus").innerHTML = message;
 }
 
-/*
-TODO load state function called when page loads, called with savedata values if player loads a save
-*/
-function parseSaveToUse(saveData) {
-  let recievedData = new Array();
-  recievedData = saveData;
-  loadFromFile(recievedData);
-}
-
-function loadFromFile(recieved) {
-/*
-for each object in recieved,
-update the values of the correct object type in saveItems
-and replace those values so that they are mapped correctly as the new values
-for the game to use
-TODO remap objects by type and use identifier to tell function
-what kind of object it is so that the save knows where to place everything
-*/
-}
-
-/*
-function loadWithoutFile() {
-  //load the game normally
-}
-*/
+//game driver
 setInterval(Grow, 100);
-
 function Grow(){
 
   generators.forEach(updateAll)
@@ -440,7 +426,7 @@ function Grow(){
     gen.updateGrowth();
     gen.updatePrestigeMulti();
   }
-  //redo math for variable changes in upgrades
+
   upgrades.forEach(update);
   function update(upgrade) {
     if (upgrade.on) {
