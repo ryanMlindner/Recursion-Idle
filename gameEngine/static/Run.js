@@ -3,28 +3,43 @@
 //TODO import some form of break_infinity.js to use DECIMAL instead of Number
 /*
 */
+import currencies from "/currencies.js";
+import upgrade from "/upgrade.js";
+import formatOutput from "/formatOutput.js"
 //LOADING SCRIPT
 onload:(openGenTab('charaGen'));
-onload:(openSuperTab('game'));
-
+onload:(openSuperTab('gameTab'));
+let debug = true;
+let playerFile = false;
 //container to keep track of game progress
-saveItems = new Array();
-itemsToDraw = new Array();
+let saveItems = new Array();
+//UI tutor container
+let itemsToDraw = new Array();
 //container to neatly call/update all upgrade effects
-upgrades = new Array();
+let upgrades = new Array();
 //generator container
-generators = new Array();
+let generators = new Array();
 
 
 //functions to control tabs
+
+document.getElementById("game").addEventListener("click", openSuperTab.bind("gameTab"));
+document.getElementById("upgrades").addEventListener("click", openSuperTab.bind("upgradesTab"));
+document.getElementById("apiUI").addEventListener("click", openSuperTab.bind("apiUITab"));
+
 function openSuperTab(tab) {
   var index;
   var tabNames = document.getElementsByClassName("supers");
   for (index = 0; index < tabNames.length; index++) {
     tabNames[index].style.display = "none";
   }
-  document.getElementById(tab).style.display = "block";
+  if (this) document.getElementById(this).style.display = "block";
+  else document.getElementById(tab).style.display = "block";
 }
+
+document.getElementById("charaTab").addEventListener("click", openGenTab.bind("charaGen"));
+document.getElementById("memoryTab").addEventListener("click", openGenTab.bind("memoryGen"));
+document.getElementById("apipTab").addEventListener("click", openGenTab.bind("apipGen"));
 
 function openGenTab(tab) {
   var index;
@@ -32,89 +47,17 @@ function openGenTab(tab) {
   for (index = 0; index < tabNames.length; index++) {
     tabNames[index].style.display = "none";
   }
-  document.getElementById(tab).style.display = "block";
+  if (this) document.getElementById(this).style.display = "block";
+  else document.getElementById(tab).style.display = "block";
 }
 
-
-//TODO private
-class currencies {
-  constructor(tier, refHTML, value, growth, unlocked, prestigeTarget, prestigeButton) {
-    this.tier = tier;
-    this.refHTML = refHTML;
-    this.value = value;
-    this.growth = growth;
-    this.backgroundTotal = value;
-    this.unlocked = unlocked;
-    this.prestigeAmount = 0;
-    this.prestigeTarget = prestigeTarget;
-    this.prestigeButton = prestigeButton;
-    saveItems.push(this);
-  }
-  updateValue() {
-    this.value = this.value + this.growth;
-    if (this.backgroundTotal < this.value) {this.backgroundTotal = this.value}
-    this.backgroundTotal = this.backgroundTotal + this.growth;
-  }
-  updatePrestige() {
-    this.prestigeAmount = Math.floor(Math.sqrt(this.backgroundTotal / 1E9)) * 100;
-  }
-  prestige() {
-    if (this.prestigeAmount != 0) {
-      this.prestigeTarget.value = this.prestigeTarget.value + this.prestigeAmount;
-      this.value = 100;
-      this.growth = 0;
-      this.backgroundTotal = 100;
-      this.prestigeAmount = 0;
-      this.prestigeButton.style.visibility = "hidden";
-      return true;
-    }
-    return false;
-  }
-}
-
-//generic upgrade class
-class upgrade {
-  constructor(name, currencyBuy, cost, effectStrength, effectTarget, button, costDisplay) {
-    this.name = name;
-    this.currencyBuy = currencyBuy;
-    this.cost = cost;
-    this.effectStrength = effectStrength;
-    this.effectTarget = effectTarget;
-    this.button = button;
-    this.on = false;
-    this.show = cost / 2;
-    this.costDisplay = costDisplay;
-
-    document.getElementById(costDisplay).innerHTML = formatOutput(this.cost);
-    saveItems.push(this);
-    itemsToDraw.push(this);
-    upgrades.push(this);
-  }
-  turnOn() {
-    this.on = true;
-    this.updateMulti();
-    this.effectTarget.updateGrowth();
-    this.button.style.backgroundColor = "green";
-  }
-  updateMulti() {
-    if(this.effectStrength.amount == 0) {this.effectTarget.upgradeMulti = 1;}
-    else this.effectTarget.upgradeMulti = this.effectStrength.amount;
-    this.effectTarget.updateGrowth();
-  }
-  prestigeClean() {
-    this.on = false;
-    this.updateMulti();
-    this.effectTarget.updateGrowth();
-    this.button.style.backgroundColor = "#111";
-  }
-}
 
 
 //class for generators to keep track of cost, costgrowth, and change in chara growth
+//generators run the game, so they are kept locally in run instead of an external file
 class generator {
   constructor(currencyBuy, currencyGen, basecost, costgrowth, costRef,
      name, button, growthFactor, growthDisplay, descriptor) {
-    //create object in JS, connect to references in HTML
     this.currencyBuy = currencyBuy;
     this.currencyGen = currencyGen;
     this.basecost = basecost;
@@ -130,6 +73,7 @@ class generator {
     this.show = basecost / 2;
     this.prestigeMulti = 1;
     this.descriptor = document.getElementById(descriptor);
+
     //update UI
     saveItems.push(this);
     itemsToDraw.push(this);
@@ -159,17 +103,27 @@ class generator {
   }
 }
 
+
+
+function addUpgradeToArrays(itemToAdd) {
+  saveItems.push(itemToAdd);
+  itemsToDraw.push(itemToAdd);
+  upgrades.push(itemToAdd);
+}
+
 //BALANCEPOINT
+//TODO refactor for pretty and for save/load
 let $memory = new currencies
   ("memory", document.getElementById("memoryTotal"), 0, 0, false, null, null);
+  saveItems.push($memory); //REFACTOR?
 let $memoryLeak = new currencies
   ("memoryLeak", document.getElementById("memoryLeakTotal"), 0, 0, true, null, null);
+  saveItems.push($memoryLeak); //REFACTOR?
 let $chara = new currencies
   ("chara", document.getElementById("charaTotal"), 100, 0, true, $memory, document.getElementById("charaPrestige"));
+  saveItems.push($chara); //REFACTOR?
 
-//TODO class definitions done, rewrite variables as generators when appropriate
 // prestige layer 1 gen
-
 //BALANCEPOINT
 let $keyboards = new generator
   ($chara, $chara, 100, 1.21, "keyboardsCost", "keyboards",
@@ -215,19 +169,24 @@ let codeCleanliness = 0;
 //upgrade layer one iteration one
 let $gen11Upgrade = new upgrade
   ("upgradeGenOne1", $chara, 4000, $autoclickers, $keyboards,
-    document.getElementById("upgradeGenOne1"), "upgradeOneCost");
+    document.getElementById("upgradeGenOne1"), document.getElementById("upgradeOneCost"));
+    addUpgradeToArrays($gen11Upgrade);
 let $gen21Upgrade = new upgrade
   ("upgradeGenTwo1", $chara, 80000, $macros, $autoclickers,
-    document.getElementById("upgradeGenTwo1"), "upgradeTwoCost");
+    document.getElementById("upgradeGenTwo1"), document.getElementById("upgradeTwoCost"));
+    addUpgradeToArrays($gen21Upgrade);
 let $gen31Upgrade = new upgrade
   ("upgradeGenThree1", $chara, 1600000, $monitors, $macros,
-    document.getElementById("upgradeGenThree1"), "upgradeThreeCost");
+    document.getElementById("upgradeGenThree1"), document.getElementById("upgradeThreeCost"));
+    addUpgradeToArrays($gen31Upgrade);
 let $gen41Upgrade = new upgrade
   ("upgradeGenFour1", $chara, 32000000, $summons, $monitors,
-    document.getElementById("upgradeGenFour1"), "upgradeFourCost");
+    document.getElementById("upgradeGenFour1"), document.getElementById("upgradeFourCost"));
+    addUpgradeToArrays($gen41Upgrade);
 let $gen51Upgrade = new upgrade
   ("upgradeGenFive1", $chara, 640000000, $keyboards, $summons,
-    document.getElementById("upgradeGenFive1"), "upgradeFiveCost");
+    document.getElementById("upgradeGenFive1"), document.getElementById("upgradeFiveCost"));
+    addUpgradeToArrays($gen51Upgrade);
 
 //button activations for upgrades
 //bundled
@@ -238,7 +197,7 @@ $gen41Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen41Upgrade)
 $gen51Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen51Upgrade));
 
 
-function turnUpgradeOn(upgradeID) {
+function turnUpgradeOn() {
   if (this.currencyBuy.value >= this.cost && this.on == false) {
     this.currencyBuy.value = this.currencyBuy.value - this.cost;
     this.turnOn();
@@ -299,8 +258,6 @@ $faustdeal.button.addEventListener("click", buyOneGenerator.bind($faustdeal));
 
 document.getElementById("charaPrestige").addEventListener("click", prestige.bind($chara));
 
-//TODO change to accept buying any amount?
-//GOAL IS ABSTRACTION
 function buyOneGenerator() {
   //math
   if (this.currencyBuy.value >= this.realcost()) {
@@ -315,7 +272,7 @@ function buyOneGenerator() {
 }
 
 function prestige() {
-  currency = this;
+  let currency = this;
   if (this.prestige()) {
     itemsToDraw.forEach(prestigeUpdate)
     function prestigeUpdate(objects) {
@@ -326,29 +283,146 @@ function prestige() {
   }
 }
 
-//public
-function formatOutput(output) {
-  if (output >= 10000) {
-    output = output.toExponential(2);
+//SAVESTATE work
+let userName = '';
+let safeInput = false;
+let serverMessage = 'no response';
+//TODO convert console logs to UI messages on save/load UI API page
+//TODO bind functions to click events like everything else is so that it works
+// in strict
+
+
+document.getElementById("saveNewUser").addEventListener("click", saveNewUser.bind());
+function saveNewUser() {
+  //get serialized json string to send
+  let saveItemsObjectNotated = bundleSavetoSend();
+  if (safeInput) {
+    fetch('/dbSave', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: saveItemsObjectNotated,
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      serverMessage = 'server response: ' + data;
+      updateServerMessage(serverMessage);
+    })
   }
-  return output;
 }
 
-//public
-function save() {
-  saveString = JSON.stringify(saveItems);
-  //ajax goes here!
+document.getElementById("saveExistingUser").addEventListener("click", saveExistingUser.bind());
+function saveExistingUser() {
+  let saveItemsObjectNotated = bundleSavetoSend();
+  if (safeInput) {
+    fetch('/dbSave', {
+      method: 'PUT',
+      headers: {'Content-Type': 'application/json'},
+      body: saveItemsObjectNotated,
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      serverMessage = 'server response: ' + data;
+      updateServerMessage(serverMessage);
+    })
+  }
+  else return false;
 }
 
-function load() {
-  saveItems = JSON.parse(saveString);
-  //ajax goes here!
+document.getElementById("loadFile").addEventListener("click", loadFile.bind());
+function loadFile() {
+  checkUsername();
+  if (safeInput) {
+    fetch('/dbLoad', {
+      method: "POST",
+      body: JSON.stringify(userName),
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+    .then((response) => response.json()
+    )
+    .then((data) => {
+      if (data != 'savefile not found') {
+        serverMessage = 'file found, loaded';
+        updateServerMessage(serverMessage);
+        playerFile = true;
+        if (debug) {
+          console.log('before load: ', saveItems);
+        }
+        parseSaveToUse(data);
+        if (debug) console.log('after load: ', saveItems);
+        }
+      else {
+        serverMessage = 'server response: ' + data;
+        updateServerMessage(serverMessage);
+      }
+    })
+  }
+}
+
+document.getElementById("deleteFile").addEventListener("click", deleteFile.bind());
+function deleteFile() {
+  checkUsername();
+  if (safeInput) {
+    fetch('/dbSave', {
+      method: "DELETE",
+      body: JSON.stringify(userName),
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    })
+    .then((response) => response.json())
+    .then((data) => {
+      serverMessage = 'server response: ' + data;
+      updateServerMessage(serverMessage);
+    })
+  }
+}
+
+//updates username value if no illegal characters are present
+function checkUsername() {
+  userName = document.getElementById("username").value;
+  let pattern = /^[A-Za-z0-9]*$/;
+  let safe = pattern.test(userName); //only allows alphanumeric characters
+  if (safe && userName != '') safeInput = true;
+  else {
+    apiStatusElement.innerHtml = 'unsafe user input';
+  }
+}
+
+//packages username + savestring into a JSON string to send
+function bundleSavetoSend() {
+  checkUsername();
+  if (safeInput) {
+    saveItems.unshift(userName);
+    let saveItemsObjectNotated = JSON.stringify(saveItems);
+    saveItems.shift(userName);
+    return saveItemsObjectNotated;
+  }
+  else return false;
+}
+
+function updateServerMessage(message) {
+  document.getElementById("apiStatus").innerHTML = message;
+}
+
+/*
+TODO load state function called when page loads, called with savedata values if player loads a save
+*/
+function parseSaveToUse(saveData) {
+  let recievedData = new Array();
+  recievedData = saveData;
+  recievedData.forEach(updateSaveData)
+
+  function updateSaveData(item, index) {
+    saveItems[index] = item;
+  }
+  recievedData = null;
 }
 
 //timer private?
 setInterval(Grow, 100);
 
-//public
 function Grow(){
 
   generators.forEach(updateAll)
@@ -390,8 +464,4 @@ function Grow(){
   $memoryLeak.refHTML.innerHTML = formatOutput($memoryLeak.value);
   //keep track of prestige amounts
   $chara.updatePrestige();
-
-  //unit test. why is this here just make a unit test ryan. shut up ryan. no u. oh wow so mature.
-  //save();
-  //console.log(saveString);
 }
