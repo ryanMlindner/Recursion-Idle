@@ -19,18 +19,13 @@ import os
 import pymongo
 import json
 
+import dependencies.databaseConnection
+from dependencies.fileAccess import saveFile
 from flask import Flask, jsonify, request, url_for, render_template
 from dotenv import load_dotenv
-from flask_restful import Resource, Api
 from pymongo import MongoClient
 
 debug = True
-
-load_dotenv()
-MONGODB_URI = os.environ['MONGODB_URI']
-
-# Connect to MongoDB cluster:
-client = MongoClient(MONGODB_URI)
 
 app = Flask(__name__,
             static_url_path='',
@@ -42,48 +37,7 @@ app = Flask(__name__,
 def index():
     return render_template('index.html')
 
-#database connection
-db = client.idleSaves
-saveCollection = db.saves
-
-class saveFile:
-    def __init__(self, username):
-        self.username = username
-        self.saveString = ''
-
-    def exists(self):
-        if (saveCollection.find_one({"username": self.username}) == None):
-            return False
-        else:
-            return True
-
-    def postData(self):
-        id = saveCollection.insert_one({
-            "username" : self.username, 
-            "saveFile" : self.saveString
-            })
-
-    def updateData(self):
-        saveCollection.update_one({
-            'username': self.username},{
-            '$set': {'saveFile': self.saveString}
-            })
-
-    def getSaveFile(self):
-        saveDoc = saveCollection.find_one({'username': self.username})
-        self.saveString = saveDoc["saveFile"]
-    
-    def delete(self):
-        if (saveCollection.find_one({'username': self.username}) != None):
-            saveCollection.delete_one({'username': self.username})
-        else: return False
-    
-    def refreshForNext(self):
-        self.user_id = None
-        self.saveString = None
-
 #call when savestring is passed from JS
-#sets username as str and passes savestate array into save.savestring
 def createSaveObject():
     bundledSave = list(json.loads(request.get_data(as_text= True)))
     userName = bundledSave[0]
@@ -96,10 +50,12 @@ def createSaveObject():
 def getSaveObject():
     userName = json.loads(request.get_data(as_text= True))
     if debug:
-        print(userName)
+        #personal request from project manager
+        print('yarp')
     save = saveFile(userName)
     return save
 
+#define database access for everything except load
 @app.route('/dbSave', methods=['POST', 'PUT', 'DELETE'])
 def dbSave():
 
@@ -134,6 +90,7 @@ def dbSave():
         save.refreshForNext()
         return jsonify(serverResponse)
 
+#define db access for load (workaround for not being able to send payload in GET)
 @app.route('/dbLoad', methods=['POST'])
 def dbLoad():
     save = getSaveObject()
@@ -144,14 +101,6 @@ def dbLoad():
         return  json.dumps(packagedSave)
     return jsonify('savefile not found')
 
-def unitTests():
-    print("index info of saves: \n")
-    print(saveCollection.index_information())
-    print("connection status: \n")
-    print(db.list_collections())
-
-if debug:
-    unitTests()
 # TODO refactor to serve for prod instead of this
 if __name__ == "__main__":
     app.run()

@@ -286,10 +286,13 @@ function prestige() {
 //SAVESTATE work
 let userName = '';
 let safeInput = false;
-
+let serverMessage = 'no response';
 //TODO convert console logs to UI messages on save/load UI API page
 //TODO bind functions to click events like everything else is so that it works
 // in strict
+
+
+document.getElementById("saveNewUser").addEventListener("click", saveNewUser.bind());
 function saveNewUser() {
   //get serialized json string to send
   let saveItemsObjectNotated = bundleSavetoSend();
@@ -301,15 +304,13 @@ function saveNewUser() {
     })
     .then((response) => response.json())
     .then((data) => {
-      if (debug) {
-        console.log(data);
-        console.log('post success!');
-      }
+      serverMessage = 'server response: ' + data;
+      updateServerMessage(serverMessage);
     })
   }
-  else return false;
 }
 
+document.getElementById("saveExistingUser").addEventListener("click", saveExistingUser.bind());
 function saveExistingUser() {
   let saveItemsObjectNotated = bundleSavetoSend();
   if (safeInput) {
@@ -320,16 +321,15 @@ function saveExistingUser() {
     })
     .then((response) => response.json())
     .then((data) => {
-      if (debug) {
-        console.log(data);
-        console.log('put success!');
-      }
+      serverMessage = 'server response: ' + data;
+      updateServerMessage(serverMessage);
     })
   }
   else return false;
 }
 
-function load() {
+document.getElementById("loadFile").addEventListener("click", loadFile.bind());
+function loadFile() {
   checkUsername();
   if (safeInput) {
     fetch('/dbLoad', {
@@ -342,8 +342,9 @@ function load() {
     .then((response) => response.json()
     )
     .then((data) => {
-      console.log(data);
       if (data != 'savefile not found') {
+        serverMessage = 'file found, loaded';
+        updateServerMessage(serverMessage);
         playerFile = true;
         if (debug) {
           console.log('before load: ', saveItems);
@@ -351,12 +352,16 @@ function load() {
         parseSaveToUse(data);
         if (debug) console.log('after load: ', saveItems);
         }
-      else console.log('invalid username');
+      else {
+        serverMessage = 'server response: ' + data;
+        updateServerMessage(serverMessage);
+      }
     })
   }
 }
 
-function deleteSave() {
+document.getElementById("deleteFile").addEventListener("click", deleteFile.bind());
+function deleteFile() {
   checkUsername();
   if (safeInput) {
     fetch('/dbSave', {
@@ -366,9 +371,10 @@ function deleteSave() {
         'Content-Type': 'application/json',
       }
     })
-    .then((response) => {
-      console.log('delete response: ');
-      console.log(response);
+    .then((response) => response.json())
+    .then((data) => {
+      serverMessage = 'server response: ' + data;
+      updateServerMessage(serverMessage);
     })
   }
 }
@@ -380,7 +386,7 @@ function checkUsername() {
   let safe = pattern.test(userName); //only allows alphanumeric characters
   if (safe && userName != '') safeInput = true;
   else {
-    console.log("unsafe user input");
+    apiStatusElement.innerHtml = 'unsafe user input';
   }
 }
 
@@ -391,15 +397,15 @@ function bundleSavetoSend() {
     saveItems.unshift(userName);
     let saveItemsObjectNotated = JSON.stringify(saveItems);
     saveItems.shift(userName);
-    console.log(saveItemsObjectNotated);
     return saveItemsObjectNotated;
   }
   else return false;
 }
 
-//reads server response and updates as the currently used save array
-//TODO doesnt work correctly, need to iterate over all game values and replace them
-//somehow, will figure out how soon
+function updateServerMessage(message) {
+  document.getElementById("apiStatus").innerHTML = message;
+}
+
 /*
 TODO load state function called when page loads, called with savedata values if player loads a save
 */
@@ -410,7 +416,6 @@ function parseSaveToUse(saveData) {
 
   function updateSaveData(item, index) {
     saveItems[index] = item;
-    console.log(item);
   }
   recievedData = null;
 }
