@@ -412,15 +412,25 @@ TODO load state function called when page loads, called with savedata values if 
 function parseSaveToUse(saveData) {
   let recievedData = new Array();
   recievedData = saveData;
-  recievedData.forEach(updateSaveData)
-
-  function updateSaveData(item, index) {
-    saveItems[index] = item;
-  }
-  recievedData = null;
+  loadFromFile(recievedData);
 }
 
-//timer private?
+function loadFromFile(recieved) {
+/*
+for each object in recieved,
+update the values of the correct object type in saveItems
+and replace those values so that they are mapped correctly as the new values
+for the game to use
+TODO remap objects by type and use identifier to tell function
+what kind of object it is so that the save knows where to place everything
+*/
+}
+
+/*
+function loadWithoutFile() {
+  //load the game normally
+}
+*/
 setInterval(Grow, 100);
 
 function Grow(){
