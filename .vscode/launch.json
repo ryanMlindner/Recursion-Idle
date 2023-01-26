@@ -5,18 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name":"Python: Flask",
+            "name":"Python: debug",
             "type":"python",
             "request":"launch",
             "module":"flask",
-            "env":{"FLASK_APP":"saveData.py","FLASK_DEBUG":"1"},
+            "env":{"FLASK_APP":"main.py","FLASK_DEBUG":"0"},
             "args":["run","--no-debugger","--no-reload"],"jinja":true,"justMyCode":true
-        },
-        {
-            "type": "chrome",
-            "request": "launch",
-            "name": "Open index.html",
-            "file": "c:\\Users\\ryanm\\Documents\\GitHub\\Recursion-Idle\\index.html"
         }
     ]
 }
