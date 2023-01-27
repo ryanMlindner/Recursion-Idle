@@ -5,7 +5,12 @@
 */
 import currencies from "/currencies.js";
 import upgrade from "/upgrade.js";
-import formatOutput from "/formatOutput.js"
+import generator from "/generator.js";
+import formatOutput from "/formatOutput.js";
+//TODO easily templated tab control, not hyper important for now, this works
+import openGenTab from "/genTabControl.js";
+import openSuperTab from "/superTabControl.js";
+
 //LOADING SCRIPT
 onload:(openGenTab('charaGen'));
 onload:(openSuperTab('gameTab'));
@@ -19,113 +24,302 @@ let itemsToDraw = new Array();
 let upgrades = new Array();
 //generator container
 let generators = new Array();
+//tutor function needs an array of types in the savestring
 
+//savefile declarations to be instantiated in either
+//loadfromfile or loadwithoutfile
+let $memory, 
+    $memoryLeak, 
+    $chara,
+    $keyboards,
+    $autoclickers,
+    $macros,
+    $monitors,
+    $summons,
+    $tickertape,
+    $etchasketch,
+    $floppydisc,
+    $ssd,
+    $faustdeal,
+    $gen11Upgrade,
+    $gen21Upgrade,
+    $gen31Upgrade,
+    $gen41Upgrade,
+    $gen51Upgrade;
 
-//functions to control tabs
+if (!playerFile) {loadWithoutFile()}
 
+//tabs
+//main tabs
 document.getElementById("game").addEventListener("click", openSuperTab.bind("gameTab"));
 document.getElementById("upgrades").addEventListener("click", openSuperTab.bind("upgradesTab"));
 document.getElementById("apiUI").addEventListener("click", openSuperTab.bind("apiUITab"));
-
-function openSuperTab(tab) {
-  var index;
-  var tabNames = document.getElementsByClassName("supers");
-  for (index = 0; index < tabNames.length; index++) {
-    tabNames[index].style.display = "none";
-  }
-  if (this) document.getElementById(this).style.display = "block";
-  else document.getElementById(tab).style.display = "block";
-}
-
+//tabs in game tab
 document.getElementById("charaTab").addEventListener("click", openGenTab.bind("charaGen"));
 document.getElementById("memoryTab").addEventListener("click", openGenTab.bind("memoryGen"));
 document.getElementById("apipTab").addEventListener("click", openGenTab.bind("apipGen"));
 
-function openGenTab(tab) {
-  var index;
-  var tabNames = document.getElementsByClassName("generators");
-  for (index = 0; index < tabNames.length; index++) {
-    tabNames[index].style.display = "none";
-  }
-  if (this) document.getElementById(this).style.display = "block";
-  else document.getElementById(tab).style.display = "block";
-}
-
-/*
-TODO load state function called when page loads, called with savedata values if player loads a save
-*/
-function parseSaveToUse(saveData) {
-  let recievedData = new Array();
-  recievedData = saveData;
-  loadFromFile(recievedData);
-}
-
-function loadFromFile(recieved) {
-/*
-for each object in recieved,
-update the values of the correct object type in saveItems
-and replace those values so that they are mapped correctly as the new values
-for the game to use
-TODO remap objects by type and use identifier to tell function
-what kind of object it is so that the save knows where to place everything
-*/
-}
-
-/*
 function loadWithoutFile() {
-  //load the game normally
+  // load the game normally
+
+  // currencies instantiation
+  $memory = new currencies
+  ("memory", "memoryTotal", 0, 0, 0, false, 0, null, null);
+  addCurrenciesToArrays($memory); 
+  $memoryLeak = new currencies
+  ("memoryLeak", "memoryLeakTotal", 0, 0, 0, true, 0, null, null);
+  addCurrenciesToArrays($memoryLeak);  
+  $chara = new currencies
+  ("chara", "charaTotal", 100, 0, 100, true, 0, $memory, "charaPrestige");
+  addCurrenciesToArrays($chara);
+  
+  // generators instantiation
+  // prestige layer 1 gen
+  $keyboards = new generator
+  ($chara, $chara, $memoryLeak, 100, 1.21, "keyboardsCost", "keyboards",
+    "gen1", 1, 0, 0, "keyboardsGen", 1, 50, 1, "descriptor1");
+    addGeneratorToArrays($keyboards);
+  $autoclickers = new generator
+  ($chara, $chara, $memoryLeak, 2000, 1.31, "autoclickersCost", "autoclickers", 
+    "gen2", 10, 0, 0, "autoclickersGen", 1, 1000, 1, "descriptor2");
+    addGeneratorToArrays($autoclickers);
+  $macros = new generator
+  ($chara, $chara, $memoryLeak, 40000, 1.41, "macrosCost", "macros", 
+    "gen3", 100, 0, 0, "macrosGen", 1, 20000, 1, "descriptor3");
+    addGeneratorToArrays($macros);
+  $monitors = new generator
+  ($chara, $chara, $memoryLeak, 800000, 1.51, "monitorsCost", "monitors", 
+    "gen4", 1000, 0, 0, "monitorsGen", 1, 400000, 1, "descriptor4");
+    addGeneratorToArrays($monitors);
+  $summons = new generator
+  ($chara, $chara, $memoryLeak, 16000000, 1.61, "summonsCost", "summons", 
+    "gen5", 10000, 0, 0, "summonsGen", 1, 80000000, 1, "descriptor5");
+    addGeneratorToArrays($summons);
+
+  // prestige layer 2 gen
+  $tickertape = new generator
+  ($memory, $memoryLeak, null, 100, 1.21, "tickertapeCost", "tickertapes", 
+    "gen6", 1, 0, 0, "tickertapeGen", 1, 50, 1, "descriptor6");
+    addGeneratorToArrays($tickertape);
+  $etchasketch = new generator
+  ($memory, $memoryLeak, null, 4000, 1.31, "etchasketchCost", "etchasketchs", 
+    "gen7", 10, 0, 0, "etchasketchGen", 1, 2000, 1, "descriptor7");
+    addGeneratorToArrays($etchasketch);
+  $floppydisc = new generator
+  ($memory, $memoryLeak, null, 40000, 1.41, "floppydiscCost", "floppydiscs", 
+    "gen8", 100, 0, 0, "floppydiscGen", 1, 20000, 1, "descriptor8");
+    addGeneratorToArrays($floppydisc);
+  $ssd = new generator
+  ($memory, $memoryLeak, null, 800000, 1.51, "ssdCost", "ssds", 
+    "gen9", 1000, 0, 0, "ssdGen", 1, 400000, 1, "descriptor9");
+    addGeneratorToArrays($ssd);
+  $faustdeal = new generator
+  ($memory, $memoryLeak, null, 16000000, 1.61, "faustdealCost", "faustdeals", 
+    "gen10", 10000, 0, 0, "faustdealGen", 1, 80000000, 1, "descriptor10");
+    addGeneratorToArrays($faustdeal);
+  /*
+  let apip = 0;
+  // prestige layer 3 gen, apip == api power
+  //WIP
+  let dots = 0;
+  let vectors = 0;
+  let nodes = 0;
+  let graphs = 0;
+  let codeCleanliness = 0;
+  */
+
+  //upgrade layer one
+  $gen11Upgrade = new upgrade
+    ("upgradeGenOne1", $chara, 4000, $autoclickers, $keyboards,
+      "upgradeGenOne1", false, 2000, "upgradeOneCost");
+  addUpgradeToArrays($gen11Upgrade);
+  $gen21Upgrade = new upgrade
+    ("upgradeGenTwo1", $chara, 80000, $macros, $autoclickers,
+      "upgradeGenTwo1", false, 40000, "upgradeTwoCost");
+  addUpgradeToArrays($gen21Upgrade);
+  $gen31Upgrade = new upgrade
+    ("upgradeGenThree1", $chara, 1600000, $monitors, $macros,
+      "upgradeGenThree1", false, 800000, "upgradeThreeCost");
+  addUpgradeToArrays($gen31Upgrade);
+  $gen41Upgrade = new upgrade
+    ("upgradeGenFour1", $chara, 32000000, $summons, $monitors,
+      "upgradeGenFour1", false, 16000000, "upgradeFourCost");
+  addUpgradeToArrays($gen41Upgrade);
+  $gen51Upgrade = new upgrade
+    ("upgradeGenFive1", $chara, 640000000, $keyboards, $summons,
+      "upgradeGenFive1", false, 320000000, "upgradeFiveCost");
+  addUpgradeToArrays($gen51Upgrade);
+
+  activateButtons();
 }
-*/
 
-//generators run the game, so they are kept locally in run instead of an external file
-class generator {
-  constructor(currencyBuy, currencyGen, basecost, costgrowth, costRef,
-     name, button, growthFactor, growthDisplay, descriptor) {
-    this.currencyBuy = currencyBuy;
-    this.currencyGen = currencyGen;
-    this.basecost = basecost;
-    this.costgrowth = costgrowth;
-    this.costRef = costRef;
-    this.name = name;
-    this.button = button;
-    this.growthFactor = growthFactor;
-    this.growth = 0;
-    this.amount = 0;
-    this.growthDisplay = growthDisplay;
-    this.upgradeMulti = 1;
-    this.show = basecost / 2;
-    this.prestigeMulti = 1;
-    this.descriptor = document.getElementById(descriptor);
-
-    //update UI
-    saveItems.push(this);
-    itemsToDraw.push(this);
-    generators.push(this);
-    document.getElementById(this.costRef).innerHTML = formatOutput(this.basecost);
-  }
-  realcost() {
-    return Math.floor((this.basecost*(Math.pow(this.costgrowth, this.amount))))
-  }
-
-  updateGrowth() {
-    this.growth = (this.growthFactor * this.amount * this.upgradeMulti * this.prestigeMulti);
-    document.getElementById(this.growthDisplay).innerHTML = formatOutput(this.growth*10);
-  }
-  updatePrestigeMulti() {
-    if (this.currencyGen == $chara) {
-    this.prestigeMulti = Math.floor(1 + ($memoryLeak.backgroundTotal/1000))
-    }
-  }
-  prestigeClean() {
-    this.amount = 0;
-    this.growth = 0;
-    this.upgradeMulti = 1;
-    document.getElementById(this.costRef).innerHTML = formatOutput(this.basecost);
-    document.getElementById(this.growthDisplay).innerHTML = formatOutput(this.growth*10);
-    document.getElementById(this.name).innerHTML = formatOutput(this.amount);
-  }
+function loadWithFile(dataArray) {
+  unloadGame();
+  //TODO refactor later to make pretty and for code reusability
+  //we just out here to make this work at all right now
+  //NOT PRETTY BUT CROSS-LANGUAGE TEMPLATING FROM PYTHON TO JS IS HARD, FRIEND
+  //currency constructor takes 9 values
+  let constructorArray = Object.values(dataArray[0]);
+  $memory = new currencies (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7],
+    constructorArray[8]);
+    addCurrenciesToArrays($memory);
+  constructorArray = Object.values(dataArray[1]);
+  $memoryLeak = new currencies (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7],
+    constructorArray[8]);
+    addCurrenciesToArrays($memoryLeak); 
+  constructorArray = Object.values(dataArray[2]);
+  $chara = new currencies (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7],
+    constructorArray[8]);
+    addCurrenciesToArrays($chara); 
+  //generator constructor takes 16 values
+  constructorArray = Object.values(dataArray[3]);
+  $keyboards = new generator (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7],
+    constructorArray[8], constructorArray[9],
+    constructorArray[10], constructorArray[11],
+    constructorArray[12], constructorArray[13],
+    constructorArray[14], constructorArray[15],);
+    addGeneratorToArrays($keyboards);
+  constructorArray = Object.values(dataArray[4]);
+  $autoclickers = new generator (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7],
+    constructorArray[8], constructorArray[9],
+    constructorArray[10], constructorArray[11],
+    constructorArray[12], constructorArray[13],
+    constructorArray[14], constructorArray[15],);
+    addGeneratorToArrays($autoclickers);
+  constructorArray = Object.values(dataArray[5]);
+  $macros = new generator (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7],
+    constructorArray[8], constructorArray[9],
+    constructorArray[10], constructorArray[11],
+    constructorArray[12], constructorArray[13],
+    constructorArray[14], constructorArray[15],);
+    addGeneratorToArrays($macros);
+  constructorArray = Object.values(dataArray[6]);
+  $monitors = new generator (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7],
+    constructorArray[8], constructorArray[9],
+    constructorArray[10], constructorArray[11],
+    constructorArray[12], constructorArray[13],
+    constructorArray[14], constructorArray[15],);
+    addGeneratorToArrays($monitors);
+  constructorArray = Object.values(dataArray[7]);
+  $summons = new generator (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7],
+    constructorArray[8], constructorArray[9],
+    constructorArray[10], constructorArray[11],
+    constructorArray[12], constructorArray[13],
+    constructorArray[14], constructorArray[15],);
+    addGeneratorToArrays($summons);
+  constructorArray = Object.values(dataArray[8]);
+  $tickertape = new generator (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7],
+    constructorArray[8], constructorArray[9],
+    constructorArray[10], constructorArray[11],
+    constructorArray[12], constructorArray[13],
+    constructorArray[14], constructorArray[15],);
+    addGeneratorToArrays($tickertape);
+  constructorArray = Object.values(dataArray[9]);
+  $etchasketch = new generator (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7],
+    constructorArray[8], constructorArray[9],
+    constructorArray[10], constructorArray[11],
+    constructorArray[12], constructorArray[13],
+    constructorArray[14], constructorArray[15],);
+    addGeneratorToArrays($etchasketch);
+  constructorArray = Object.values(dataArray[10]);
+  $floppydisc = new generator (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7],
+    constructorArray[8], constructorArray[9],
+    constructorArray[10], constructorArray[11],
+    constructorArray[12], constructorArray[13],
+    constructorArray[14], constructorArray[15],);
+    addGeneratorToArrays($floppydisc);
+  constructorArray = Object.values(dataArray[11]);
+  $ssd = new generator (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7],
+    constructorArray[8], constructorArray[9],
+    constructorArray[10], constructorArray[11],
+    constructorArray[12], constructorArray[13],
+    constructorArray[14], constructorArray[15],);
+    addGeneratorToArrays($ssd);
+  constructorArray = Object.values(dataArray[12]);
+  $faustdeal = new generator (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7],
+    constructorArray[8], constructorArray[9],
+    constructorArray[10], constructorArray[11],
+    constructorArray[12], constructorArray[13],
+    constructorArray[14], constructorArray[15],);
+    addGeneratorToArrays($faustdeal);
+  //upgrade constructors take 9 values
+  constructorArray = Object.values(dataArray[13]);
+  $gen11Upgrade = new upgrade (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7], constructorArray[8]);
+    addUpgradeToArrays($gen11Upgrade);
+  constructorArray = Object.values(dataArray[14]);
+  $gen21Upgrade = new upgrade (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7], constructorArray[8]);
+    addUpgradeToArrays($gen21Upgrade);
+  constructorArray = Object.values(dataArray[15]);
+  $gen31Upgrade = new upgrade (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7], constructorArray[8]);
+    addUpgradeToArrays($gen31Upgrade);
+  constructorArray = Object.values(dataArray[16]);
+  $gen41Upgrade = new upgrade (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7], constructorArray[8]);
+    addUpgradeToArrays($gen41Upgrade);
+  constructorArray = Object.values(dataArray[17]);
+  $gen51Upgrade = new upgrade (constructorArray[0], constructorArray[1], 
+    constructorArray[2], constructorArray[3],
+    constructorArray[4], constructorArray[5],
+    constructorArray[6], constructorArray[7], constructorArray[8]);
+    addUpgradeToArrays($gen51Upgrade);
+  activateButtons();
 }
 
+function addGeneratorToArrays(itemToAdd) {
+  saveItems.push(itemToAdd);
+  itemsToDraw.push(itemToAdd);
+  generators.push(itemToAdd);
+}
 
 function addUpgradeToArrays(itemToAdd) {
   saveItems.push(itemToAdd);
@@ -133,89 +327,95 @@ function addUpgradeToArrays(itemToAdd) {
   upgrades.push(itemToAdd);
 }
 
-//BALANCEPOINT
-let $memory = new currencies
-  ("memory", document.getElementById("memoryTotal"), 0, 0, false, null, null);
-  saveItems.push($memory); 
-let $memoryLeak = new currencies
-  ("memoryLeak", document.getElementById("memoryLeakTotal"), 0, 0, true, null, null);
-  saveItems.push($memoryLeak); 
-let $chara = new currencies
-  ("chara", document.getElementById("charaTotal"), 100, 0, true, $memory, document.getElementById("charaPrestige"));
-  saveItems.push($chara); 
+function addCurrenciesToArrays(itemToAdd) {
+  saveItems.push(itemToAdd);
+}
 
-// prestige layer 1 gen
-//BALANCEPOINT
-let $keyboards = new generator
-  ($chara, $chara, 100, 1.21, "keyboardsCost", "keyboards",
-    document.getElementById("gen1"), 1, "keyboardsGen", "descriptor1");
-let $autoclickers = new generator
-  ($chara, $chara, 2000, 1.31, "autoclickersCost", "autoclickers", 
-    document.getElementById("gen2"), 10, "autoclickersGen", "descriptor2");
-let $macros = new generator
-  ($chara, $chara, 40000, 1.41, "macrosCost", "macros", 
-    document.getElementById("gen3"), 100, "macrosGen", "descriptor3");
-let $monitors = new generator
-  ($chara, $chara, 800000, 1.51, "monitorsCost", "monitors", 
-    document.getElementById("gen4"), 1000, "monitorsGen", "descriptor4");
-let $summons = new generator
-  ($chara, $chara, 16000000, 1.61, "summonsCost", "summons", 
-    document.getElementById("gen5"), 10000, "summonsGen", "descriptor5");
+function activateButtons() {
+  document.getElementById($gen11Upgrade.buttonID).addEventListener(
+    "click", turnUpgradeOn.bind($gen11Upgrade));
+  document.getElementById($gen21Upgrade.buttonID).addEventListener(
+    "click", turnUpgradeOn.bind($gen21Upgrade));
+  document.getElementById($gen31Upgrade.buttonID).addEventListener(
+    "click", turnUpgradeOn.bind($gen31Upgrade));
+  document.getElementById($gen41Upgrade.buttonID).addEventListener(
+    "click", turnUpgradeOn.bind($gen41Upgrade));
+  document.getElementById($gen51Upgrade.buttonID).addEventListener(
+    "click", turnUpgradeOn.bind($gen51Upgrade));
+  
+  document.getElementById($keyboards.buttonID).addEventListener(
+    "click", buyOneGenerator.bind($keyboards));
+  document.getElementById($autoclickers.buttonID).addEventListener(
+    "click", buyOneGenerator.bind($autoclickers));
+  document.getElementById($macros.buttonID).addEventListener(
+    "click", buyOneGenerator.bind($macros));
+  document.getElementById($monitors.buttonID).addEventListener(
+    "click", buyOneGenerator.bind($monitors));
+  document.getElementById($summons.buttonID).addEventListener(
+    "click", buyOneGenerator.bind($summons));
 
-// BALANCEPOINT prestige layer 2 gen
-let $tickertape = new generator
-  ($memory, $memoryLeak, 100, 1.21, "tickertapeCost", "tickertapes", 
-    document.getElementById("gen6"), 1, "tickertapeGen", "descriptor6");
-let $etchasketch = new generator
-  ($memory, $memoryLeak, 4000, 1.31, "etchasketchCost", "etchasketchs", 
-    document.getElementById("gen7"), 10, "etchasketchGen", "descriptor7");
-let $floppydisc = new generator
-  ($memory, $memoryLeak, 40000, 1.41, "floppydiscCost", "floppydiscs", 
-    document.getElementById("gen8"), 100, "floppydiscGen", "descriptor8");
-let $ssd = new generator
-  ($memory, $memoryLeak, 800000, 1.51, "ssdCost", "ssds", 
-    document.getElementById("gen9"), 1000, "ssdGen", "descriptor9");
-let $faustdeal = new generator
-  ($memory, $memoryLeak, 16000000, 1.61, "faustdealCost", "faustdeals", 
-    document.getElementById("gen10"), 10000, "faustdealGen", "descriptor10");
+  document.getElementById($tickertape.buttonID).addEventListener(
+    "click", buyOneGenerator.bind($tickertape));
+  document.getElementById($etchasketch.buttonID).addEventListener(
+    "click", buyOneGenerator.bind($etchasketch));
+  document.getElementById($floppydisc.buttonID).addEventListener(
+    "click", buyOneGenerator.bind($floppydisc));
+  document.getElementById($ssd.buttonID).addEventListener(
+    "click", buyOneGenerator.bind($ssd));
+  document.getElementById($faustdeal.buttonID).addEventListener(
+    "click", buyOneGenerator.bind($faustdeal));
 
-let apip = 0;
-// prestige layer 3 gen, apip == api power
-let dots = 0;
-let vectors = 0;
-let nodes = 0;
-let graphs = 0;
-let codeCleanliness = 0;
+  document.getElementById("charaPrestige").addEventListener("click", prestige.bind($chara));
+}
 
-//upgrade layer one
-let $gen11Upgrade = new upgrade
-  ("upgradeGenOne1", $chara, 4000, $autoclickers, $keyboards,
-    document.getElementById("upgradeGenOne1"), document.getElementById("upgradeOneCost"));
-    addUpgradeToArrays($gen11Upgrade);
-let $gen21Upgrade = new upgrade
-  ("upgradeGenTwo1", $chara, 80000, $macros, $autoclickers,
-    document.getElementById("upgradeGenTwo1"), document.getElementById("upgradeTwoCost"));
-    addUpgradeToArrays($gen21Upgrade);
-let $gen31Upgrade = new upgrade
-  ("upgradeGenThree1", $chara, 1600000, $monitors, $macros,
-    document.getElementById("upgradeGenThree1"), document.getElementById("upgradeThreeCost"));
-    addUpgradeToArrays($gen31Upgrade);
-let $gen41Upgrade = new upgrade
-  ("upgradeGenFour1", $chara, 32000000, $summons, $monitors,
-    document.getElementById("upgradeGenFour1"), document.getElementById("upgradeFourCost"));
-    addUpgradeToArrays($gen41Upgrade);
-let $gen51Upgrade = new upgrade
-  ("upgradeGenFive1", $chara, 640000000, $keyboards, $summons,
-    document.getElementById("upgradeGenFive1"), document.getElementById("upgradeFiveCost"));
-    addUpgradeToArrays($gen51Upgrade);
+function deactivateButtons() {
+  document.getElementById($gen11Upgrade.buttonID).removeEventListener(
+    "click", turnUpgradeOn.bind($gen11Upgrade));
+  document.getElementById($gen21Upgrade.buttonID).removeEventListener(
+    "click", turnUpgradeOn.bind($gen21Upgrade));
+  document.getElementById($gen31Upgrade.buttonID).removeEventListener(
+    "click", turnUpgradeOn.bind($gen31Upgrade));
+  document.getElementById($gen41Upgrade.buttonID).removeEventListener(
+    "click", turnUpgradeOn.bind($gen41Upgrade));
+  document.getElementById($gen51Upgrade.buttonID).removeEventListener(
+    "click", turnUpgradeOn.bind($gen51Upgrade));
+  
+  document.getElementById($keyboards.buttonID).removeEventListener(
+    "click", buyOneGenerator.bind($keyboards));
+  document.getElementById($autoclickers.buttonID).removeEventListener(
+    "click", buyOneGenerator.bind($autoclickers));
+  document.getElementById($macros.buttonID).removeEventListener(
+    "click", buyOneGenerator.bind($macros));
+  document.getElementById($monitors.buttonID).removeEventListener(
+    "click", buyOneGenerator.bind($monitors));
+  document.getElementById($summons.buttonID).removeEventListener(
+    "click", buyOneGenerator.bind($summons));
 
-//button activations for upgrades
-$gen11Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen11Upgrade));
-$gen21Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen21Upgrade));
-$gen31Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen31Upgrade));
-$gen41Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen41Upgrade));
-$gen51Upgrade.button.addEventListener("click", turnUpgradeOn.bind($gen51Upgrade));
+  document.getElementById($tickertape.buttonID).removeEventListener(
+    "click", buyOneGenerator.bind($tickertape));
+  document.getElementById($etchasketch.buttonID).removeEventListener(
+    "click", buyOneGenerator.bind($etchasketch));
+  document.getElementById($floppydisc.buttonID).removeEventListener(
+    "click", buyOneGenerator.bind($floppydisc));
+  document.getElementById($ssd.buttonID).removeEventListener(
+    "click", buyOneGenerator.bind($ssd));
+  document.getElementById($faustdeal.buttonID).removeEventListener(
+    "click", buyOneGenerator.bind($faustdeal));
 
+  document.getElementById("charaPrestige").removeEventListener("click", prestige.bind($chara));
+}
+
+function unloadGame() {
+  saveItems = null;
+  saveItems = new Array();
+  itemsToDraw = null;
+  itemsToDraw = new Array();
+  generators = null;
+  generators = new Array();
+  upgrades = null;
+  upgrades = new Array();
+  deactivateButtons();
+}
 
 function turnUpgradeOn() {
   if (this.currencyBuy.value >= this.cost && this.on == false) {
@@ -230,8 +430,8 @@ function checkUnlocks() {
   itemsToDraw.forEach(checkToDraw);
   function checkToDraw(object) {
     if (object.currencyBuy.backgroundTotal >= object.show) {
-      object.button.style.visibility = "visible";
-      if (object.descriptor) {object.descriptor.style.visibility = "visible";}
+      document.getElementById(object.buttonID).style.visibility = "visible";
+      if (object.descriptor) {document.getElementById(object.descriptor).style.visibility = "visible";}
     }
   }
   let memoryUnlockGoal = Number(1E9);
@@ -261,20 +461,10 @@ function checkUnlocks() {
   }
 }
 
-$keyboards.button.addEventListener("click", buyOneGenerator.bind($keyboards));
-$autoclickers.button.addEventListener("click", buyOneGenerator.bind($autoclickers));
-$macros.button.addEventListener("click", buyOneGenerator.bind($macros));
-$monitors.button.addEventListener("click", buyOneGenerator.bind($monitors));
-$summons.button.addEventListener("click", buyOneGenerator.bind($summons));
-
-$tickertape.button.addEventListener("click", buyOneGenerator.bind($tickertape));
-$etchasketch.button.addEventListener("click", buyOneGenerator.bind($etchasketch));
-$floppydisc.button.addEventListener("click", buyOneGenerator.bind($floppydisc));
-$ssd.button.addEventListener("click", buyOneGenerator.bind($ssd));
-$faustdeal.button.addEventListener("click", buyOneGenerator.bind($faustdeal));
-
-document.getElementById("charaPrestige").addEventListener("click", prestige.bind($chara));
-
+//TODO chase down references to objects in code so that the
+//loadstate behaves the same with or without a savefile
+//there are some wrong assignments floating around
+//but i just did 5 straight hours of coding so im getting food now
 function buyOneGenerator() {
   if (this.currencyBuy.value >= this.realcost()) {
     this.currencyBuy.value = this.currencyBuy.value - this.realcost();
@@ -360,7 +550,8 @@ function loadFile() {
         if (debug) {
           console.log('before load: ', saveItems);
         }
-        parseSaveToUse(data);
+        //reloads all values in game
+        loadWithFile(data);
         if (debug) console.log('after load: ', saveItems);
         }
       else {
@@ -451,13 +642,13 @@ function Grow(){
   }
   //keep track of spendable money
   $chara.updateValue();
-  $chara.refHTML.innerHTML = formatOutput($chara.value);
+  document.getElementById($chara.refHTML).innerHTML = formatOutput($chara.value);
 
   $memory.updateValue();
-  $memory.refHTML.innerHTML = formatOutput($memory.value);
+  document.getElementById($memory.refHTML).innerHTML = formatOutput($memory.value);
 
   $memoryLeak.updateValue();
-  $memoryLeak.refHTML.innerHTML = formatOutput($memoryLeak.value);
+  document.getElementById($memoryLeak.refHTML).innerHTML = formatOutput($memoryLeak.value);
   //keep track of prestige amounts
   $chara.updatePrestige();
 }

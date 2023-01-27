@@ -1,15 +1,15 @@
 export default
 class currencies {
-    constructor(tier, refHTML, value, growth, unlocked, prestigeTarget, prestigeButton) {
+    constructor(tier, refHTML, value, growth, backgroundTotal, unlocked, prestigeAmount, prestigeTarget, prestigeButtonID) {
       this.tier = tier;
       this.refHTML = refHTML;
       this.value = value;
       this.growth = growth;
-      this.backgroundTotal = value;
+      this.backgroundTotal = backgroundTotal;
       this.unlocked = unlocked;
-      this.prestigeAmount = 0;
+      this.prestigeAmount = prestigeAmount;
       this.prestigeTarget = prestigeTarget;
-      this.prestigeButton = prestigeButton;
+      this.prestigeButtonID = prestigeButtonID;
     }
     updateValue() {
       this.value = this.value + this.growth;
@@ -26,7 +26,7 @@ class currencies {
         this.growth = 0;
         this.backgroundTotal = 100;
         this.prestigeAmount = 0;
-        this.prestigeButton.style.visibility = "hidden";
+        document.getElementById(this.prestigeButtonID).style.visibility = "hidden";
         return true;
       }
       return false;

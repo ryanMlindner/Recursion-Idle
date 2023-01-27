@@ -1,24 +1,24 @@
 import formatOutput from "/formatOutput.js";
 export default
 class upgrade {
-    constructor(name, currencyBuy, cost, effectStrength, effectTarget, button, costDisplay) {
+    constructor(name, currencyBuy, cost, effectStrength, effectTarget, buttonID, on, show, costDisplay) {
       this.name = name;
       this.currencyBuy = currencyBuy;
       this.cost = cost;
       this.effectStrength = effectStrength;
       this.effectTarget = effectTarget;
-      this.button = button;
-      this.on = false;
-      this.show = cost / 2;
+      this.buttonID = buttonID;
+      this.on = on;
+      this.show = show;
       this.costDisplay = costDisplay;
 
-      this.costDisplay.innerHTML = formatOutput(this.cost);
+      document.getElementById(this.costDisplay).innerHTML = formatOutput(this.cost);
     }
     turnOn() {
       this.on = true;
       this.updateMulti();
       this.effectTarget.updateGrowth();
-      this.button.style.backgroundColor = "green";
+      document.getElementById(this.buttonID).style.backgroundColor = "green";
     }
     updateMulti() {
       if(this.effectStrength.amount == 0) {this.effectTarget.upgradeMulti = 1;}
@@ -29,6 +29,6 @@ class upgrade {
       this.on = false;
       this.updateMulti();
       this.effectTarget.updateGrowth();
-      this.button.style.backgroundColor = "#111";
+      document.getElementById(this.buttonID).style.backgroundColor = "#111";
     }
   }
