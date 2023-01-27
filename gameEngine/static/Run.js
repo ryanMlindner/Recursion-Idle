@@ -330,10 +330,12 @@ function addCurrenciesToArrays(itemToAdd) {
   saveItems.push(itemToAdd);
 }
 
+//moved into class def
 function activateButtons() {
   document.getElementById("charaPrestige").addEventListener("click", prestige.bind($chara));
 }
 
+//TODO i dont think this actually works
 function deactivateButtons() {
   document.getElementById("charaPrestige").removeEventListener("click", prestige.bind($chara));
 }
