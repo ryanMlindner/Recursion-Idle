@@ -25,7 +25,7 @@ under my name for more python (technical/algorithmic) code WIP
 -MVP: idle game, API endpoints/security, databasing with mongoDB, OOP style file structure, 
 single authored full dev stack from server to UI (if very very small)
 
-#This build will not work. Why?
+# This build will not work. Why?
 
 -The aforementioned coder does not know how to put secrets on github, therefore the mongoDB connection
 will not work because you need a connection string which only I have. Good for security,
