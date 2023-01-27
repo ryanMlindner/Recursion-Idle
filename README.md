@@ -1,9 +1,12 @@
 # Recursion-Idle
 
 A repository of code to accomplish several things:
+
   -run an idle game
+  
   -showcase some important aspects of software design and best practices for use in
 resumes
+
   -coding is puzzles, and I like puzzles.
 
 # Reference for different aspects
