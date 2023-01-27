@@ -1,12 +1,15 @@
 # Recursion-Idle
 
-In the beginning, A coder wanted to get a job.
-There were many jobs available, but no proof that this coder could actually code anything.
-The coder knew how to fix this.
-The coder would make a project that they enjoyed, and use handy dandy tools to show proficiency.
-Totally gonna work.
+A repository of code to accomplish several things:
+  -run an idle game
+  -showcase some important aspects of software design and best practices for use in
+resumes
+  -coding is puzzles, and I like puzzles.
 
 # Reference for different aspects
+
+If, given the option, someone wants to look at this for certain coding practices but does not
+want to read every single file, please refer to the following:
 
 -python connection to database: dependencies.databaseconnection and dependencies.fileaccess
 
