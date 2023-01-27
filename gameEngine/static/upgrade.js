@@ -12,18 +12,26 @@ class upgrade {
       this.show = show;
       this.costDisplay = costDisplay;
 
+      this.attachButton();
       document.getElementById(this.costDisplay).innerHTML = formatOutput(this.cost);
     }
     turnOn() {
-      this.on = true;
-      this.updateMulti();
-      this.effectTarget.updateGrowth();
-      document.getElementById(this.buttonID).style.backgroundColor = "green";
+      if (this.currencyBuy.value >= this.cost && this.on == false) {
+        this.currencyBuy.value = this.currencyBuy.value - this.cost;
+        this.on = true;
+        this.updateMulti();
+        this.effectTarget.updateGrowth();
+        document.getElementById(this.buttonID).style.backgroundColor = "green";
+      }
     }
     updateMulti() {
       if(this.effectStrength.amount == 0) {this.effectTarget.upgradeMulti = 1;}
       else this.effectTarget.upgradeMulti = this.effectStrength.amount;
       this.effectTarget.updateGrowth();
+    }
+    attachButton() {
+      document.getElementById(this.buttonID).addEventListener(
+        "click", this.turnOn.bind(this));
     }
     prestigeClean() {
       this.on = false;

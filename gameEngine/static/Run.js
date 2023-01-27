@@ -46,8 +46,7 @@ let $memory,
     $gen31Upgrade,
     $gen41Upgrade,
     $gen51Upgrade;
-
-if (!playerFile) {loadWithoutFile()}
+onload:(loadWithoutFile());
 
 //tabs
 //main tabs
@@ -332,96 +331,51 @@ function addCurrenciesToArrays(itemToAdd) {
 }
 
 function activateButtons() {
-  document.getElementById($gen11Upgrade.buttonID).addEventListener(
-    "click", turnUpgradeOn.bind($gen11Upgrade));
-  document.getElementById($gen21Upgrade.buttonID).addEventListener(
-    "click", turnUpgradeOn.bind($gen21Upgrade));
-  document.getElementById($gen31Upgrade.buttonID).addEventListener(
-    "click", turnUpgradeOn.bind($gen31Upgrade));
-  document.getElementById($gen41Upgrade.buttonID).addEventListener(
-    "click", turnUpgradeOn.bind($gen41Upgrade));
-  document.getElementById($gen51Upgrade.buttonID).addEventListener(
-    "click", turnUpgradeOn.bind($gen51Upgrade));
-  
-  document.getElementById($keyboards.buttonID).addEventListener(
-    "click", buyOneGenerator.bind($keyboards));
-  document.getElementById($autoclickers.buttonID).addEventListener(
-    "click", buyOneGenerator.bind($autoclickers));
-  document.getElementById($macros.buttonID).addEventListener(
-    "click", buyOneGenerator.bind($macros));
-  document.getElementById($monitors.buttonID).addEventListener(
-    "click", buyOneGenerator.bind($monitors));
-  document.getElementById($summons.buttonID).addEventListener(
-    "click", buyOneGenerator.bind($summons));
-
-  document.getElementById($tickertape.buttonID).addEventListener(
-    "click", buyOneGenerator.bind($tickertape));
-  document.getElementById($etchasketch.buttonID).addEventListener(
-    "click", buyOneGenerator.bind($etchasketch));
-  document.getElementById($floppydisc.buttonID).addEventListener(
-    "click", buyOneGenerator.bind($floppydisc));
-  document.getElementById($ssd.buttonID).addEventListener(
-    "click", buyOneGenerator.bind($ssd));
-  document.getElementById($faustdeal.buttonID).addEventListener(
-    "click", buyOneGenerator.bind($faustdeal));
-
   document.getElementById("charaPrestige").addEventListener("click", prestige.bind($chara));
 }
 
 function deactivateButtons() {
-  document.getElementById($gen11Upgrade.buttonID).removeEventListener(
-    "click", turnUpgradeOn.bind($gen11Upgrade));
-  document.getElementById($gen21Upgrade.buttonID).removeEventListener(
-    "click", turnUpgradeOn.bind($gen21Upgrade));
-  document.getElementById($gen31Upgrade.buttonID).removeEventListener(
-    "click", turnUpgradeOn.bind($gen31Upgrade));
-  document.getElementById($gen41Upgrade.buttonID).removeEventListener(
-    "click", turnUpgradeOn.bind($gen41Upgrade));
-  document.getElementById($gen51Upgrade.buttonID).removeEventListener(
-    "click", turnUpgradeOn.bind($gen51Upgrade));
-  
-  document.getElementById($keyboards.buttonID).removeEventListener(
-    "click", buyOneGenerator.bind($keyboards));
-  document.getElementById($autoclickers.buttonID).removeEventListener(
-    "click", buyOneGenerator.bind($autoclickers));
-  document.getElementById($macros.buttonID).removeEventListener(
-    "click", buyOneGenerator.bind($macros));
-  document.getElementById($monitors.buttonID).removeEventListener(
-    "click", buyOneGenerator.bind($monitors));
-  document.getElementById($summons.buttonID).removeEventListener(
-    "click", buyOneGenerator.bind($summons));
-
-  document.getElementById($tickertape.buttonID).removeEventListener(
-    "click", buyOneGenerator.bind($tickertape));
-  document.getElementById($etchasketch.buttonID).removeEventListener(
-    "click", buyOneGenerator.bind($etchasketch));
-  document.getElementById($floppydisc.buttonID).removeEventListener(
-    "click", buyOneGenerator.bind($floppydisc));
-  document.getElementById($ssd.buttonID).removeEventListener(
-    "click", buyOneGenerator.bind($ssd));
-  document.getElementById($faustdeal.buttonID).removeEventListener(
-    "click", buyOneGenerator.bind($faustdeal));
-
   document.getElementById("charaPrestige").removeEventListener("click", prestige.bind($chara));
 }
 
+//TODO eventually I've got to come across a less sloppy way to do this
+//but for now if it works then MVP!
 function unloadGame() {
-  saveItems = null;
-  saveItems = new Array();
-  itemsToDraw = null;
-  itemsToDraw = new Array();
-  generators = null;
-  generators = new Array();
-  upgrades = null;
-  upgrades = new Array();
   deactivateButtons();
-}
-
-function turnUpgradeOn() {
-  if (this.currencyBuy.value >= this.cost && this.on == false) {
-    this.currencyBuy.value = this.currencyBuy.value - this.cost;
-    this.turnOn();
+  for (let index = 0; index < saveItems.length; index++) {
+    saveItems[index] = null; 
   }
+  for (let index = 0; index < itemsToDraw.length; index++) {
+    itemsToDraw[index] = null; 
+  }
+  for (let index = 0; index < generators.length; index++) {
+    generators[index] = null; 
+  }
+  for (let index = 0; index < upgrades.length; index++) {
+    upgrades[index] = null;
+  }
+  $memory = null;
+  $memoryLeak = null;
+  $chara = null;
+  $keyboards = null;
+  $autoclickers = null;
+  $macros = null;
+  $monitors = null;
+  $summons = null;
+  $tickertape = null;
+  $etchasketch = null;
+  $floppydisc = null;
+  $ssd = null;
+  $faustdeal = null;
+  $gen11Upgrade = null;
+  $gen21Upgrade = null;
+  $gen31Upgrade = null;
+  $gen41Upgrade = null;
+  $gen51Upgrade = null;
+  saveItems = new Array();
+  itemsToDraw = new Array();
+  generators = new Array();
+  upgrades = new Array();
 }
 
 //IMPORTANT FUNCTION for guiding gameplay
@@ -465,17 +419,6 @@ function checkUnlocks() {
 //loadstate behaves the same with or without a savefile
 //there are some wrong assignments floating around
 //but i just did 5 straight hours of coding so im getting food now
-function buyOneGenerator() {
-  if (this.currencyBuy.value >= this.realcost()) {
-    this.currencyBuy.value = this.currencyBuy.value - this.realcost();
-    this.amount++;
-    this.updateGrowth();
-    //update UI
-    document.getElementById(this.name).innerHTML = formatOutput(this.amount);
-    document.getElementById(this.costRef).innerHTML = formatOutput(this.realcost());
-    document.getElementById(this.growthDisplay).innerHTML = formatOutput(this.growth*10);
-  }
-}
 
 function prestige() {
   let currency = this;
@@ -626,14 +569,12 @@ function Grow(){
   }
   
   $chara.growth = 
-    $keyboards.growth + $autoclickers.growth + $macros.growth + $monitors.growth + $summons.growth;
+    $keyboards.growth + $autoclickers.growth + 
+    $macros.growth + $monitors.growth + $summons.growth;
 
   $memoryLeak.growth =
-    $tickertape.growth + $etchasketch.growth + $floppydisc.growth + $ssd.growth + $faustdeal.growth;
-
-  //backgroundtotal is used for unlocks
-  $chara.backgroundTotal = $chara.backgroundTotal + $chara.growth;
-  $memoryLeak.backgroundTotal = $memoryLeak.backgroundTotal + $memoryLeak.growth;
+    $tickertape.growth + $etchasketch.growth + 
+    $floppydisc.growth + $ssd.growth + $faustdeal.growth;
 
   checkUnlocks($chara);
   if ($memory.unlocked) {
@@ -642,13 +583,8 @@ function Grow(){
   }
   //keep track of spendable money
   $chara.updateValue();
-  document.getElementById($chara.refHTML).innerHTML = formatOutput($chara.value);
-
   $memory.updateValue();
-  document.getElementById($memory.refHTML).innerHTML = formatOutput($memory.value);
-
   $memoryLeak.updateValue();
-  document.getElementById($memoryLeak.refHTML).innerHTML = formatOutput($memoryLeak.value);
   //keep track of prestige amounts
   $chara.updatePrestige();
 }
