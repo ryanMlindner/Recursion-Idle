@@ -10,12 +10,17 @@ import formatOutput from "/formatOutput.js";
 //TODO easily templated tab control, not hyper important for now, this works
 import openGenTab from "/genTabControl.js";
 import openSuperTab from "/superTabControl.js";
+import deleteFile from "./databaseConnection/deleteFile.js";
+import loadFile from "./databaseConnection/loadFile.js";
+import saveExistingUser from "./databaseConnection/saveExistingUser.js";
+import saveNewUser from "./databaseConnection/saveNewUser.js";
+
+//raw JS does not support environment variables, so
+const DEBUG = true;
 
 //LOADING SCRIPT
 onload:(openGenTab('charaGen'));
 onload:(openSuperTab('gameTab'));
-let debug = true;
-let playerFile = false;
 //container to keep track of game progress
 let saveItems = new Array();
 //UI tutor container
@@ -116,10 +121,10 @@ function loadWithoutFile() {
   ($memory, $memoryLeak, null, 16000000, 1.61, "faustdealCost", "faustdeals", 
     "gen10", 10000, 0, 0, "faustdealGen", 1, 80000000, 1, "descriptor10");
     addGeneratorToArrays($faustdeal);
+  // prestige layer 3 is not implemented yet, commented out
   /*
   let apip = 0;
   // prestige layer 3 gen, apip == api power
-  //WIP
   let dots = 0;
   let vectors = 0;
   let nodes = 0;
@@ -154,163 +159,65 @@ function loadWithoutFile() {
 
 function loadWithFile(dataArray) {
   unloadGame();
-  //TODO refactor later to make pretty and for code reusability
-  //we just out here to make this work at all right now
-  //NOT PRETTY BUT CROSS-LANGUAGE TEMPLATING FROM PYTHON TO JS IS HARD, FRIEND
-  //currency constructor takes 9 values
-  let constructorArray = Object.values(dataArray[0]);
-  $memory = new currencies (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7],
-    constructorArray[8]);
+  if (DEBUG) {
+  console.log(saveItems);
+  }
+  //helper function to look inside each object in the savestring array
+  function getFormattedConstructorString(saveArrayIndex) {
+    let constructorArray = Object.values(saveArrayIndex);
+    let constructorString = '';
+    for (let index = 0; index < constructorArray.length; index++) {
+      constructorString+= constructorArray[index];
+    }
+    return constructorString;
+  }
+
+  //currency constructors
+  $memory = new currencies (getFormattedConstructorString(dataArray[0]));
     addCurrenciesToArrays($memory);
-  constructorArray = Object.values(dataArray[1]);
-  $memoryLeak = new currencies (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7],
-    constructorArray[8]);
+  $memoryLeak = new currencies (getFormattedConstructorString(dataArray[1]));
     addCurrenciesToArrays($memoryLeak); 
-  constructorArray = Object.values(dataArray[2]);
-  $chara = new currencies (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7],
-    constructorArray[8]);
+  $chara = new currencies (getFormattedConstructorString(dataArray[2]));
     addCurrenciesToArrays($chara); 
-  //generator constructor takes 16 values
-  constructorArray = Object.values(dataArray[3]);
-  $keyboards = new generator (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7],
-    constructorArray[8], constructorArray[9],
-    constructorArray[10], constructorArray[11],
-    constructorArray[12], constructorArray[13],
-    constructorArray[14], constructorArray[15],);
+  
+  //generator constructors
+  $keyboards = new generator (getFormattedConstructorString(dataArray[3]));
     addGeneratorToArrays($keyboards);
-  constructorArray = Object.values(dataArray[4]);
-  $autoclickers = new generator (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7],
-    constructorArray[8], constructorArray[9],
-    constructorArray[10], constructorArray[11],
-    constructorArray[12], constructorArray[13],
-    constructorArray[14], constructorArray[15],);
+  $autoclickers = new generator (getFormattedConstructorString(dataArray[4]));
     addGeneratorToArrays($autoclickers);
-  constructorArray = Object.values(dataArray[5]);
-  $macros = new generator (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7],
-    constructorArray[8], constructorArray[9],
-    constructorArray[10], constructorArray[11],
-    constructorArray[12], constructorArray[13],
-    constructorArray[14], constructorArray[15],);
+  $macros = new generator (getFormattedConstructorString(dataArray[5]));
     addGeneratorToArrays($macros);
-  constructorArray = Object.values(dataArray[6]);
-  $monitors = new generator (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7],
-    constructorArray[8], constructorArray[9],
-    constructorArray[10], constructorArray[11],
-    constructorArray[12], constructorArray[13],
-    constructorArray[14], constructorArray[15],);
+  $monitors = new generator (getFormattedConstructorString(dataArray[6]));
     addGeneratorToArrays($monitors);
-  constructorArray = Object.values(dataArray[7]);
-  $summons = new generator (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7],
-    constructorArray[8], constructorArray[9],
-    constructorArray[10], constructorArray[11],
-    constructorArray[12], constructorArray[13],
-    constructorArray[14], constructorArray[15],);
+  $summons = new generator (getFormattedConstructorString(dataArray[7]));
     addGeneratorToArrays($summons);
-  constructorArray = Object.values(dataArray[8]);
-  $tickertape = new generator (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7],
-    constructorArray[8], constructorArray[9],
-    constructorArray[10], constructorArray[11],
-    constructorArray[12], constructorArray[13],
-    constructorArray[14], constructorArray[15],);
+  $tickertape = new generator (getFormattedConstructorString(dataArray[8]));
     addGeneratorToArrays($tickertape);
-  constructorArray = Object.values(dataArray[9]);
-  $etchasketch = new generator (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7],
-    constructorArray[8], constructorArray[9],
-    constructorArray[10], constructorArray[11],
-    constructorArray[12], constructorArray[13],
-    constructorArray[14], constructorArray[15],);
+  $etchasketch = new generator (getFormattedConstructorString(dataArray[9]));
     addGeneratorToArrays($etchasketch);
-  constructorArray = Object.values(dataArray[10]);
-  $floppydisc = new generator (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7],
-    constructorArray[8], constructorArray[9],
-    constructorArray[10], constructorArray[11],
-    constructorArray[12], constructorArray[13],
-    constructorArray[14], constructorArray[15],);
+  $floppydisc = new generator (getFormattedConstructorString(dataArray[10]));
     addGeneratorToArrays($floppydisc);
-  constructorArray = Object.values(dataArray[11]);
-  $ssd = new generator (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7],
-    constructorArray[8], constructorArray[9],
-    constructorArray[10], constructorArray[11],
-    constructorArray[12], constructorArray[13],
-    constructorArray[14], constructorArray[15],);
+  $ssd = new generator (getFormattedConstructorString(dataArray[11]));
     addGeneratorToArrays($ssd);
-  constructorArray = Object.values(dataArray[12]);
-  $faustdeal = new generator (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7],
-    constructorArray[8], constructorArray[9],
-    constructorArray[10], constructorArray[11],
-    constructorArray[12], constructorArray[13],
-    constructorArray[14], constructorArray[15],);
+  $faustdeal = new generator (getFormattedConstructorString(dataArray[12]));
     addGeneratorToArrays($faustdeal);
-  //upgrade constructors take 9 values
-  constructorArray = Object.values(dataArray[13]);
-  $gen11Upgrade = new upgrade (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7], constructorArray[8]);
+
+  //upgrade constructors
+  $gen11Upgrade = new upgrade (getFormattedConstructorString(dataArray[13]));
     addUpgradeToArrays($gen11Upgrade);
-  constructorArray = Object.values(dataArray[14]);
-  $gen21Upgrade = new upgrade (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7], constructorArray[8]);
+  $gen21Upgrade = new upgrade (getFormattedConstructorString(dataArray[14]));
     addUpgradeToArrays($gen21Upgrade);
-  constructorArray = Object.values(dataArray[15]);
-  $gen31Upgrade = new upgrade (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7], constructorArray[8]);
+  $gen31Upgrade = new upgrade (getFormattedConstructorString(dataArray[15]));
     addUpgradeToArrays($gen31Upgrade);
-  constructorArray = Object.values(dataArray[16]);
-  $gen41Upgrade = new upgrade (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7], constructorArray[8]);
+  $gen41Upgrade = new upgrade (getFormattedConstructorString(dataArray[16]));
     addUpgradeToArrays($gen41Upgrade);
-  constructorArray = Object.values(dataArray[17]);
-  $gen51Upgrade = new upgrade (constructorArray[0], constructorArray[1], 
-    constructorArray[2], constructorArray[3],
-    constructorArray[4], constructorArray[5],
-    constructorArray[6], constructorArray[7], constructorArray[8]);
+  $gen51Upgrade = new upgrade (getFormattedConstructorString(dataArray[17]));
     addUpgradeToArrays($gen51Upgrade);
+  
+  if (DEBUG) {
+    console.log(saveItems);
+    }
+  
   activateButtons();
 }
 
@@ -419,8 +326,6 @@ function checkUnlocks() {
 
 //TODO chase down references to objects in code so that the
 //loadstate behaves the same with or without a savefile
-//there are some wrong assignments floating around
-//but i just did 5 straight hours of coding so im getting food now
 
 function prestige() {
   let currency = this;
@@ -435,122 +340,61 @@ function prestige() {
 }
 
 //SAVESTATE work
-let userName = '';
-let safeInput = false;
-let serverMessage = 'no response';
 
-document.getElementById("saveNewUser").addEventListener("click", saveNewUser.bind());
-function saveNewUser() {
-  let saveItemsObjectNotated = bundleSavetoSend();
-  if (safeInput) {
-    fetch('/dbSave', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: saveItemsObjectNotated,
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      serverMessage = 'server response: ' + data;
-      updateServerMessage(serverMessage);
-    })
-  }
+document.getElementById("saveNewUser").addEventListener("click", saveNewOp.bind());
+function saveNewOp() {
+  let userName = document.getElementById("username").value;
+  let saveItemsObjectNotated = bundleSavetoSend(userName);
+  saveNewUser(saveItemsObjectNotated, userName);
 }
 
-document.getElementById("saveExistingUser").addEventListener("click", saveExistingUser.bind());
-function saveExistingUser() {
-  let saveItemsObjectNotated = bundleSavetoSend();
-  if (safeInput) {
-    fetch('/dbSave', {
-      method: 'PUT',
-      headers: {'Content-Type': 'application/json'},
-      body: saveItemsObjectNotated,
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      serverMessage = 'server response: ' + data;
-      updateServerMessage(serverMessage);
-    })
-  }
-  else return false;
+document.getElementById("saveExistingUser").addEventListener("click", saveExistingOp.bind());
+function saveExistingOp() {
+  let userName = document.getElementById("username").value;
+  let saveItemsObjectNotated = bundleSavetoSend(userName);
+  saveExistingUser(saveItemsObjectNotated, userName);
 }
 
-document.getElementById("loadFile").addEventListener("click", loadFile.bind());
-function loadFile() {
-  checkUsername();
-  if (safeInput) {
-    fetch('/dbLoad', {
-      method: "POST",
-      body: JSON.stringify(userName),
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    })
-    .then((response) => response.json()
-    )
-    .then((data) => {
-      if (data != 'savefile not found') {
-        serverMessage = 'file found, loaded';
-        updateServerMessage(serverMessage);
-        playerFile = true;
-        if (debug) {
-          console.log('before load: ', saveItems);
-        }
-        //reloads all values in game
-        loadWithFile(data);
-        if (debug) console.log('after load: ', saveItems);
-        }
-      else {
-        serverMessage = 'server response: ' + data;
-        updateServerMessage(serverMessage);
-      }
-    })
+document.getElementById("loadFile").addEventListener("click", loadOp.bind());
+function loadOp() {
+  let userName = document.getElementById("username").value;
+  //TODO async required, i dont know enough right now
+  function resolveAfterDatabaseResponse() {
+    return new Promise(resolve => {
+      resolve = loadFile(userName);
+    });
   }
+  async function getSaveArray() {
+    let saveArray = await resolveAfterDatabaseResponse();
+    //this is still never called but my brain hurts
+    loadWithFile(saveArray);
+  }
+  getSaveArray();
 }
 
-document.getElementById("deleteFile").addEventListener("click", deleteFile.bind());
-function deleteFile() {
-  checkUsername();
-  if (safeInput) {
-    fetch('/dbSave', {
-      method: "DELETE",
-      body: JSON.stringify(userName),
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      serverMessage = 'server response: ' + data;
-      updateServerMessage(serverMessage);
-    })
-  }
-}
-
-//updates username value if no illegal characters are present
-function checkUsername() {
-  userName = document.getElementById("username").value;
-  let pattern = /^[A-Za-z0-9]*$/;
-  let safe = pattern.test(userName); //only allows alphanumeric characters
-  if (safe && userName != '') safeInput = true;
-  else {
-    apiStatusElement.innerHtml = 'unsafe user input';
-  }
+document.getElementById("deleteFile").addEventListener("click", deleteOp.bind());
+function deleteOp() {
+  let userName = document.getElementById("username").value;
+  deleteFile(userName);
 }
 
 //packages username + savestring into a JSON string to send
-function bundleSavetoSend() {
-  checkUsername();
-  if (safeInput) {
-    saveItems.unshift(userName);
-    let saveItemsObjectNotated = JSON.stringify(saveItems);
-    saveItems.shift(userName);
-    return saveItemsObjectNotated;
-  }
-  else return false;
+function bundleSavetoSend(userName) {
+  saveItems.unshift(userName);
+  let saveItemsObjectNotated = JSON.stringify(saveItems);
+  saveItems.shift(userName);
+  return saveItemsObjectNotated;
 }
 
-function updateServerMessage(message) {
-  document.getElementById("apiStatus").innerHTML = message;
+function updateGeneratorGrowth(currencyTarget) {
+  let growthValue = 0;
+  generators.forEach(growthUpdateCheck)
+  function growthUpdateCheck(gen) {
+    if (gen.currencyGen == currencyTarget) {
+      growthValue = growthValue + gen.growth; 
+    }
+  }
+  return growthValue;
 }
 
 //game driver
@@ -569,14 +413,9 @@ function Grow(){
       upgrade.updateMulti();
     }
   }
-  
-  $chara.growth = 
-    $keyboards.growth + $autoclickers.growth + 
-    $macros.growth + $monitors.growth + $summons.growth;
 
-  $memoryLeak.growth =
-    $tickertape.growth + $etchasketch.growth + 
-    $floppydisc.growth + $ssd.growth + $faustdeal.growth;
+  $chara.growth = updateGeneratorGrowth($chara);
+  $memoryLeak.growth = updateGeneratorGrowth($memoryLeak)
 
   checkUnlocks($chara);
   if ($memory.unlocked) {
