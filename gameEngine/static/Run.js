@@ -15,6 +15,9 @@ import loadFile from "./databaseConnection/loadFile.js";
 import saveExistingUser from "./databaseConnection/saveExistingUser.js";
 import saveNewUser from "./databaseConnection/saveNewUser.js";
 
+//raw JS does not support environment variables, so
+const DEBUG = true;
+
 //LOADING SCRIPT
 onload:(openGenTab('charaGen'));
 onload:(openSuperTab('gameTab'));
@@ -156,6 +159,9 @@ function loadWithoutFile() {
 
 function loadWithFile(dataArray) {
   unloadGame();
+  if (DEBUG) {
+  console.log(saveItems);
+  }
   //helper function to look inside each object in the savestring array
   function getFormattedConstructorString(saveArrayIndex) {
     let constructorArray = Object.values(saveArrayIndex);
@@ -207,6 +213,11 @@ function loadWithFile(dataArray) {
     addUpgradeToArrays($gen41Upgrade);
   $gen51Upgrade = new upgrade (getFormattedConstructorString(dataArray[17]));
     addUpgradeToArrays($gen51Upgrade);
+  
+  if (DEBUG) {
+    console.log(saveItems);
+    }
+  
   activateButtons();
 }
 
@@ -345,13 +356,20 @@ function saveExistingOp() {
 }
 
 document.getElementById("loadFile").addEventListener("click", loadOp.bind());
-async function loadOp() {
+function loadOp() {
   let userName = document.getElementById("username").value;
-  function resolveLoadResponse(userName) {
-    return new Promise(resolve => {resolve = loadFile(userName)})
+  //TODO async required, i dont know enough right now
+  function resolveAfterDatabaseResponse() {
+    return new Promise(resolve => {
+      resolve = loadFile(userName);
+    });
   }
-  let saveArray = await resolveLoadResponse(userName);
-  loadWithFile(saveArray);
+  async function getSaveArray() {
+    let saveArray = await resolveAfterDatabaseResponse();
+    //this is still never called but my brain hurts
+    loadWithFile(saveArray);
+  }
+  getSaveArray();
 }
 
 document.getElementById("deleteFile").addEventListener("click", deleteOp.bind());
