@@ -415,7 +415,7 @@ function Grow(){
   }
 
   $chara.growth = updateGeneratorGrowth($chara);
-  $memoryLeak.growth = updateGeneratorGrowth($memoryLeak)
+  $memoryLeak.growth = updateGeneratorGrowth($memoryLeak);
 
   checkUnlocks($chara);
   if ($memory.unlocked) {
