@@ -10,6 +10,10 @@ import formatOutput from "/formatOutput.js";
 //TODO easily templated tab control, not hyper important for now, this works
 import openGenTab from "/genTabControl.js";
 import openSuperTab from "/superTabControl.js";
+import deleteFile from "./databaseConnection/deleteFile.js";
+import loadFile from "./databaseConnection/loadFile.js";
+import saveExistingUser from "./databaseConnection/saveExistingUser.js";
+import saveNewUser from "./databaseConnection/saveNewUser.js";
 
 //LOADING SCRIPT
 onload:(openGenTab('charaGen'));
@@ -419,8 +423,6 @@ function checkUnlocks() {
 
 //TODO chase down references to objects in code so that the
 //loadstate behaves the same with or without a savefile
-//there are some wrong assignments floating around
-//but i just did 5 straight hours of coding so im getting food now
 
 function prestige() {
   let currency = this;
@@ -435,122 +437,54 @@ function prestige() {
 }
 
 //SAVESTATE work
-let userName = '';
-let safeInput = false;
-let serverMessage = 'no response';
 
-document.getElementById("saveNewUser").addEventListener("click", saveNewUser.bind());
-function saveNewUser() {
-  let saveItemsObjectNotated = bundleSavetoSend();
-  if (safeInput) {
-    fetch('/dbSave', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: saveItemsObjectNotated,
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      serverMessage = 'server response: ' + data;
-      updateServerMessage(serverMessage);
-    })
-  }
+document.getElementById("saveNewUser").addEventListener("click", saveNewOp.bind());
+function saveNewOp() {
+  let userName = document.getElementById("username").value;
+  let saveItemsObjectNotated = bundleSavetoSend(userName);
+  saveNewUser(saveItemsObjectNotated, userName);
 }
 
-document.getElementById("saveExistingUser").addEventListener("click", saveExistingUser.bind());
-function saveExistingUser() {
-  let saveItemsObjectNotated = bundleSavetoSend();
-  if (safeInput) {
-    fetch('/dbSave', {
-      method: 'PUT',
-      headers: {'Content-Type': 'application/json'},
-      body: saveItemsObjectNotated,
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      serverMessage = 'server response: ' + data;
-      updateServerMessage(serverMessage);
-    })
-  }
-  else return false;
+document.getElementById("saveExistingUser").addEventListener("click", saveExistingOp.bind());
+function saveExistingOp() {
+  let userName = document.getElementById("username").value;
+  let saveItemsObjectNotated = bundleSavetoSend(userName);
+  saveExistingUser(saveItemsObjectNotated, userName);
 }
 
-document.getElementById("loadFile").addEventListener("click", loadFile.bind());
-function loadFile() {
-  checkUsername();
-  if (safeInput) {
-    fetch('/dbLoad', {
-      method: "POST",
-      body: JSON.stringify(userName),
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    })
-    .then((response) => response.json()
-    )
-    .then((data) => {
-      if (data != 'savefile not found') {
-        serverMessage = 'file found, loaded';
-        updateServerMessage(serverMessage);
-        playerFile = true;
-        if (debug) {
-          console.log('before load: ', saveItems);
-        }
-        //reloads all values in game
-        loadWithFile(data);
-        if (debug) console.log('after load: ', saveItems);
-        }
-      else {
-        serverMessage = 'server response: ' + data;
-        updateServerMessage(serverMessage);
-      }
-    })
+document.getElementById("loadFile").addEventListener("click", loadOp.bind());
+async function loadOp() {
+  let userName = document.getElementById("username").value;
+  function resolveLoadResponse(userName) {
+    return new Promise(resolve => {resolve = loadFile(userName)})
   }
+  let saveArray = await resolveLoadResponse(userName);
+  loadWithFile(saveArray);
 }
 
-document.getElementById("deleteFile").addEventListener("click", deleteFile.bind());
-function deleteFile() {
-  checkUsername();
-  if (safeInput) {
-    fetch('/dbSave', {
-      method: "DELETE",
-      body: JSON.stringify(userName),
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    })
-    .then((response) => response.json())
-    .then((data) => {
-      serverMessage = 'server response: ' + data;
-      updateServerMessage(serverMessage);
-    })
-  }
-}
-
-//updates username value if no illegal characters are present
-function checkUsername() {
-  userName = document.getElementById("username").value;
-  let pattern = /^[A-Za-z0-9]*$/;
-  let safe = pattern.test(userName); //only allows alphanumeric characters
-  if (safe && userName != '') safeInput = true;
-  else {
-    apiStatusElement.innerHtml = 'unsafe user input';
-  }
+document.getElementById("deleteFile").addEventListener("click", deleteOp.bind());
+function deleteOp() {
+  let userName = document.getElementById("username").value;
+  deleteFile(userName);
 }
 
 //packages username + savestring into a JSON string to send
-function bundleSavetoSend() {
-  checkUsername();
-  if (safeInput) {
-    saveItems.unshift(userName);
-    let saveItemsObjectNotated = JSON.stringify(saveItems);
-    saveItems.shift(userName);
-    return saveItemsObjectNotated;
-  }
-  else return false;
+function bundleSavetoSend(userName) {
+  saveItems.unshift(userName);
+  let saveItemsObjectNotated = JSON.stringify(saveItems);
+  saveItems.shift(userName);
+  return saveItemsObjectNotated;
 }
 
-function updateServerMessage(message) {
-  document.getElementById("apiStatus").innerHTML = message;
+function updateGeneratorGrowth(currencyTarget) {
+  let growthValue = 0;
+  generators.forEach(growthUpdateCheck)
+  function growthUpdateCheck(gen) {
+    if (gen.currencyGen == currencyTarget) {
+      growthValue = growthValue + gen.growth; 
+    }
+  }
+  return growthValue;
 }
 
 //game driver
@@ -569,14 +503,9 @@ function Grow(){
       upgrade.updateMulti();
     }
   }
-  
-  $chara.growth = 
-    $keyboards.growth + $autoclickers.growth + 
-    $macros.growth + $monitors.growth + $summons.growth;
 
-  $memoryLeak.growth =
-    $tickertape.growth + $etchasketch.growth + 
-    $floppydisc.growth + $ssd.growth + $faustdeal.growth;
+  $chara.growth = updateGeneratorGrowth($chara);
+  $memoryLeak.growth = updateGeneratorGrowth($memoryLeak)
 
   checkUnlocks($chara);
   if ($memory.unlocked) {
