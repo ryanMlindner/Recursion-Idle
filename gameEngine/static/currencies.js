@@ -21,7 +21,7 @@ class currencies {
       this.prestigeAmount = Math.floor(Math.sqrt(this.backgroundTotal / 1E9)) * 100;
     }
     prestige() {
-      if (this.prestigeAmount != 0) {
+      if (this.prestigeAmount !== 0) {
         this.prestigeTarget.value = this.prestigeTarget.value + this.prestigeAmount;
         this.value = 100;
         this.growth = 0;

@@ -14,6 +14,7 @@ import deleteFile from "./databaseConnection/deleteFile.js";
 import loadFile from "./databaseConnection/loadFile.js";
 import saveExistingUser from "./databaseConnection/saveExistingUser.js";
 import saveNewUser from "./databaseConnection/saveNewUser.js";
+import saveContainer from "/saveContainer.js";
 
 //raw JS does not support environment variables, so
 const DEBUG = true;
@@ -21,6 +22,8 @@ const DEBUG = true;
 //LOADING SCRIPT
 onload:(openGenTab('charaGen'));
 onload:(openSuperTab('gameTab'));
+//handy dandy container class for recieving async saves
+let container = new saveContainer(null, false);
 //container to keep track of game progress
 let saveItems = new Array();
 //UI tutor container
@@ -162,56 +165,47 @@ function loadWithFile(dataArray) {
   if (DEBUG) {
   console.log(saveItems);
   }
-  //helper function to look inside each object in the savestring array
-  function getFormattedConstructorString(saveArrayIndex) {
-    let constructorArray = Object.values(saveArrayIndex);
-    let constructorString = '';
-    for (let index = 0; index < constructorArray.length; index++) {
-      constructorString+= constructorArray[index];
-    }
-    return constructorString;
-  }
 
-  //currency constructors
-  $memory = new currencies (getFormattedConstructorString(dataArray[0]));
+  //currency 
+  $memory = dataArray[0];
     addCurrenciesToArrays($memory);
-  $memoryLeak = new currencies (getFormattedConstructorString(dataArray[1]));
+  $memoryLeak = dataArray[1];
     addCurrenciesToArrays($memoryLeak); 
-  $chara = new currencies (getFormattedConstructorString(dataArray[2]));
+  $chara = dataArray[2];
     addCurrenciesToArrays($chara); 
   
-  //generator constructors
-  $keyboards = new generator (getFormattedConstructorString(dataArray[3]));
+  //generators
+  $keyboards = dataArray[3];
     addGeneratorToArrays($keyboards);
-  $autoclickers = new generator (getFormattedConstructorString(dataArray[4]));
+  $autoclickers = dataArray[4];
     addGeneratorToArrays($autoclickers);
-  $macros = new generator (getFormattedConstructorString(dataArray[5]));
+  $macros = dataArray[5];
     addGeneratorToArrays($macros);
-  $monitors = new generator (getFormattedConstructorString(dataArray[6]));
+  $monitors = dataArray[6];
     addGeneratorToArrays($monitors);
-  $summons = new generator (getFormattedConstructorString(dataArray[7]));
+  $summons = dataArray[7];
     addGeneratorToArrays($summons);
-  $tickertape = new generator (getFormattedConstructorString(dataArray[8]));
+  $tickertape = dataArray[8];
     addGeneratorToArrays($tickertape);
-  $etchasketch = new generator (getFormattedConstructorString(dataArray[9]));
+  $etchasketch = dataArray[9];
     addGeneratorToArrays($etchasketch);
-  $floppydisc = new generator (getFormattedConstructorString(dataArray[10]));
+  $floppydisc = dataArray[10];
     addGeneratorToArrays($floppydisc);
-  $ssd = new generator (getFormattedConstructorString(dataArray[11]));
+  $ssd = dataArray[11];
     addGeneratorToArrays($ssd);
-  $faustdeal = new generator (getFormattedConstructorString(dataArray[12]));
+  $faustdeal = dataArray[12];
     addGeneratorToArrays($faustdeal);
 
-  //upgrade constructors
-  $gen11Upgrade = new upgrade (getFormattedConstructorString(dataArray[13]));
+  //upgrades
+  $gen11Upgrade = dataArray[13];
     addUpgradeToArrays($gen11Upgrade);
-  $gen21Upgrade = new upgrade (getFormattedConstructorString(dataArray[14]));
+  $gen21Upgrade = dataArray[14];
     addUpgradeToArrays($gen21Upgrade);
-  $gen31Upgrade = new upgrade (getFormattedConstructorString(dataArray[15]));
+  $gen31Upgrade = dataArray[15];
     addUpgradeToArrays($gen31Upgrade);
-  $gen41Upgrade = new upgrade (getFormattedConstructorString(dataArray[16]));
+  $gen41Upgrade = dataArray[16];
     addUpgradeToArrays($gen41Upgrade);
-  $gen51Upgrade = new upgrade (getFormattedConstructorString(dataArray[17]));
+  $gen51Upgrade = dataArray[17];
     addUpgradeToArrays($gen51Upgrade);
   
   if (DEBUG) {
@@ -339,6 +333,17 @@ function prestige() {
   }
 }
 
+function updateGeneratorGrowth(currencyTarget) {
+  let growthValue = 0;
+  generators.forEach(growthUpdateCheck)
+  function growthUpdateCheck(gen) {
+    if (gen.currencyGen == currencyTarget) {
+      growthValue = growthValue + gen.growth; 
+    }
+  }
+  return growthValue;
+}
+
 //SAVESTATE work
 
 document.getElementById("saveNewUser").addEventListener("click", saveNewOp.bind());
@@ -358,18 +363,8 @@ function saveExistingOp() {
 document.getElementById("loadFile").addEventListener("click", loadOp.bind());
 function loadOp() {
   let userName = document.getElementById("username").value;
-  //TODO async required, i dont know enough right now
-  function resolveAfterDatabaseResponse() {
-    return new Promise(resolve => {
-      resolve = loadFile(userName);
-    });
-  }
-  async function getSaveArray() {
-    let saveArray = await resolveAfterDatabaseResponse();
-    //this is still never called but my brain hurts
-    loadWithFile(saveArray);
-  }
-  getSaveArray();
+  container.empty();
+  loadFile(userName, container);
 }
 
 document.getElementById("deleteFile").addEventListener("click", deleteOp.bind());
@@ -386,20 +381,15 @@ function bundleSavetoSend(userName) {
   return saveItemsObjectNotated;
 }
 
-function updateGeneratorGrowth(currencyTarget) {
-  let growthValue = 0;
-  generators.forEach(growthUpdateCheck)
-  function growthUpdateCheck(gen) {
-    if (gen.currencyGen == currencyTarget) {
-      growthValue = growthValue + gen.growth; 
-    }
-  }
-  return growthValue;
-}
-
 //game driver
 setInterval(Grow, 100);
 function Grow(){
+
+  //check to load a save
+  if (container.checkStatus()) {
+    let newSaveData = container.getSaveDataAndEmpty();
+    loadWithFile(newSaveData);
+  }
 
   generators.forEach(updateAll)
   function updateAll(gen) {
