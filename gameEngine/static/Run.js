@@ -9,6 +9,7 @@ import updateGenGrowth from "./updateGenGrowth.js";
 import buyOneGenerator from "./buyOneGenerator.js";
 import updateMulti from "./updateMulti.js";
 import updateValue from "./updateValue.js";
+import updateGenUI from "./updateGenUI.js";
 //TODO easily templated tab control, not hyper important for now, this works
 import openGenTab from "./genTabControl.js";
 import openSuperTab from "./superTabControl.js";
@@ -167,6 +168,10 @@ function loadWithoutFile() {
     prestigeMulti: 1, descriptor: "descriptor10"};
   addGeneratorToArrays($faustdeal);
 
+  generators.forEach(updateUI);
+  function updateUI(gen) {
+    updateGenUI(gen);
+  }
   //upgrade layer one
   $gen11Upgrade = {name: "upgradeGenOne1", currencyBuy: $chara, cost: 4000, 
     effectStrength: $autoclickers, effectTarget: $keyboards, 
@@ -231,6 +236,11 @@ function loadWithFile(dataArray) {
     addGeneratorToArrays($ssd);
   $faustdeal = dataArray[12];
     addGeneratorToArrays($faustdeal);
+  
+  generators.forEach(updateUI);
+  function updateUI(gen) {
+    updateGenUI(gen);
+  }
 
   //upgrades
   $gen11Upgrade = dataArray[13];
@@ -247,7 +257,6 @@ function loadWithFile(dataArray) {
   if (DEBUG) {
     console.log(saveItems);
     }
-  
   activateButtons();
 }
 
@@ -268,6 +277,7 @@ function addCurrenciesToArrays(itemToAdd) {
   currencies.push(itemToAdd);
 }
 
+//TODO buttons dont work on load
 function activateButtons() {
   saveItems.forEach(attachButton);
   function attachButton(target) {
@@ -284,27 +294,14 @@ function activateButtons() {
   //document.getElementById("charaPrestige").addEventListener("click", prestige.bind($chara));
 }
 
-//TODO i dont think this actually works
-function deactivateButtons() {
-  saveItems.forEach(detachButton);
-  function detachButton(target) {
-    if (target.currencyGen) {
-        document.getElementById(target.buttonID).removeEventListener(
-            "click", target.buyOneGenerator.bind(target));
-    }
-    else if (target.effectStrength) {
-        document.getElementById(target.buttonID).removeEventListener(
-            "click", target.turnOn.bind(target));
-    }
-  }
+
   //refactor
   //document.getElementById("charaPrestige").removeEventListener("click", prestige.bind($chara));
-}
+
 
 //TODO eventually I've got to come across a less sloppy way to do this
 //but for now if it works then MVP!
 function unloadGame() {
-  deactivateButtons();
   for (let index = 0; index < saveItems.length; index++) {
     saveItems[index] = null; 
   }
@@ -383,7 +380,7 @@ function updateCurrencyGrowth(currencyTarget) {
   let growthValue = 0;
   generators.forEach(growthUpdateCheck)
   function growthUpdateCheck(gen) {
-    if (gen.currencyGen === currencyTarget) {
+    if (gen.currencyGen.tier === currencyTarget.tier) {
       growthValue = growthValue + gen.growth; 
     }
   }
@@ -436,7 +433,6 @@ function Grow(){
     let newSaveData = container.getSaveDataAndEmpty();
     loadWithFile(newSaveData);
   }
-  //TODO update generator costs at load
   generators.forEach(updateGen)
   function updateGen(gen) {
     updateGenGrowth(gen);
@@ -458,7 +454,7 @@ function Grow(){
     //refactor
     //document.getElementById("charaPrestigeAmount").innerHTML = formatOutput($chara.prestigeAmount);
   }
-  
+
   currencies.forEach(updateCurrencies);
   function updateCurrencies(currency) {
     updateValue(currency);

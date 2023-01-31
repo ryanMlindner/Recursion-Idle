@@ -1,7 +1,7 @@
 import formatOutput from "./formatOutput.js";
 import realcost from "./realCost.js";
 export default
-function updateUI(target) {
+function updateGenUI(target) {
     document.getElementById(target.name).innerHTML = 
         formatOutput(target.amount);
     document.getElementById(target.costRef).innerHTML = 
