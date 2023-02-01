@@ -83,9 +83,10 @@ function loadWithoutFile() {
   $memoryLeak = {tier: "memoryLeak", refHTML: "memoryLeakTotal", value: 0, growth: 0, 
     backgroundTotal: 0, unlocked: true, 
     prestigeAmount: 0, prestigeTarget: null, prestigeButtonID: null};
-  addCurrenciesToArrays($memoryLeak);  
-  $chara = {tier: "chara", refHTML: "charaTotal", value: 100, growth: 0, 
-    backgroundTotal: 100, unlocked: false, 
+  addCurrenciesToArrays($memoryLeak); 
+  //TODO put back from dev #
+  $chara = {tier: "chara", refHTML: "charaTotal", value: 1000000, growth: 0, 
+    backgroundTotal: 1000000, unlocked: false, 
     prestigeAmount: 0, prestigeTarget: "memory", prestigeButtonID: "charaPrestige"};
   addCurrenciesToArrays($chara);
   
@@ -211,7 +212,7 @@ function loadWithFile(dataArray) {
   if (DEBUG) {
   console.log(saveItems);
   }
-  
+
   //currency 
   $memory = dataArray[0];
     addCurrenciesToArrays($memory);
@@ -295,7 +296,9 @@ function activateButtons() {
     }
     else if (target.effectStrength) {
       document.getElementById(target.buttonID).addEventListener(
-          "click", function () { turnOn(target, getCurrencyBuy(target));});
+          "click", function () { 
+            turnOn(target, getCurrencyBuy(target), 
+            getUpgradeEffect(target), getUpgradeTarget(target));});
     }
   }
   //refactor
@@ -353,7 +356,10 @@ function unloadGame() {
   generators = new Array();
   upgrades = new Array();
 }
-//TODO fix references in save data like so
+
+//TODO later change the use of this function to only call once to set up
+//minorly unnecessary to call this every time, but it works (and takes no* time)
+//*(almost no time)
 function getCurrencyBuy(target) {
   let reference = null;
   currencies.forEach(checkTier);
@@ -362,8 +368,27 @@ function getCurrencyBuy(target) {
   }
   return reference;
 }
+//TODO see directly above
+function getUpgradeTarget(upgrade) {
+  let reference = null;
+  generators.forEach(checkName);
+  function checkName(generator) {
+    if (generator.name === upgrade.effectTarget) {reference = generator;}
+  }
+  return reference;
+}
+
+//TODO see two above
+function getUpgradeEffect(upgrade) {
+  let reference = null;
+  generators.forEach(checkName);
+  function checkName(generator) {
+    if (generator.name === upgrade.effectStrength) {reference = generator;}
+  }
+  return reference;
+}
+
 //IMPORTANT FUNCTION for guiding gameplay
-//refactor?
 function checkUnlocks() {
 
   itemsToDraw.forEach(checkToDraw);
@@ -466,7 +491,7 @@ function Grow(){
   upgrades.forEach(updateUpgrades);
   function updateUpgrades(upgrade) {
     if (upgrade.on) {
-      updateMulti(upgrade);
+      updateMulti(getUpgradeEffect(upgrade), getUpgradeTarget(upgrade));
     }
   }
 
