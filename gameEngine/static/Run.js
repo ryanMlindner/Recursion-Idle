@@ -86,40 +86,40 @@ function loadWithoutFile() {
   addCurrenciesToArrays($memoryLeak);  
   $chara = {tier: "chara", refHTML: "charaTotal", value: 100, growth: 0, 
     backgroundTotal: 100, unlocked: false, 
-    prestigeAmount: 0, prestigeTarget: $memory, prestigeButtonID: "charaPrestige"};
+    prestigeAmount: 0, prestigeTarget: "memory", prestigeButtonID: "charaPrestige"};
   addCurrenciesToArrays($chara);
   
   // generators instantiation
   // prestige layer 1 gen
-  $keyboards = {currencyBuy: $chara, currencyGen: $chara, nextTier: $memoryLeak, 
+  $keyboards = {currencyBuy: "chara", currencyGen: "chara", nextTier: "memoryLeak", 
     basecost: 100, costgrowth: 1.21, 
     costRef: "keyboardsCost", name: "keyboards",
     buttonID: "gen1", growthFactor: 1, growth: 0,
     amount: 0, growthDisplay: "keyboardsGen", upgradeMulti: 1, show: 50,
     prestigeMulti: 1, descriptor: "descriptor1"};
   addGeneratorToArrays($keyboards);
-  $autoclickers = {currencyBuy: $chara, currencyGen: $chara, nextTier: $memoryLeak, 
+  $autoclickers = {currencyBuy: "chara", currencyGen: "chara", nextTier: "memoryLeak", 
     basecost: 2000, costgrowth: 1.31, 
     costRef: "autoclickersCost", name: "autoclickers", 
     buttonID: "gen2", growthFactor: 10, growth: 0,
     amount: 0, growthDisplay: "autoclickersGen", upgradeMulti: 1, show: 1000,
     prestigeMulti: 1, descriptor: "descriptor2"};
   addGeneratorToArrays($autoclickers);
-  $macros = {currencyBuy: $chara, currencyGen: $chara, nextTier: $memoryLeak, 
+  $macros = {currencyBuy: "chara", currencyGen: "chara", nextTier: "memoryleak", 
     basecost: 40000, costgrowth: 1.41,
     costRef: "macrosCost", name: "macros",
     buttonID: "gen3", growthFactor: 100, growth: 0,
     amount: 0, growthDisplay: "macrosGen", upgradeMulti: 1, show: 20000,
     prestigeMulti: 1, descriptor: "descriptor3"};
   addGeneratorToArrays($macros);
-  $monitors = {currencyBuy: $chara, currencyGen: $chara, nextTier: $memoryLeak, 
+  $monitors = {currencyBuy: "chara", currencyGen: "chara", nextTier: "memoryleak", 
     basecost: 800000, costgrowth: 1.51,
     costRef: "monitorsCost", name: "monitors",
     buttonID: "gen4", growthFactor: 1000, growth: 0,
     amount: 0, growthDisplay: "monitorsGen", upgradeMulti: 1, show: 400000,
     prestigeMulti: 1, descriptor: "descriptor4"};
   addGeneratorToArrays($monitors);
-  $summons = {currencyBuy: $chara, currencyGen: $chara, nextTier: $memoryLeak, 
+  $summons = {currencyBuy: "chara", currencyGen: "chara", nextTier: "memoryleak", 
     basecost: 16000000, costgrowth: 1.61,
     costRef: "summonsCost", name: "summons",
     buttonID: "gen5", growthFactor: 10000, growth: 0,
@@ -128,7 +128,7 @@ function loadWithoutFile() {
   addGeneratorToArrays($summons);
 
   // prestige layer 2 gen
-  $tickertape = {currencyBuy: $memory, currencyGen: $memoryLeak, nextTier: null, 
+  $tickertape = {currencyBuy: "memory", currencyGen: "memoryleak", nextTier: null, 
     basecost: 100, costgrowth: 1.21,
     costRef: "tickertapeCost", name: "tickertapes",
     buttonID: "gen6", growthFactor: 1, growth: 0,
@@ -136,7 +136,7 @@ function loadWithoutFile() {
     prestigeMulti: 1, descriptor: "descriptor6"};
   addGeneratorToArrays($tickertape);
   $etchasketch = {
-    currencyBuy: $memory, currencyGen: $memoryLeak, nextTier: null,
+    currencyBuy: "memory", currencyGen: "memoryleak", nextTier: null,
     basecost: 2000, costgrowth: 1.31,
     costRef: "etchasketchCost", name: "etchasketchs",
     buttonID: "gen7", growthFactor: 10, growth: 0,
@@ -144,7 +144,7 @@ function loadWithoutFile() {
     prestigeMulti: 1, descriptor: "descriptor7"};
   addGeneratorToArrays($etchasketch);
   $floppydisc = {
-    currencyBuy: $memory, currencyGen: $memoryLeak, nextTier: null,
+    currencyBuy: "memory", currencyGen: "memoryleak", nextTier: null,
     basecost: 40000, costgrowth: 1.41,
     costRef: "floppydiscCost", name: "floppydiscs",
     buttonID: "gen8", growthFactor: 100, growth: 0,
@@ -152,7 +152,7 @@ function loadWithoutFile() {
     prestigeMulti: 1, descriptor: "descriptor8"};
   addGeneratorToArrays($floppydisc);
   $ssd = {
-    currencyBuy: $memory, currencyGen: $memoryLeak, nextTier: null,
+    currencyBuy: "memory", currencyGen: "memoryleak", nextTier: null,
     basecost: 800000, costgrowth: 1.51,
     costRef: "ssdCost", name: "ssds",
     buttonID: "gen9", growthFactor: 1000, growth: 0,
@@ -160,53 +160,58 @@ function loadWithoutFile() {
     prestigeMulti: 1, descriptor: "descriptor9"};
   addGeneratorToArrays($ssd);
   $faustdeal = {
-    currencyBuy: $memory, currencyGen: $memoryLeak, nextTier: null,
+    currencyBuy: "memory", currencyGen: "memoryleak", nextTier: null,
     basecost: 16000000, costgrowth: 1.61,
     costRef: "faustdealCost", name: "faustdeals",
     buttonID: "gen10", growthFactor: 10000, growth: 0,
     amount: 0, growthDisplay: "faustdealGen", upgradeMulti: 1, show: 8000000,
     prestigeMulti: 1, descriptor: "descriptor10"};
   addGeneratorToArrays($faustdeal);
-
   generators.forEach(updateUI);
   function updateUI(gen) {
     updateGenUI(gen);
   }
   //upgrade layer one
-  $gen11Upgrade = {name: "upgradeGenOne1", currencyBuy: $chara, cost: 4000, 
-    effectStrength: $autoclickers, effectTarget: $keyboards, 
+  $gen11Upgrade = {name: "upgradeGenOne1", currencyBuy: "chara", cost: 4000, 
+    effectStrength: "autoclickers", effectTarget: "keyboards", 
     buttonID: "upgradeGenOne1", on: false, show: 2000,
     costDisplay: "upgradeOneCost"};
   addUpgradeToArrays($gen11Upgrade);
-  $gen21Upgrade = {name: "upgradeGenTwo1", currencyBuy: $chara, cost: 80000, 
-    effectStrength: $macros, effectTarget: $autoclickers, 
+  $gen21Upgrade = {name: "upgradeGenTwo1", currencyBuy: "chara", cost: 80000, 
+    effectStrength: "macros", effectTarget: "autoclickers", 
     buttonID: "upgradeGenTwo1", on: false, show: 40000,
     costDisplay: "upgradeTwoCost"};
   addUpgradeToArrays($gen21Upgrade);
-  $gen31Upgrade = {name: "upgradeGenThree1", currencyBuy: $chara, cost: 1600000, 
-    effectStrength: $monitors, effectTarget: $macros, 
+  $gen31Upgrade = {name: "upgradeGenThree1", currencyBuy: "chara", cost: 1600000, 
+    effectStrength: "monitors", effectTarget: "macros", 
     buttonID: "upgradeGenThree1", on: false, show: 800000,
     costDisplay: "upgradeThreeCost"};
   addUpgradeToArrays($gen31Upgrade);
-  $gen41Upgrade = {name: "upgradeGenFour1", currencyBuy: $chara, cost: 32000000, 
-    effectStrength: $summons, effectTarget: $monitors, 
+  $gen41Upgrade = {name: "upgradeGenFour1", currencyBuy: "chara", cost: 32000000, 
+    effectStrength: "summons", effectTarget: "monitors", 
     buttonID: "upgradeGenFour1", on: false, show: 16000000,
     costDisplay: "upgradeFourCost"};
   addUpgradeToArrays($gen41Upgrade);
-  $gen51Upgrade = {name: "upgradeGenFive1", currencyBuy: $chara, cost: 640000000, 
-    effectStrength: $keyboards, effectTarget: $summons, 
+  $gen51Upgrade = {name: "upgradeGenFive1", currencyBuy: "chara", cost: 640000000, 
+    effectStrength: "keyboards", effectTarget: "summons", 
     buttonID: "upgradeGenFive1", on: false, show: 320000000,
     costDisplay: "upgradeFiveCost"};
   addUpgradeToArrays($gen51Upgrade);
+
+  upgrades.forEach(updateUpgradeUI);
+  function updateUpgradeUI(upgrade) {
+    document.getElementById(upgrade.costDisplay).innerHTML = upgrade.cost;
+  }
   activateButtons();
 }
 
 function loadWithFile(dataArray) {
+  clearButtons();
   unloadGame();
   if (DEBUG) {
   console.log(saveItems);
   }
-
+  
   //currency 
   $memory = dataArray[0];
     addCurrenciesToArrays($memory);
@@ -254,6 +259,10 @@ function loadWithFile(dataArray) {
   $gen51Upgrade = dataArray[17];
     addUpgradeToArrays($gen51Upgrade);
   
+  upgrades.forEach(updateUpgradeUI);
+  function updateUpgradeUI(upgrade) {
+    document.getElementById(upgrade.costDisplay).innerHTML = upgrade.cost;
+  }
   if (DEBUG) {
     console.log(saveItems);
     }
@@ -277,28 +286,35 @@ function addCurrenciesToArrays(itemToAdd) {
   currencies.push(itemToAdd);
 }
 
-//TODO buttons dont work on load
 function activateButtons() {
   saveItems.forEach(attachButton);
   function attachButton(target) {
     if (target.currencyGen) {
-        document.getElementById(target.buttonID).addEventListener(
-            "click", buyOneGenerator.bind(target));
+      document.getElementById(target.buttonID).addEventListener(
+          "click", function () { buyOneGenerator(target, getCurrencyBuy(target));});
     }
     else if (target.effectStrength) {
-        document.getElementById(target.buttonID).addEventListener(
-            "click", turnOn.bind(target));
+      document.getElementById(target.buttonID).addEventListener(
+          "click", function () { turnOn(target, getCurrencyBuy(target));});
     }
   }
   //refactor
   //document.getElementById("charaPrestige").addEventListener("click", prestige.bind($chara));
 }
 
-
-  //refactor
-  //document.getElementById("charaPrestige").removeEventListener("click", prestige.bind($chara));
-
-
+function clearButtons() {
+  saveItems.forEach(cloneButtons);
+  function cloneButtons(target) {
+    if (target.currencyGen) {
+      let element = document.getElementById(target.buttonID)
+      element.replaceWith(element.cloneNode(true));
+    }
+    else if (target.effectStrength) {
+      let element = document.getElementById(target.buttonID)
+      element.replaceWith(element.cloneNode(true));
+    }
+  }
+}
 //TODO eventually I've got to come across a less sloppy way to do this
 //but for now if it works then MVP!
 function unloadGame() {
@@ -337,14 +353,22 @@ function unloadGame() {
   generators = new Array();
   upgrades = new Array();
 }
-
+//TODO fix references in save data like so
+function getCurrencyBuy(target) {
+  let reference = null;
+  currencies.forEach(checkTier);
+  function checkTier(currency) {
+    if (currency.tier === target.currencyBuy) {reference = currency;}
+  }
+  return reference;
+}
 //IMPORTANT FUNCTION for guiding gameplay
 //refactor?
 function checkUnlocks() {
 
   itemsToDraw.forEach(checkToDraw);
   function checkToDraw(object) {
-    if (object.currencyBuy.backgroundTotal >= object.show) {
+    if (getCurrencyBuy(object).backgroundTotal >= object.show) {
       document.getElementById(object.buttonID).style.visibility = "visible";
       if (object.descriptor) {document.getElementById(object.descriptor).style.visibility = "visible";}
     }
@@ -380,7 +404,7 @@ function updateCurrencyGrowth(currencyTarget) {
   let growthValue = 0;
   generators.forEach(growthUpdateCheck)
   function growthUpdateCheck(gen) {
-    if (gen.currencyGen.tier === currencyTarget.tier) {
+    if (getCurrencyBuy(gen).tier === currencyTarget.tier) {
       growthValue = growthValue + gen.growth; 
     }
   }

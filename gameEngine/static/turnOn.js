@@ -1,16 +1,16 @@
 import updateGenGrowth from "./updateGenGrowth.js";
-//TODO configure like buyonegenerator
+//TODO refactor save data map to remove self references
 export default
-function turnOn() {
-  if (this.currencyBuy.value >= this.cost && this.on == false) {
-    this.currencyBuy.value = this.currencyBuy.value - this.cost;
-    updateMulti(this);
-    updateGenGrowth(this.effectTarget);
-    updateStatus(this);
+function turnOn(target) {
+  if (target.currencyBuy.value >= target.cost && target.on == false) {
+    target.currencyBuy.value = target.currencyBuy.value - target.cost;
+    updateMulti(target);
+    updateGenGrowth(target.effectTarget);
+    updateStatus(target);
   }
   function updateMulti() {
-    if(this.effectStrength.amount == 0) {this.effectTarget.upgradeMulti = 1;}
-    else this.effectTarget.upgradeMulti = this.effectStrength.amount;
+    if(target.effectStrength.amount == 0) {target.effectTarget.upgradeMulti = 1;}
+    else target.effectTarget.upgradeMulti = target.effectStrength.amount;
   }
   function updateStatus(target) {
     target.on = true;
