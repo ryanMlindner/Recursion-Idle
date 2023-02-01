@@ -2,7 +2,7 @@
 
 ensure you have a python installation accessible in your current directory (3.x should work)
 
-# get into a virtual environment
+# get into a virtual environment (optional)
 
 to install pip, follow command line instructions for your system from google :)
 
