@@ -1,5 +1,5 @@
 export default
-function updateMulti(target) {
-    if(target.effectStrength.amount == 0) {target.effectTarget.upgradeMulti = 1;}
-    else target.effectTarget.upgradeMulti = target.effectStrength.amount;
+function updateMulti(multiplier, genTarget) {
+    if(multiplier.amount === 0) {genTarget.upgradeMulti = 1;}
+    else genTarget.upgradeMulti = multiplier.amount;
   }
