@@ -74,19 +74,17 @@ document.getElementById("apipTab").addEventListener("click", openGenTab.bind("ap
 
 function loadWithoutFile() {
   // load the game normally
-
   // currencies instantiation
   $memory = {tier: "memory", refHTML: "memoryTotal", value: 0, growth: 0, 
     backgroundTotal: 0, unlocked: false, 
     prestigeAmount: 0, prestigeTarget: null, prestigeButtonID: null};
-  addCurrenciesToArrays($memory); 
+  addCurrenciesToArrays($memory);
   $memoryLeak = {tier: "memoryLeak", refHTML: "memoryLeakTotal", value: 0, growth: 0, 
     backgroundTotal: 0, unlocked: true, 
     prestigeAmount: 0, prestigeTarget: null, prestigeButtonID: null};
-  addCurrenciesToArrays($memoryLeak); 
-  //TODO put back from dev #
-  $chara = {tier: "chara", refHTML: "charaTotal", value: 1000000, growth: 0, 
-    backgroundTotal: 1000000, unlocked: false, 
+  addCurrenciesToArrays($memoryLeak);
+  $chara = {tier: "chara", refHTML: "charaTotal", value: 100, growth: 0, 
+    backgroundTotal: 100, unlocked: false, 
     prestigeAmount: 0, prestigeTarget: "memory", prestigeButtonID: "charaPrestige"};
   addCurrenciesToArrays($chara);
   
