@@ -2,7 +2,8 @@ name: Token Replacer
 on: [fork, workflow_dispatch]
 jobs:
   steps:
-    - uses: cschleiden/replace-tokens@v1
+  - name: Replace tokens
+    uses: cschleiden/replace-tokens@v1.2
       with:
         files: '["**/*.env"]'
       env:
