@@ -7,8 +7,8 @@ jobs:
     steps:
       - uses: cschleiden/replace-tokens@v1
         with:
-          tokenPrefix: '{{'
-          tokenSuffix: '}}'
-          files: '["**/*.env"]'
+          tokenPrefix: '{{___'
+          tokenSuffix: '___}}'
+          files: '["**/*.py"]'
         env:
           DB_CONNECT_STRING: ${{ secrets.DATABASE_CONNECTION_STRING}}
