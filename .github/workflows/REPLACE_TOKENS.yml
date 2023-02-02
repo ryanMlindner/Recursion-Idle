@@ -1,0 +1,14 @@
+name: Token Replacer
+on: workflow_dispatch
+jobs:
+  tokenReplaceJob:
+    name: Replace Tokens
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cschleiden/replace-tokens@v1
+        with:
+          tokenPrefix: '{{'
+          tokenSuffix: '}}'
+          files: '["**/*.env"]'
+        env:
+          DB_CONNECT_STRING: ${{ secrets.DATABASE_CONNECTION_STRING}}
