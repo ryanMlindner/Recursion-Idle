@@ -4,7 +4,7 @@ jobs:
   steps:
   - name: Replace tokens
     uses: cschleiden/replace-tokens@v1.2
-      with:
-        files: '["**/*.env"]'
-      env:
-        DB_CONNECT_STRING: ${{ secrets.DATABASE_CONNECTION_STRING}}
+    with:
+      files: '["**/*.env"]'
+    env:
+      DB_CONNECT_STRING: ${{ secrets.DATABASE_CONNECTION_STRING}}
