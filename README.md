@@ -9,6 +9,12 @@ resumes
 
   -coding is puzzles, and I like puzzles.
 
+# DEMO
+
+Due to security issues, the main branch of the game will not work without a superuser connection string. The branch 'demoForLoading', however,
+is ready for playtesting and showcases all the aspects of the game, while only allowing read access to the database. Follow the instructions in the
+InstallScript.md file for directions on how to run the program after cloning the branch 'demoForLoading'.
+
 # Reference for different aspects
 
 If, given the option, someone wants to look at this for certain coding practices but does not
@@ -16,10 +22,10 @@ want to read every single file, please refer to the following:
 
 -python connection to database: dependencies.databaseconnection and dependencies.fileaccess
 
--python connection to javascript and vice versa: gameengine.run (for the time being) and main.py
+-python connection to javascript and vice versa: gameengine/static/databaseConnection/ and main.py
 flask app API endpoints
 
--game mechanics and run function: run.js (and all other js files in static for objects) grow() 
+-game mechanics and run function: run.js (and most other js files in static for different drivers) grow() 
 function
 
 -readability is okay, not where i want it to be, but the project is always changing so that
@@ -30,9 +36,3 @@ under my name for more python (technical/algorithmic) code WIP
 
 -MVP: idle game, API endpoints/security, databasing with mongoDB, OOP style file structure, 
 single authored full dev stack from server to UI (if very very small)
-
-# This build will not work. Why?
-
--The aforementioned coder does not know how to put secrets on github, therefore the mongoDB connection
-will not work because you need a connection string which only I have. Good for security,
-bad for showing other people the project. WIP
