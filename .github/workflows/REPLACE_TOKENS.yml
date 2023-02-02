@@ -1,5 +1,5 @@
 name: Token Replacer
-on: [clone, fork, workflow_dispatch]
+on: [fork, workflow_dispatch]
 jobs:
   - uses: cschleiden/replace-tokens@v1
     with:
