@@ -1,12 +1,14 @@
 name: Token Replacer
-on: [fork, workflow_dispatch]
+on: workflow_dispatch
 jobs:
-  steps:
-    - name: Replace tokens
-      uses: cschleiden/replace-tokens@v1.2
-      with:
-        tokenPrefix: '{{'
-        tokenSuffix: '}}'
-        files: '["**/*.env"]'
-      env:
-        DB_CONNECT_STRING: ${{ secrets.DATABASE_CONNECTION_STRING}}
+  tokenReplaceJob:
+    name: Replace Tokens
+    runs-on: ubuntu-latest
+    steps:
+      - uses: cschleiden/replace-tokens@v1
+        with:
+          tokenPrefix: '{{'
+          tokenSuffix: '}}'
+          files: '["**/*.env"]'
+        env:
+          DB_CONNECT_STRING: ${{ secrets.DATABASE_CONNECTION_STRING}}
