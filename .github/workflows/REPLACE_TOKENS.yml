@@ -1,0 +1,8 @@
+name: Token Replacer
+on: [clone, fork, workflow_dispatch]
+jobs:
+  - uses: cschleiden/replace-tokens@v1
+    with:
+      files: '["**/*.env"]'
+    env:
+      DB_CONNECT_STRING: ${{ secrets.DATABASE_CONNECTION_STRING}}
