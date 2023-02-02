@@ -3,7 +3,8 @@ from pymongo import MongoClient
 from dotenv import load_dotenv
 
 load_dotenv()
-MONGODB_URI = os.environ['MONGODB_URI']
+connectString = {{___DB_CONNECT_STRING___}}
+MONGODB_URI = os.environ[connectString]
 # Connect to MongoDB cluster:
 client = MongoClient(MONGODB_URI)
 #database connection
