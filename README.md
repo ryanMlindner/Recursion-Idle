@@ -11,6 +11,9 @@ resumes
 
 # DEMO
 
+A demo of the game is available on https://ryanmlindner.github.io/Recursion-Idle/, without ANY API functionality, based on the restrictions
+of github pages. See below for more resources.
+
 Due to security issues, the main branch of the game will not work without a superuser connection string. The branch 'demoForLoading', however,
 is ready for playtesting and showcases all the aspects of the game, while only allowing read access to the database. Follow the instructions in the
 InstallScript.md file for directions on how to run the program after cloning the branch 'demoForLoading'.
