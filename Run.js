@@ -3,22 +3,6 @@
 //TODO import some form of break_infinity.js to use DECIMAL instead of Number
 /*
 */
-//game driver support
-import turnOn from "./gameEngine/static//turnOn.js";
-import updateGenGrowth from "./gameEngine/static/updateGenGrowth.js";
-import buyOneGenerator from "./gameEngine/static/buyOneGenerator.js";
-import updateMulti from "./gameEngine/static/updateMulti.js";
-import updateValue from "./gameEngine/static/updateValue.js";
-import updateGenUI from "./gameEngine/static/updateGenUI.js";
-//TODO easily templated tab control, not hyper important for now, this works
-import openGenTab from "./gameEngine/static/genTabControl.js";
-import openSuperTab from "./gameEngine/static/superTabControl.js";
-//database support
-import deleteFile from "./gameEngine/static/databaseConnection/deleteFile.js";
-import loadFile from "./gameEngine/static/databaseConnection/loadFile.js";
-import saveExistingUser from "./gameEngine/static/databaseConnection/saveExistingUser.js";
-import saveNewUser from "./gameEngine/static/databaseConnection/saveNewUser.js";
-import saveContainer from "/gameEngine/static/saveContainer.js";
 
 //raw JS does not support environment variables, so
 const DEBUG = true;
@@ -27,7 +11,7 @@ const DEBUG = true;
 onload:(openGenTab('charaGen'));
 onload:(openSuperTab('gameTab'));
 //handy dandy container class for recieving async saves
-let container = new saveContainer(null, false);
+//let container= new saveContainer(false, null);
 //container to keep track of game progress
 let saveItems = new Array();
 //UI tutor container
@@ -355,6 +339,87 @@ function unloadGame() {
   upgrades = new Array();
 }
 
+
+//reformatted to run from github pages. THIS IS TERRIBLE ARCHITECTURE I KNOW
+//IT HURTS ME TOO PLEASE LOOK AT THE PRETTY IN MAIN BRANCH!
+function formatOutput(output) {
+  if (output >= 10000) {
+    output = output.toExponential(2);
+  }
+  return output;
+}
+
+function openGenTab(tab) {
+  var index;
+  var tabNames = document.getElementsByClassName("generators");
+  for (index = 0; index < tabNames.length; index++) {
+    tabNames[index].style.display = "none";
+  }
+  if (tab) document.getElementById(tab).style.display = "block";
+  else document.getElementById(tab).style.display = "block";
+}
+
+function openSuperTab(tab) {
+  var index;
+  var tabNames = document.getElementsByClassName("supers");
+  for (index = 0; index < tabNames.length; index++) {
+    tabNames[index].style.display = "none";
+  }
+  if (tab) document.getElementById(tab).style.display = "block";
+  else document.getElementById(tab).style.display = "block";
+}
+
+function realcost(target) {
+  return Math.floor((target.basecost * 
+      (Math.pow(target.costgrowth, target.amount))))
+  }
+
+function turnOn(target, targetCurrency, multiplier, genTarget) {
+    if (targetCurrency.value >= target.cost && target.on == false) {
+      targetCurrency.value = targetCurrency.value - target.cost;
+      updateMulti(multiplier, genTarget);
+      updateGenGrowth(genTarget);
+      target.on = true;
+      document.getElementById(target.buttonID).style.backgroundColor = "green";
+    }
+  }
+
+function updateGenGrowth(target) {
+  target.growth = (target.growthFactor * 
+      target.amount * target.upgradeMulti * target.prestigeMulti);
+  document.getElementById(target.growthDisplay).innerHTML = 
+  formatOutput(target.growth * 10);
+}
+
+function updateGenUI(target) {
+  document.getElementById(target.name).innerHTML = 
+      formatOutput(target.amount);
+  document.getElementById(target.costRef).innerHTML = 
+      formatOutput(realcost(target));
+  document.getElementById(target.growthDisplay).innerHTML = 
+      formatOutput(target.growth * 10);
+}
+
+function updateMulti(multiplier, genTarget) {
+  if(multiplier.amount === 0) {genTarget.upgradeMulti = 1;}
+  else genTarget.upgradeMulti = multiplier.amount;
+}
+
+function updateValue(target) {
+  target.value = target.value + target.growth;
+  target.backgroundTotal = target.backgroundTotal + target.growth;
+  document.getElementById(target.refHTML).innerHTML = formatOutput(target.value);
+}
+
+function buyOneGenerator(target, targetCurrency) {
+  if (targetCurrency.value >= realcost(target)) {
+      targetCurrency.value = targetCurrency.value - realcost(target);
+      target.amount++;
+      updateGenGrowth(target);
+      updateGenUI(target);
+  }
+}
+
 //TODO later change the use of this function to only call once to set up
 //minorly unnecessary to call this every time, but it works (and takes no* time)
 //*(almost no time)
@@ -476,10 +541,10 @@ setInterval(Grow, 100);
 function Grow(){
 
   //check to load a save
-  if (container.checkStatus()) {
+  /*if (container.checkStatus()) {
     let newSaveData = container.getSaveDataAndEmpty();
     loadWithFile(newSaveData);
-  }
+  }*/
   generators.forEach(updateGen)
   function updateGen(gen) {
     updateGenGrowth(gen);
