@@ -48,13 +48,13 @@ onload:(loadWithoutFile());
 
 //tabs
 //main tabs
-document.getElementById("game").addEventListener("click", openSuperTab.bind("gameTab"));
-document.getElementById("upgrades").addEventListener("click", openSuperTab.bind("upgradesTab"));
-document.getElementById("apiUI").addEventListener("click", openSuperTab.bind("apiUITab"));
+document.getElementById("game").addEventListener("click", function () { openSuperTab("gameTab")});
+document.getElementById("upgrades").addEventListener("click", function () { openSuperTab("upgradesTab")});
+document.getElementById("apiUI").addEventListener("click", function () { openSuperTab("apiUITab")});
 //tabs in game tab
-document.getElementById("charaTab").addEventListener("click", openGenTab.bind("charaGen"));
-document.getElementById("memoryTab").addEventListener("click", openGenTab.bind("memoryGen"));
-document.getElementById("apipTab").addEventListener("click", openGenTab.bind("apipGen"));
+document.getElementById("charaTab").addEventListener("click", function () {openGenTab("charaGen")});
+document.getElementById("memoryTab").addEventListener("click", function () {openGenTab("memoryGen")});
+document.getElementById("apipTab").addEventListener("click", function () {openGenTab("apipGen")});
 
 function loadWithoutFile() {
   // load the game normally
@@ -67,8 +67,8 @@ function loadWithoutFile() {
     backgroundTotal: 0, unlocked: true, 
     prestigeAmount: 0, prestigeTarget: null, prestigeButtonID: null};
   addCurrenciesToArrays($memoryLeak);
-  $chara = {tier: "chara", refHTML: "charaTotal", value: 100, growth: 0, 
-    backgroundTotal: 100, unlocked: false, 
+  $chara = {tier: "chara", refHTML: "charaTotal", value: 100000, growth: 0, 
+    backgroundTotal: 100000, unlocked: false, 
     prestigeAmount: 0, prestigeTarget: "memory", prestigeButtonID: "charaPrestige"};
   addCurrenciesToArrays($chara);
   
@@ -183,7 +183,7 @@ function loadWithoutFile() {
 
   upgrades.forEach(updateUpgradeUI);
   function updateUpgradeUI(upgrade) {
-    document.getElementById(upgrade.costDisplay).innerHTML = upgrade.cost;
+    document.getElementById(upgrade.costDisplay).innerHTML = formatOutput(upgrade.cost);
   }
   activateButtons();
 }
