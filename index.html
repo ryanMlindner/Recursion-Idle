@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta content="width=device-width, initial-scale=1.0" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <link rel="stylesheet" href="{{ url_for('static', filename='Recursion.css') }}" >
+  <link rel="stylesheet" href="Recursion.css" >
 </head>
 <body>
   <!-- TODO: write a game -->
@@ -140,8 +140,10 @@
   <h1>See I told you it was real!</h1>
 
   <div id="saveLoadAPI" class="APIUI">
-    <h4>This is a VERY primitive save/load system that works off of unique user IDs. For the 
-      purposes of this program, enter the username "devImpersonator" for playtesting and debugging
+    <h4>The Save/Load system does not work from github pages, it requires being loaded by a python
+      server runner i.e. my main branch filesystem. Please refer to the branch 'demoLoading' or
+      email me at ryan.m.lindner@gmail.com for resume based questions. Thank you for checking 
+      out my game!
     </h4>
     <h4>Server Messages show here: <span id="apiStatus"></span> </h4>
     <input type="text" id="username">
@@ -152,5 +154,5 @@
   </div>
 </div>
 
-<script type="module" src="{{ url_for('static', filename='Run.js') }}"></script>
+<script type="module" src="Run.js"></script>
 </body>

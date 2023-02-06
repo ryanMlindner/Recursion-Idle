@@ -4,21 +4,21 @@
 /*
 */
 //game driver support
-import turnOn from "./turnOn.js";
-import updateGenGrowth from "./updateGenGrowth.js";
-import buyOneGenerator from "./buyOneGenerator.js";
-import updateMulti from "./updateMulti.js";
-import updateValue from "./updateValue.js";
-import updateGenUI from "./updateGenUI.js";
+import turnOn from "./gameEngine/static//turnOn.js";
+import updateGenGrowth from "./gameEngine/static/updateGenGrowth.js";
+import buyOneGenerator from "./gameEngine/static/buyOneGenerator.js";
+import updateMulti from "./gameEngine/static/updateMulti.js";
+import updateValue from "./gameEngine/static/updateValue.js";
+import updateGenUI from "./gameEngine/static/updateGenUI.js";
 //TODO easily templated tab control, not hyper important for now, this works
-import openGenTab from "./genTabControl.js";
-import openSuperTab from "./superTabControl.js";
+import openGenTab from "./gameEngine/static/genTabControl.js";
+import openSuperTab from "./gameEngine/static/superTabControl.js";
 //database support
-import deleteFile from "./databaseConnection/deleteFile.js";
-import loadFile from "./databaseConnection/loadFile.js";
-import saveExistingUser from "./databaseConnection/saveExistingUser.js";
-import saveNewUser from "./databaseConnection/saveNewUser.js";
-import saveContainer from "/saveContainer.js";
+import deleteFile from "./gameEngine/static/databaseConnection/deleteFile.js";
+import loadFile from "./gameEngine/static/databaseConnection/loadFile.js";
+import saveExistingUser from "./gameEngine/static/databaseConnection/saveExistingUser.js";
+import saveNewUser from "./gameEngine/static/databaseConnection/saveNewUser.js";
+import saveContainer from "/gameEngine/static/saveContainer.js";
 
 //raw JS does not support environment variables, so
 const DEBUG = true;
